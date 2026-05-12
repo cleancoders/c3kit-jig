@@ -1,0 +1,19 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  placeholder:
+    name: placeholder (phase 0)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Report status
+        run: |
+          echo "c3kit-starter is in Phase 0 bootstrap."
+          echo "Real CI jobs (CLI tests, template scaffold checks) will be added"
+          echo "when their sub-specs are implemented. See docs/specs/."

@@ -1,0 +1,36 @@
+# macOS
+.DS_Store
+
+# Editors / IDEs
+.idea/
+*.iml
+.vscode/
+*.swp
+
+# Clojure / CLJS
+.cpcache/
+.clj-kondo/
+.lsp/
+target/
+out/
+classes/
+pom.xml
+pom.xml.asc
+
+# Node (only present inside templates that use it)
+node_modules/
+
+# Generated / build artifacts
+resources/public/cljs/
+resources/public/js/compiled/
+resources/prerendered/
+
+# Local-only env / secrets
+.env
+.env.local
+
+# Logs
+*.log
+
+# bb uberscript build output (CLI release artifacts live under cli/dist/)
+cli/dist/
