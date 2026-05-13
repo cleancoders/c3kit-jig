@@ -14,7 +14,7 @@
 (def REPO-URL "https://github.com/cleancoders/c3kit-starter")
 (def DEFAULT-REF "main")
 
-(defn- exit [code] (System/exit code))
+(defn exit [code] (System/exit code))
 
 (defn- resolve-templates-dir [opts]
   (or (:template-dir opts)
@@ -35,7 +35,7 @@
       ;; manifest
       (let [m (manifest/read-manifest (str tdir))
             nm (rn/validate-name (or name "my-app") (:tokens m))
-            target (str (fs/path (fs/cwd) nm))]
+            target (str (fs/path (or (:target-parent opts) (fs/cwd)) nm))]
         (when (fs/exists? target)
           (ui/fail (str "target already exists: " target))
           (cfs/cleanup! stage)
@@ -92,4 +92,5 @@
         :error    (do (ui/fail error) (println (args/help)) (exit 2))
         :list     (do (ui/info "List of templates not yet implemented.") (exit 0))
         :upgrade  (do (ui/info "Upgrade not yet implemented.") (exit 0))
-        :scaffold (scaffold! options)))))
+        :scaffold (do (scaffold! options) (exit 0))))))
+

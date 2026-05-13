@@ -40,4 +40,8 @@
       (should-contain "Unknown option" (:error r))))
 
   (it "includes a help string"
-    (should-contain "c3kit-create" (args/help))))
+    (should-contain "c3kit-create" (args/help)))
+
+  (it "captures --target-parent"
+    (should= "/tmp/xyz"
+             (:target-parent (:options (args/parse ["my-app" "--target-parent" "/tmp/xyz"]))))))

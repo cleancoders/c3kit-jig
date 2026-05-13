@@ -11,6 +11,7 @@
    [nil  "--no-git"            "Skip `git init` and initial commit"
     :id :git? :default true :parse-fn (constantly false)]
    [nil  "--debug"             "Print full stack traces on error"]
+   [nil  "--target-parent PATH" "(internal) override CWD for scaffold target"]
    ["-h" "--help"              "Show this help"]
    [nil  "--version"           "Print CLI version"]
    [nil  "--list"              "List available templates"]
