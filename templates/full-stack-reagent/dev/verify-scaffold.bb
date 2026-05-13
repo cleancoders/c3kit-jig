@@ -43,11 +43,7 @@
         feat-flags  (mapcat (fn [[k v]] ["--feature" (str (name k) "=" (boolean v))])
                             (:features expected))
         cli-prefix  (if cli-cp
-                      ;; Pre-load fetch before main; bb's sci analyzer on Linux otherwise fails to resolve
-                      ;; fetch/clone-repo! during main.clj analysis when invoked via bare `-m c3kit-create.main`.
-                      ["bb" "-cp" cli-cp
-                       "-e" "(require 'c3kit-create.fetch) (require 'c3kit-create.main) (apply c3kit-create.main/-main *command-line-args*)"
-                       "--"]
+                      ["bb" "-cp" cli-cp "-m" "c3kit-create.main"]
                       ["bb" cli])
         cli-args    (concat [(:name expected)
                              "--template-dir" templates-dir
