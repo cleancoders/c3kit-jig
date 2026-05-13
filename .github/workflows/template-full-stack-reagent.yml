@@ -22,7 +22,7 @@ jobs:
       - uses: DeLaGuardo/setup-clojure@13.0
         with:
           cli: latest
-          bb: latest
+          bb: 1.12.218
       - name: Build CLI uberscript
         run: |
           mkdir -p cli/dist
@@ -64,7 +64,7 @@ jobs:
       - uses: DeLaGuardo/setup-clojure@13.0
         with:
           cli: latest
-          bb: latest
+          bb: 1.12.218
       - uses: actions/download-artifact@v4
         with:
           name: c3kit-create-uberscript
@@ -83,7 +83,7 @@ jobs:
       - uses: DeLaGuardo/setup-clojure@13.0
         with:
           cli: latest
-          bb: latest
+          bb: 1.12.218
       - uses: actions/download-artifact@v4
         with:
           name: c3kit-create-uberscript

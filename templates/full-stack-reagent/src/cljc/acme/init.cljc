@@ -22,8 +22,16 @@
 #?(:cljs (defn install-reagent-db-atom! []
            (db/set-impl! (db/create-db config/bucket schema/full))))
 
+#?(:clj
+   (defn- safe-version-from-js-file [path]
+     ;; api/version-from-js-file throws when the JS bundle hasn't been built
+     ;; (a common state in fresh scaffolds and CI). Fall back to "dev" so
+     ;; spec runs don't require a prior `clojure -M:test:cljs once`.
+     (try (api/version-from-js-file path)
+          (catch Exception _ "dev"))))
+
 (defn configure-api! []
   (api/configure! #?(:clj  {:ws-handlers 'acme.routes/ws-handlers
-                            :version     (api/version-from-js-file (if config/development? "public/cljs/acme_dev.js" "public/cljs/acme.js"))}
+                            :version     (safe-version-from-js-file (if config/development? "public/cljs/acme_dev.js" "public/cljs/acme.js"))}
                      :cljs {:redirect-fn core/goto!}))
   #?(:cljs (rest/configure!)))
