@@ -10,20 +10,26 @@
             [c3kit.apron.util :as util]
             [c3kit.bucket.bg :as bg]
             [c3kit.bucket.api :as db]
-            [c3kit.wire.websocket :as websocket])
+            ;; @c3kit/feature :websocket = [c3kit.wire.websocket :as websocket]
+            )
   (:import (java.lang Runtime Thread)))
 
 (def scheduled-tasks [])
 (def schedule-bg-tasks (partial bg/start-scheduled-tasks scheduled-tasks))
 (def cancel-bg-tasks (partial bg/stop-scheduled-tasks scheduled-tasks))
 
-(defn start-env [app] (app/start-env app "cc.env" "CC_ENV"))
+(defn start-env [app] (app/start-env app "acme.env" "ACME_ENV"))
 
 (def env (app/service 'acme.main/start-env 'c3kit.apron.app/stop-env))
 (def http (app/service 'acme.http/start 'acme.http/stop))
 (def bg-tasks (app/service 'acme.main/schedule-bg-tasks 'acme.main/cancel-bg-tasks))
 
+;; @c3kit/feature :websocket {
 (def all-services [env db/service http websocket/service bg/service #_bg-tasks])
+;; @c3kit/feature :websocket }
+;; @c3kit/feature !:websocket {
+(def all-services [env db/service http bg/service #_bg-tasks])
+;; @c3kit/feature !:websocket }
 (def refresh-services [db/service bg/service bg-tasks])
 
 (defn maybe-init-dev []

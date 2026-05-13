@@ -8,7 +8,8 @@
             [acme.test-data :as test-data]
             [acme.user :as sut]
             [c3kit.wire.spec-helper :as wire-helper]
-            [c3kit.wire.websocket :as ws]))
+            ;; @c3kit/feature :websocket = [c3kit.wire.websocket :as ws]
+            ))
 
 (describe "User"
   (with-stubs)
@@ -18,6 +19,7 @@
   (test-data/with-memory-kinds :user)
   (before (page/clear!))
 
+  ;; @c3kit/feature :websocket {
   (it "install-and-connect!"
     (with-redefs [ws/start! (stub :ws/start!)]
       (sut/install-and-connect! @test-data/road-runner)
@@ -31,6 +33,14 @@
       (should-have-invoked-ws :user/fetch-data nil sut/data-fetched!)
       (sut/data-fetched! [])
       (should @sut/data-fetched?)))
+  ;; @c3kit/feature :websocket }
+
+  ;; @c3kit/feature !:websocket {
+  (it "install-and-connect! marks data-fetched? immediately"
+    (sut/install-and-connect! @test-data/road-runner)
+    (should= @test-data/road-runner @sut/current)
+    (should @sut/data-fetched?))
+  ;; @c3kit/feature !:websocket }
 
   (context "menu"
 

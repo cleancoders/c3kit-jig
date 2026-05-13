@@ -23,7 +23,7 @@
          [:h2.small-margin-bottom "An error has occurred"]
          [:p "We have been notified, and are looking into it. Our apologies for the inconvenience."
           "If you continue to receive this error, please contact us at "
-          [:a {:target "_blank" :href "mailto:support@cleancoders.com"} "support@cleancoders.com"] "."]]]]]]))
+          [:a {:target "_blank" :href "mailto:support@example.com"} "support@example.com"] "."]]]]]]))
 
 (defn pretty-printed [x] (with-out-str (pprint/pprint x)))
 
@@ -53,7 +53,7 @@
 
 (defn internal-error [to m]
   {:to      to
-   :from    "errors@cleancoders.com"
+   :from    "errors@example.com"
    :subject (format "[acme] 500 error in [%s] at [%s]"
                     config/environment
                     (time/unparse :iso8601 (time/now)))
@@ -61,7 +61,7 @@
 
 (defn send-error-email
   ([error-html]
-   (email/send-email (internal-error "support@cleancoders.com" {:body error-html})))
+   (email/send-email (internal-error "support@example.com" {:body error-html})))
   ([request e]
    (let [error-html (build-error-html request e)]
      (send-error-email error-html))))

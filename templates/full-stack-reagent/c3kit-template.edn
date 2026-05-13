@@ -65,7 +65,11 @@
                                   "spec/clj/{{acme}}/destination_spec.clj"
                                   "spec/cljs/{{acme}}/user_spec.cljs"
                                   "spec/cljs/{{acme}}/forgot_password_spec.cljs"
-                                  "spec/cljs/{{acme}}/recover_password_spec.cljs"]}]
+                                  "spec/cljs/{{acme}}/recover_password_spec.cljs"]}
+
+               {:id      :websocket
+                :prompt  "WebSocket support (c3kit.wire.websocket)?"
+                :default true}]
 
  :db          {:prompt  "Database"
                :options [{:id :datomic-pro :label "Datomic Pro (free, single-jar transactor)"}

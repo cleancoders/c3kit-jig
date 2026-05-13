@@ -1,7 +1,7 @@
 {:ns-prefix   "acme"
  :ignore-errors  ["goog/i18n/bidi.js"]
  :ignore-console ["Failed to load resource"]
- :env-keys    ["cc.env" "CC_ENV"]
+ :env-keys    ["acme.env" "ACME_ENV"]
  :run-cmd     "node resources/public/specs/speclj.js"
  :development {:cache-analysis true
                :optimizations  :none

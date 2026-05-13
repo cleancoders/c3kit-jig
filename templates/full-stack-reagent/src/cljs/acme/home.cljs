@@ -1,84 +1,64 @@
 (ns acme.home
   (:require [acme.core :as cc]
+            [acme.forms :as forms]
             [acme.layoutc :as layoutc]
             [acme.page :as page]
             [acme.user :as user]
+            [acme.user.corec :as userc]
             [c3kit.apron.corec :as ccc]
             [c3kit.wire.ajax :as ajax]
-            [c3kit.wire.js :as wjs]
             [clojure.string :as str]
             [reagent.core :as reagent]))
 
 (def handle-login-success (juxt (comp user/install-and-connect! :user)
                                 (comp cc/goto! :destination)))
 
-(defn attempt-login [username password]
-  (ajax/post! "/ajax/user/signin" {:username username :password password} handle-login-success))
-
-(defn attempt-signup [email password confirm-password]
-  (ajax/post! "/ajax/user/signup" {:email email :password password :confirm-password confirm-password} handle-login-success))
-
 (def show-signup? (reagent/atom false))
 
+(defn- non-blank? [state ks] (every? (complement str/blank?) (map state ks)))
+
 (defn signin-form []
-  (let [username (reagent/atom "")
-        password (reagent/atom "")]
+  (let [state  (reagent/atom {})
+        config (forms/config userc/signin-schema state "/ajax/user/signin" handle-login-success)]
     (fn []
       [:form
-       [:fieldset.small-margin-bottom
-        [:label "Email"]
-        [:input#-username {:type          "text"
-                           :placeholder   "email"
-                           :auto-complete "username"
-                           :on-change     #(reset! username (wjs/e-text %))}]]
-       [:fieldset.small-margin-bottom
-        [:label "Password"]
-        [:input#-password {:type          "password"
-                           :placeholder   "password"
-                           :auto-complete "current-password"
-                           :on-change     #(reset! password (wjs/e-text %))}]
-        [:p [:a {:href "/forgot-password"} "I forgot my password."]]]
+       [forms/field-set "Email"
+        forms/text-field
+        {:id "-email" :placeholder "email" :auto-complete "username"}
+        :email config]
+       [forms/field-set "Password"
+        forms/password-field
+        {:id "-password" :placeholder "password" :auto-complete "current-password"}
+        :password config]
+       [:p [:a {:href "/forgot-password"} "I forgot my password."]]
        [:fieldset
-        [:button.primary
-         {:id       "-signin-button"
-          :disabled (some str/blank? [@username @password])
-          :on-click (wjs/nod-n-do #(attempt-login @username @password))}
-         "Sign In"]]
+        [forms/submit-button "Sign In" "-signin-button" config
+         (non-blank? @state [:email :password])]]
        [:p.margin-top-default.text-align-center
         "Don't have an account? "
         [:a {:href "#" :on-click #(reset! show-signup? true)} "Sign Up"]]])))
 
 (defn signup-form []
-  (let [email            (reagent/atom "")
-        password         (reagent/atom "")
-        confirm-password (reagent/atom "")]
+  (let [state  (reagent/atom {})
+        config (forms/config userc/signup-schema state "/ajax/user/signup" handle-login-success)]
     (fn []
       [:form
-       [:fieldset.small-margin-bottom
-        [:label "Email"]
-        [:input#-signup-email {:type          "email"
-                               :placeholder   "email"
-                               :auto-complete "email"
-                               :on-change     #(reset! email (wjs/e-text %))}]]
-       [:fieldset.small-margin-bottom
-        [:label "Password"]
-        [:input#-signup-password {:type          "password"
-                                  :placeholder   "password"
-                                  :auto-complete "new-password"
-                                  :on-change     #(reset! password (wjs/e-text %))}]]
-       [:fieldset.small-margin-bottom
-        [:label "Confirm Password"]
-        [:input#-signup-confirm {:type          "password"
-                                 :placeholder   "confirm password"
-                                 :auto-complete "new-password"
-                                 :on-change     #(reset! confirm-password (wjs/e-text %))}]]
+       [forms/field-set "Email"
+        forms/text-field
+        {:id "-signup-email" :type "email" :placeholder "email" :auto-complete "email"}
+        :email config]
+       [forms/field-set "Password"
+        forms/password-field
+        {:id "-signup-password" :placeholder "password" :auto-complete "new-password"}
+        :password config]
+       [forms/field-set "Confirm Password"
+        forms/password-field
+        {:id "-signup-confirm" :placeholder "confirm password" :auto-complete "new-password"}
+        :confirm-password config]
        [:fieldset
-        [:button.primary
-         {:id       "-signup-button"
-          :disabled (or (some str/blank? [@email @password @confirm-password])
-                        (not= @password @confirm-password))
-          :on-click (wjs/nod-n-do #(attempt-signup @email @password @confirm-password))}
-         "Sign Up"]]
+        [forms/submit-button "Sign Up" "-signup-button" config
+         (and (non-blank? @state [:email :password :confirm-password])
+              (= (:password @state) (:confirm-password @state)))]]
        [:p.margin-top-default.text-align-center
         "Already have an account? "
         [:a {:href "#" :on-click #(reset! show-signup? false)} "Sign In"]]])))

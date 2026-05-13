@@ -102,9 +102,9 @@
         user       (rn/variants user-name)
         secret-map (sec/generate-secret-map (:secrets manifest))]
     (doseq [file (visit-all-files stage-dir)]
-      (rewrite-content! tokens user features db-choice file))
-    (doseq [file (visit-all-files stage-dir)]
       (replace-secrets! secret-map file))
+    (doseq [file (visit-all-files stage-dir)]
+      (rewrite-content! tokens user features db-choice file))
     (rename-paths! tokens user stage-dir)
     (apply-deletes! stage-dir manifest features user)
     (rename-readme! stage-dir)

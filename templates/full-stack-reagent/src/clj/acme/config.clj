@@ -100,7 +100,7 @@
     ;; @c3kit/feature :auth = :jwt-secret "ACME_PRODUCTION_SECRET"
     ))
 
-(def environment (app/find-env "cc.env" "CC_ENV"))
+(def environment (app/find-env "acme.env" "ACME_ENV"))
 (def development? (= "development" environment))
 (def production? (= "production" environment))
 

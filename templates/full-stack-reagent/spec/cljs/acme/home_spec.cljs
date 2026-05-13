@@ -26,33 +26,33 @@
 
     (before (user/clear!))
 
-    (it "is disabled when no username or password"
+    (it "is disabled when no email or password"
       (should (wire-helper/disabled? "#-signin-button"))
       (wire-helper/click! "#-signin-button")
-      (should-not-have-invoked :ajax/get!))
+      (should-not-have-invoked :ajax/post!))
 
-    (it "is disabled when no username"
+    (it "is disabled when no email"
       (wire-helper/change! "#-password" "password")
       (should= "password" (wire-helper/value "#-password"))
       (should (wire-helper/disabled? "#-signin-button"))
       (wire-helper/click! "#-signin-button")
-      (should-not-have-invoked :ajax/get!))
+      (should-not-have-invoked :ajax/post!))
 
     (it "is disabled when no password"
-      (wire-helper/change! "#-username" "username")
-      (should= "username" (wire-helper/value "#-username"))
+      (wire-helper/change! "#-email" "test@test.com")
+      (should= "test@test.com" (wire-helper/value "#-email"))
       (should (wire-helper/disabled? "#-signin-button"))
       (wire-helper/click! "#-signin-button")
-      (should-not-have-invoked :ajax/get!))
+      (should-not-have-invoked :ajax/post!))
 
-    (it "is clickable when username & password"
-      (wire-helper/change! "#-username" "username")
+    (it "is clickable when email & password"
+      (wire-helper/change! "#-email" "test@test.com")
       (wire-helper/change! "#-password" "password")
-      (should= "username" (wire-helper/value "#-username"))
+      (should= "test@test.com" (wire-helper/value "#-email"))
       (should= "password" (wire-helper/value "#-password"))
       (should-not (wire-helper/disabled? "#-signin-button"))
       (wire-helper/click! "#-signin-button")
-      (should-have-invoked-ajax-post "/ajax/user/signin" {:username "username" :password "password"} sut/handle-login-success))
+      (should-have-invoked-ajax-post "/ajax/user/signin" {:email "test@test.com" :password "password"}))
     )
 
   (context "with user"
@@ -99,7 +99,6 @@
       (wire-helper/change! "#-signup-confirm" "password")
       (should-not (wire-helper/disabled? "#-signup-button"))
       (wire-helper/click! "#-signup-button")
-      (should-have-invoked-ajax-post "/ajax/user/signup" {:email "test@test.com" :password "password" :confirm-password "password"} sut/handle-login-success))
+      (should-have-invoked-ajax-post "/ajax/user/signup" {:email "test@test.com" :password "password" :confirm-password "password"}))
     )
   )
-

@@ -43,14 +43,14 @@
         (spit f (str "#!/usr/bin/env node\n" preamble "\n" patched))))))
 
 (defn -main [& args]
-  (let [original-env (System/getProperty "cc.env")]
+  (let [original-env (System/getProperty "acme.env")]
     (try
-      (System/setProperty "cc.env" "prerender")
+      (System/setProperty "acme.env" "prerender")
       (generate-prerender-requires! (find-prerender-namespaces ["src/cljc" "src/cljs"]))
       (cljs/-main "once")
       (patch-prerender!)
       (finally
         (if original-env
-          (System/setProperty "cc.env" original-env)
-          (System/clearProperty "cc.env")))))
+          (System/setProperty "acme.env" original-env)
+          (System/clearProperty "acme.env")))))
   (apply cljs/-main args))

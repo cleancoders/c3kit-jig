@@ -4,7 +4,8 @@
             [c3kit.wire.ajax :as ajax]
             [c3kit.wire.js :as wjs]
             [c3kit.wire.util :as wire-util]
-            [c3kit.wire.websocket :as ws]))
+            ;; @c3kit/feature :websocket = [c3kit.wire.websocket :as ws]
+            ))
 
 (defn focus-and-select [node]
   (when node
@@ -79,7 +80,12 @@
        (let [presentable (schema/present! schema conformed)
              ;presentable (assoc presentable :__anti-forgery-token (config/anti-forgery-token))
              options     (update options :after-all processing-off ratom)
+             ;; @c3kit/feature :websocket {
              call-fn     (if (keyword? url) ws/call! ajax/post!)]
+             ;; @c3kit/feature :websocket }
+             ;; @c3kit/feature !:websocket {
+             call-fn     ajax/post!]
+             ;; @c3kit/feature !:websocket }
          (swap! ratom (fn [v] (dissoc v :errors) (assoc v :_processing? true)))
          (call-fn url presentable (capture-errors-handler ratom success-handler) options))))))
 
@@ -137,9 +143,9 @@
   ([label field-fn options field {:keys [ratom schema] :as form-config}]
    (field-set label field-fn options field ratom schema))
   ([label field-fn options field ratom schema]
-   [:fieldset {:id (:id options) :class "small-margin-bottom"}
+   [:fieldset {:class "small-margin-bottom"}
     (fieldset-label label)
-    (field-fn (dissoc options :id) field ratom schema)
+    (field-fn options field ratom schema)
     (field-error ratom field)]))
 
 (defn checkbox-field-set

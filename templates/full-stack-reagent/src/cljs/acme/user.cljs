@@ -3,7 +3,7 @@
     [acme.core :as core]
     [acme.page :as page]
     [c3kit.bucket.api :as db]
-    [c3kit.wire.websocket :as ws]
+    ;; @c3kit/feature :websocket = [c3kit.wire.websocket :as ws]
     [reagent.core :as reagent]
     ))
 
@@ -22,8 +22,14 @@
   (when user
     (db/tx user)
     (install! user)
-    (ws/start!) ;; remove is you don't need websockets
-    (ws/call! :user/fetch-data nil data-fetched!)))
+    ;; @c3kit/feature :websocket {
+    (ws/start!)
+    (ws/call! :user/fetch-data nil data-fetched!)
+    ;; @c3kit/feature :websocket }
+    ;; @c3kit/feature !:websocket {
+    (reset! data-fetched? true)
+    ;; @c3kit/feature !:websocket }
+    ))
 
 (defmulti render-menu-items identity)
 (defmethod render-menu-items :default [_] nil)

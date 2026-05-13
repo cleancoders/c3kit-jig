@@ -36,8 +36,8 @@ clj -M:test:cljss       # CSS + CLJS auto-watch (combined)
 
 Production:
 ```sh
-CC_ENV=production clj -M:test:css once
-CC_ENV=production clj -M:test:cljs once
+ACME_ENV=production clj -M:test:css once
+ACME_ENV=production clj -M:test:cljs once
 ```
 
 ## Run
