@@ -73,4 +73,31 @@
                                    "x"
                                    ";; @c3kit/feature :csp }"
                                    ";; @c3kit/feature :ssr }")
-                            {:ssr true :csp true} {}))))
+                            {:ssr true :csp true} {})))
+
+  (it "db line-eq: selected backend → code kept, marker stripped"
+    (should= "org.xerial/sqlite-jdbc {:mvn/version \"3.46.0.0\"}"
+             (f/strip ";; @c3kit/db :sqlite = org.xerial/sqlite-jdbc {:mvn/version \"3.46.0.0\"}"
+                      {} {:db :sqlite})))
+
+  (it "db line-eq: non-selected backend → line dropped"
+    (should= ""
+             (f/strip ";; @c3kit/db :sqlite = org.xerial/sqlite-jdbc {:mvn/version \"3.46.0.0\"}"
+                      {} {:db :postgres})))
+
+  (it "db line-eq: multi-line, keeps only selected"
+    (should= ":bucket sqlite-local"
+             (f/strip (lines ";; @c3kit/db :datomic-pro = :bucket datomic-local"
+                             ";; @c3kit/db :sqlite      = :bucket sqlite-local"
+                             ";; @c3kit/db :postgres    = :bucket postgres-local"
+                             ";; @c3kit/db :memory      = :bucket memory-local")
+                      {} {:db :sqlite})))
+
+  (it "db line-eq: inside an open feature block, not interpreted"
+    (let [src (lines ";; @c3kit/feature :ssr {"
+                     ";; @c3kit/db :sqlite = :bucket sqlite-local"
+                     ";; @c3kit/feature :ssr }")]
+      ;; ssr ON → block kept; the db line-eq inside is treated as a plain line
+      ;; (block context wins, line-eq only fires when stack empty).
+      (should= ";; @c3kit/db :sqlite = :bucket sqlite-local"
+               (f/strip src {:ssr true} {:db :sqlite})))))

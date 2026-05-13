@@ -6,6 +6,9 @@
 (def ^:private LINE-EQ-RE
   #"@c3kit/feature\s+(!)?:([A-Za-z][A-Za-z0-9-]*)\s*=\s*(.*)$")
 
+(def ^:private DB-LINE-EQ-RE
+  #"@c3kit/db\s+:([A-Za-z][A-Za-z0-9-]*)\s*=\s*(.*)$")
+
 (def ^:private BLOCK-OPEN-RE
   #"@c3kit/feature\s+(!)?:([A-Za-z][A-Za-z0-9-]*)\s*\{")
 
@@ -29,6 +32,11 @@
     (let [[_ inv id-str code] m
           on? (feature-on? features (keyword id-str) (some? inv))]
       (if on? code ::drop))))
+
+(defn- handle-db-line-eq [line db-choice]
+  (when-let [m (re-find DB-LINE-EQ-RE line)]
+    (let [[_ id-str code] m]
+      (if (= (keyword id-str) (:db db-choice)) code ::drop))))
 
 (defn- block-open [line]
   (when-let [m (re-find BLOCK-OPEN-RE line)]
@@ -68,6 +76,10 @@
           (cond
             (and (empty? stack) (re-find LINE-EQ-RE line))
             (let [r (handle-line-eq line features)]
+              (recur rest (if (= r ::drop) out (conj out r)) stack))
+
+            (and (empty? stack) (re-find DB-LINE-EQ-RE line))
+            (let [r (handle-db-line-eq line db-choice)]
               (recur rest (if (= r ::drop) out (conj out r)) stack))
 
             (or (block-open line) (db-open line))
