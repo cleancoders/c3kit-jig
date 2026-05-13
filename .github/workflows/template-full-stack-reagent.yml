@@ -39,10 +39,10 @@ jobs:
       - uses: DeLaGuardo/setup-clojure@13.0
         with:
           cli: latest
-      - name: clj -M:test:spec inside template tree
+      - name: clojure -M:test:spec inside template tree
         run: |
           cd templates/full-stack-reagent
-          clj -M:test:spec
+          clojure -M:test:spec
 
   scaffold-matrix:
     needs: build-cli

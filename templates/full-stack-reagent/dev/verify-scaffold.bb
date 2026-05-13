@@ -82,9 +82,9 @@
           (doseq [l (str/split-lines out)] (println "  " l))
           (fail (str "residue: " pat)))))
 
-    ;; clj -M:test:spec inside scaffold
-    (println "Running clj -M:test:spec in scaffold ...")
-    (let [{:keys [exit out err]} (p/sh {:dir target} "clj" "-M:test:spec")]
+    ;; clojure -M:test:spec inside scaffold (clojure not clj — CI runners may lack rlwrap)
+    (println "Running clojure -M:test:spec in scaffold ...")
+    (let [{:keys [exit out err]} (p/sh {:dir target} "clojure" "-M:test:spec")]
       (println out)
       (when (seq err) (println err))
       (when-not (zero? exit) (fail "clj -M:test:spec failed in scaffold")))
