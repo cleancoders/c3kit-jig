@@ -3,7 +3,7 @@
             ;; @c3kit/feature :content = [acme.content]
             [acme.destination :as destination]
             [acme.init :as init]
-            [acme.prerender]
+            ;; @c3kit/feature :ssr = [acme.prerender]
             [acme.user.web :as user.web]
             [c3kit.apron.app :as app]
             [c3kit.apron.log :as log]
@@ -49,4 +49,7 @@
   (.addShutdownHook (Runtime/getRuntime) (Thread. stop-all))
   (.addShutdownHook (Runtime/getRuntime) (Thread. shutdown-agents))
   (start-all)
-  (acme.prerender/prerender!))
+  ;; @c3kit/feature :ssr {
+  (acme.prerender/prerender!)
+  ;; @c3kit/feature :ssr }
+  )
