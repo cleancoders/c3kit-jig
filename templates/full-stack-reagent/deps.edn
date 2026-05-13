@@ -1,12 +1,7 @@
 {
  :paths     ["src/clj" "src/cljc" "src/cljs" "resources"]
- :mvn/repos {"my.datomic.com" {:url "https://my.datomic.com/repo"}
-             "maven_central"  {:url "https://repo.maven.apache.org/maven2/"}}
+ :mvn/repos {"maven_central" {:url "https://repo.maven.apache.org/maven2/"}}
  :deps      {
-             com.amazonaws/aws-java-sdk-dynamodb                       {:mvn/version "1.12.797"} ; required for staging/production
-             com.amazonaws/aws-java-sdk-s3                             {:mvn/version "1.12.797"}
-             com.amazonaws/aws-java-sdk-ses                            {:mvn/version "1.12.797"}
-             com.amazonaws/aws-java-sdk-core                           {:mvn/version "1.12.797"}
              com.atlassian.commonmark/commonmark                       {:mvn/version "0.17.0"} ;; Markdown
              com.atlassian.commonmark/commonmark-ext-gfm-strikethrough {:mvn/version "0.17.0"} ;; Github flavor markdown (strikethrough)
              com.atlassian.commonmark/commonmark-ext-gfm-tables        {:mvn/version "0.17.0"} ;; Github flavor markdown (tables)
