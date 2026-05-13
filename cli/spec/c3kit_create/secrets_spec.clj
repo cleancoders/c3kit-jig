@@ -30,3 +30,25 @@
   (it "warns but does not throw when placeholder absent (returns input)"
     (should= "hello" (s/replace-placeholders "hello"
                                               [{:placeholder "MISSING" :bytes 8}]))))
+
+(describe "secrets/generate-secret-map"
+  (it "returns {placeholder hex} for each secret entry"
+    (let [m (s/generate-secret-map [{:placeholder "A" :bytes 4}
+                                    {:placeholder "B" :bytes 8}])]
+      (should= #{"A" "B"} (set (keys m)))
+      (should= 8  (count (get m "A")))
+      (should= 16 (count (get m "B")))))
+
+  (it "two calls produce different values for the same placeholder"
+    (let [m1 (s/generate-secret-map [{:placeholder "X" :bytes 8}])
+          m2 (s/generate-secret-map [{:placeholder "X" :bytes 8}])]
+      (should-not= (get m1 "X") (get m2 "X")))))
+
+(describe "secrets/apply-secret-map"
+  (it "replaces each key with its hex value"
+    (should= "k=abcd o=abcd"
+             (s/apply-secret-map "k=A o=A" {"A" "abcd"})))
+
+  (it "replaces multiple placeholders"
+    (should= "1234 / 5678"
+             (s/apply-secret-map "X / Y" {"X" "1234" "Y" "5678"}))))

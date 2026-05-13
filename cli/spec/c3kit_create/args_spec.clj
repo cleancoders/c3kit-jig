@@ -44,4 +44,21 @@
 
   (it "captures --target-parent"
     (should= "/tmp/xyz"
-             (:target-parent (:options (args/parse ["my-app" "--target-parent" "/tmp/xyz"]))))))
+             (:target-parent (:options (args/parse ["my-app" "--target-parent" "/tmp/xyz"])))))
+
+  (it "captures --db as a keyword"
+    (should= :sqlite
+             (:db (:options (args/parse ["my-app" "--db" "sqlite"])))))
+
+  (it "captures repeated --feature flags into a {id-kw bool} map"
+    (let [r (args/parse ["my-app" "--feature" "auth=false" "--feature" "csp=true"])]
+      (should= {:auth false :csp true} (:feature (:options r)))))
+
+  (it "--feature accepts yes/no/y/n/1/0 in addition to true/false"
+    (let [r (args/parse ["my-app" "--feature" "a=yes" "--feature" "b=no"
+                          "--feature" "c=1"   "--feature" "d=0"])]
+      (should= {:a true :b false :c true :d false} (:feature (:options r)))))
+
+  (it "rejects malformed --feature"
+    (let [r (args/parse ["my-app" "--feature" "nope"])]
+      (should= :error (:action r)))))

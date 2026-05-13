@@ -12,11 +12,21 @@
          (map #(format "%02x" (bit-and ^long % 0xff)))
          (apply str))))
 
+(defn generate-secret-map
+  "Build {placeholder hex} from manifest :secrets entries.
+   Caller can apply via `apply-secret-map` and also surface the map in
+   .c3kit-create-context.edn for hook scripts."
+  [secrets]
+  (into {} (for [{:keys [placeholder bytes]} secrets]
+             [placeholder (hex bytes)])))
+
+(defn apply-secret-map
+  "Replace each `placeholder` in `text` with its hex value from `secret-map`."
+  [text secret-map]
+  (reduce-kv (fn [s placeholder hex] (str/replace s placeholder hex))
+             text secret-map))
+
 (defn replace-placeholders
-  "Replace each :placeholder with a freshly generated hex secret of :bytes length.
-   Same placeholder occurring multiple times gets the same secret."
+  "Generate hex secrets for each placeholder in `secrets`, replace inline."
   [text secrets]
-  (reduce (fn [s {:keys [placeholder bytes]}]
-            (let [secret (hex bytes)]
-              (str/replace s placeholder secret)))
-          text secrets))
+  (apply-secret-map text (generate-secret-map secrets)))

@@ -1,8 +1,8 @@
 (ns c3kit-create.render
   (:require [babashka.fs :as fs]
-            [clojure.edn :as edn]
             [clojure.string :as str]
             [c3kit-create.features :as f]
+            [c3kit-create.hook :as hook]
             [c3kit-create.rename :as rn]
             [c3kit-create.secrets :as sec]))
 
@@ -28,6 +28,13 @@
       (when-not (= orig after-features)
         (spit file after-features)))))
 
+(defn- replace-secrets! [secret-map file]
+  (when (text-file? file)
+    (let [s  (slurp file)
+          s' (sec/apply-secret-map s secret-map)]
+      (when-not (= s s')
+        (spit file s')))))
+
 (defn- rename-paths! [tokens user dir]
   ;; depth-first so leaves are renamed before parents.
   (let [paths (->> (file-seq (fs/file dir))
@@ -39,26 +46,49 @@
           (fs/move (.getAbsolutePath p)
                    (.getAbsolutePath (java.io.File. (.getParentFile p) new-name))))))))
 
+(defn- rename-readme! [stage-dir]
+  (let [src (fs/path stage-dir "README.scaffold.md")
+        tgt (fs/path stage-dir "README.md")]
+    (when (fs/exists? src)
+      (fs/delete-if-exists tgt)
+      (fs/move src tgt))))
+
+(defn- write-context! [stage-dir manifest user-name name-variants
+                       db-choice features secret-map cli-version]
+  (let [context {:name             user-name
+                 :name-variants    name-variants
+                 :db               (:db db-choice)
+                 :features         features
+                 :secrets          (mapv (fn [{:keys [placeholder]}]
+                                           {:placeholder placeholder
+                                            :generated   (get secret-map placeholder)})
+                                         (:secrets manifest))
+                 :template         (:id manifest)
+                 :template-version (:version manifest)
+                 :cli-version      cli-version}]
+    (spit (fs/file (fs/path stage-dir ".c3kit-create-context.edn"))
+          (pr-str context))))
+
 (defn render!
-  "In-place rewrite of `stage-dir`: rename tokens, strip markers, generate secrets,
-   rename file/dir paths, drop the manifest file. Caller validates manifest first."
-  [stage-dir manifest-edn user-name features db-choice]
-  (let [m (edn/read-string manifest-edn)
-        tokens (:tokens m)
-        user   (rn/variants user-name)]
-    ;; 1. content rewrite (tokens + features) on every text file
+  "In-place rewrite of `stage-dir`:
+   1. tokens + markers, 2. secrets, 3. path renames,
+   4. README.scaffold.md → README.md, 5. write .c3kit-create-context.edn,
+   6. invoke template hook (if :hook? manifest), 7. cleanup hook + manifest files.
+   Caller validates manifest first."
+  [stage-dir manifest user-name features db-choice cli-version]
+  (let [tokens     (:tokens manifest)
+        user       (rn/variants user-name)
+        secret-map (sec/generate-secret-map (:secrets manifest))]
     (doseq [file (visit-all-files stage-dir)]
       (rewrite-content! tokens user features db-choice file))
-    ;; 2. secrets pass — second sweep so token rename can't interfere
     (doseq [file (visit-all-files stage-dir)]
-      (when (text-file? file)
-        (let [s (slurp file)
-              s' (sec/replace-placeholders s (:secrets m))]
-          (when-not (= s s')
-            (spit file s')))))
-    ;; 3. drop manifest
+      (replace-secrets! secret-map file))
+    (rename-paths! tokens user stage-dir)
+    (rename-readme! stage-dir)
+    (write-context! stage-dir manifest user-name user db-choice features
+                    secret-map cli-version)
+    (when (:hook? manifest) (hook/run! stage-dir))
+    (fs/delete-if-exists (fs/path stage-dir ".c3kit-create-context.edn"))
     (fs/delete-if-exists (fs/path stage-dir "c3kit-template.edn"))
     (fs/delete-if-exists (fs/path stage-dir "c3kit-template.bb"))
-    ;; 4. rename dirs + files
-    (rename-paths! tokens user stage-dir)
     stage-dir))

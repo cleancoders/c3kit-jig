@@ -20,6 +20,25 @@
   (or (:template-dir opts)
       (System/getenv "C3KIT_TEMPLATES")))
 
+(defn- effective-features
+  "Manifest defaults overlaid with CLI --feature overrides."
+  [manifest cli-feature]
+  (let [defaults (into {} (for [{:keys [id default]} (:features manifest)]
+                            [id default]))]
+    (merge defaults (or cli-feature {}))))
+
+(defn- effective-db
+  "CLI --db wins over manifest :db.default. Validated against :db.options."
+  [manifest cli-db]
+  (when-let [db (:db manifest)]
+    (let [chosen (or cli-db (:default db))
+          ids    (set (map :id (:options db)))]
+      (when-not (ids chosen)
+        (throw (ex-info (str "--db " chosen " not in manifest :db.options "
+                             (vec ids))
+                        {:name? true :reason :db-choice})))
+      {:db chosen})))
+
 (defn- scaffold! [{:keys [name template yes template-ref] :as opts}]
   (let [stage (cfs/stage-dir)
         ref   (or template-ref DEFAULT-REF)
@@ -41,10 +60,9 @@
           (cfs/cleanup! stage)
           (exit 3))
 
-        ;; collect features + db (use defaults under --yes)
-        (let [features (into {} (for [{:keys [id default]} (:features m)]
-                                  [id default]))
-              db       (when (:db m) {:db (:default (:db m))})]
+        ;; effective features + db (CLI override > manifest default)
+        (let [features (effective-features m (:feature opts))
+              db       (effective-db m (:db opts))]
           (when-not yes (ui/info "Using defaults (interactive prompts WIP in v0.2)"))
 
           ;; stage-2: render
@@ -52,9 +70,7 @@
           ;; copy tdir → scaffold and render in place
           (let [scaffold (str (fs/path stage "scaffold"))]
             (fs/copy-tree (str tdir) scaffold)
-            (render/render! scaffold
-                            (slurp (fs/file (fs/path tdir "c3kit-template.edn")))
-                            nm features db)
+            (render/render! scaffold m nm features db (v/current))
 
             ;; stage-4: move
             (ui/step "moving into place …")
