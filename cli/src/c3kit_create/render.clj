@@ -46,6 +46,28 @@
           (fs/move (.getAbsolutePath p)
                    (.getAbsolutePath (java.io.File. (.getParentFile p) new-name))))))))
 
+(defn- resolve-delete-path [stage-dir tokens user path]
+  (let [with-placeholders (reduce (fn [s [token-name _]]
+                                    (str/replace s
+                                                 (str "{{" token-name "}}")
+                                                 (:underscore user)))
+                                  path tokens)
+        renamed (rn/replace-many with-placeholders tokens user)]
+    (str (fs/path stage-dir renamed))))
+
+(defn- apply-deletes! [stage-dir manifest features user]
+  (let [tokens (:tokens manifest)]
+    (doseq [feat (:features manifest)
+            :let [id  (:id feat)
+                  on? (get features id (:default feat))]
+            :when (not on?)
+            path (:delete-when-off feat)
+            :let [full (resolve-delete-path stage-dir tokens user path)]]
+      (when (fs/exists? full)
+        (if (fs/directory? full)
+          (fs/delete-tree full)
+          (fs/delete full))))))
+
 (defn- rename-readme! [stage-dir]
   (let [src (fs/path stage-dir "README.scaffold.md")
         tgt (fs/path stage-dir "README.md")]
@@ -84,6 +106,7 @@
     (doseq [file (visit-all-files stage-dir)]
       (replace-secrets! secret-map file))
     (rename-paths! tokens user stage-dir)
+    (apply-deletes! stage-dir manifest features user)
     (rename-readme! stage-dir)
     (write-context! stage-dir manifest user-name user db-choice features
                     secret-map cli-version)
