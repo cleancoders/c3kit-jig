@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+DB_NAME="acme_dev"
+if ! command -v createdb >/dev/null 2>&1; then
+  echo "createdb not found. Install Postgres first:"
+  echo "  macOS:  brew install postgresql && brew services start postgresql"
+  echo "  Debian: sudo apt install postgresql && sudo systemctl start postgresql"
+  exit 1
+fi
+createdb "$DB_NAME" 2>/dev/null || echo "Database $DB_NAME already exists (ok)"
+echo "Postgres database '$DB_NAME' ready."

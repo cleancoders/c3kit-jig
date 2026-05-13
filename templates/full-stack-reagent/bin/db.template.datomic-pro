@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DATOMIC_VERSION="1.0.7482"
+DATOMIC_HOME="${HOME}/.c3kit/datomic-pro/datomic-pro-${DATOMIC_VERSION}"
+ZIP_URL="https://datomic-pro-downloads.s3.amazonaws.com/${DATOMIC_VERSION}/datomic-pro-${DATOMIC_VERSION}.zip"
+
+if [[ ! -d "$DATOMIC_HOME" ]]; then
+  echo "Datomic Pro transactor not found at $DATOMIC_HOME."
+  read -rp "Download Datomic Pro $DATOMIC_VERSION (~300MB)? [y/N] " confirm
+  if [[ ! "$confirm" =~ ^[yY]$ ]]; then
+    echo "Aborted. To install manually, download from https://www.datomic.com/get-datomic.html"
+    exit 1
+  fi
+  mkdir -p "${HOME}/.c3kit/datomic-pro"
+  curl -fsSL "$ZIP_URL" -o "${HOME}/.c3kit/datomic-pro/datomic-pro.zip"
+  unzip -q "${HOME}/.c3kit/datomic-pro/datomic-pro.zip" -d "${HOME}/.c3kit/datomic-pro"
+  rm "${HOME}/.c3kit/datomic-pro/datomic-pro.zip"
+fi
+
+cd "$DATOMIC_HOME"
+exec bin/transactor config/samples/dev-transactor-template.properties

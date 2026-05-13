@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+echo "In-memory backend selected; no DB process needed."
+echo "The bucket starts with the application."
+exit 0

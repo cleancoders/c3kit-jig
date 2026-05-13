@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+mkdir -p db
+touch db/dev.sqlite
+echo "SQLite ready at db/dev.sqlite"
