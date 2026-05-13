@@ -8,7 +8,9 @@
             [c3kit-create.render :as render]
             [c3kit-create.rename :as rn]
             [c3kit-create.ui :as ui]
-            [c3kit-create.version :as v])
+            [c3kit-create.version :as v]
+            [c3kit-create.wizard :as wizard]
+            [clojure.string :as str])
   (:gen-class))
 
 (def REPO-URL "https://github.com/cleancoders/c3kit-starter")
@@ -16,9 +18,47 @@
 
 (defn exit [code] (System/exit code))
 
+(defn- non-blank [label]
+  (fn [v]
+    (when (str/blank? v)
+      (throw (ex-info (str label " is required") {})))
+    v))
+
 (defn- resolve-templates-dir [opts]
   (or (:template-dir opts)
       (System/getenv "C3KIT_TEMPLATES")))
+
+(defn- ensure-template-dir
+  "Return opts with `:template-dir` set. If already set, no-op. Otherwise clones
+   the upstream repo into a tmp stage and sets `:template-dir` to its templates/
+   subdir. Caller must clean up via ::clone-stage."
+  [opts]
+  (if (resolve-templates-dir opts)
+    opts
+    (let [stage (cfs/stage-dir)
+          tdir  (fetch/clone-repo! REPO-URL (or (:template-ref opts) DEFAULT-REF) stage)]
+      (assoc opts :template-dir tdir ::clone-stage stage))))
+
+(defn- prompt-template [opts]
+  (let [opts'   (ensure-template-dir opts)
+        tdir    (resolve-templates-dir opts')
+        choices (fetch/list-local-templates tdir)]
+    (when-not (seq choices)
+      (throw (ex-info (str "no templates available in " tdir) {:fetch? true})))
+    (let [menu (mapv (fn [c] {:id (:id c) :label (:label c)}) choices)
+          chosen (wizard/prompt-select "Template" menu (-> menu first :id))]
+      [chosen opts'])))
+
+(defn- prompt-missing
+  "Interactively prompt for :name and :template when missing. Skipped under --yes."
+  [opts]
+  (let [opts (if (:name opts)
+               opts
+               (assoc opts :name (wizard/prompt-text "Project name" "my-app" identity)))]
+    (if (:template opts)
+      opts
+      (let [[tid opts'] (prompt-template opts)]
+        (assoc opts' :template tid)))))
 
 (defn- effective-features
   "Manifest defaults overlaid with CLI --feature overrides."
@@ -39,63 +79,70 @@
                         {:name? true :reason :db-choice})))
       {:db chosen})))
 
-(defn- scaffold! [{:keys [name template yes template-ref] :as opts}]
+(def ^:private ERROR-EXIT-CODE
+  {:manifest?     6
+   :collision?    3
+   :fetch?        7
+   :features?     8
+   :name?         4
+   :postscaffold? 9})
+
+(defn- exit-code-for [ex-data]
+  (some (fn [[k code]] (when (get ex-data k) code)) ERROR-EXIT-CODE))
+
+(defn- fetch-template! [opts template stage tdir]
+  (ui/step "fetching template …")
+  (if-let [local (resolve-templates-dir opts)]
+    (fetch/from-local-dir local template (str tdir))
+    (fetch/from-git REPO-URL (or (:template-ref opts) DEFAULT-REF) template stage (str tdir))))
+
+(defn- target-path [opts nm]
+  (str (fs/path (or (:target-parent opts) (fs/cwd)) nm)))
+
+(defn- die-if-target-exists! [target stage]
+  (when (fs/exists? target)
+    (ui/fail (str "target already exists: " target))
+    (cfs/cleanup! stage)
+    (exit 3)))
+
+(defn- render-into-stage! [tdir stage manifest nm features db]
+  (ui/step "rendering tokens …")
+  (let [scaffold (str (fs/path stage "scaffold"))]
+    (fs/copy-tree (str tdir) scaffold)
+    (render/render! scaffold manifest nm features db (v/current))
+    scaffold))
+
+(defn- finalize! [scaffold target opts]
+  (ui/step "moving into place …")
+  (cfs/move-into-place! scaffold target)
+  (when (:git? opts)
+    (ui/step "git init + initial commit …")
+    (ps/git-init! target))
+  (ps/install! target opts))
+
+(defn- handle-scaffold-failure! [e opts]
+  (ui/fail (.getMessage e))
+  (let [code (exit-code-for (ex-data e))]
+    (when (and (nil? code) (:debug opts)) (.printStackTrace e))
+    (exit (or code 1))))
+
+(defn- scaffold! [{:keys [name template yes] :as opts}]
   (let [stage (cfs/stage-dir)
-        ref   (or template-ref DEFAULT-REF)
-        local (resolve-templates-dir opts)
         tdir  (fs/path stage template)]
     (try
-      ;; stage-1: fetch
-      (ui/step "fetching template …")
-      (if local
-        (fetch/from-local-dir local template (str tdir))
-        (fetch/from-git REPO-URL ref template stage (str tdir)))
-
-      ;; manifest
-      (let [m (manifest/read-manifest (str tdir))
-            nm (rn/validate-name (or name "my-app") (:tokens m))
-            target (str (fs/path (or (:target-parent opts) (fs/cwd)) nm))]
-        (when (fs/exists? target)
-          (ui/fail (str "target already exists: " target))
-          (cfs/cleanup! stage)
-          (exit 3))
-
-        ;; effective features + db (CLI override > manifest default)
-        (let [features (effective-features m (:feature opts))
-              db       (effective-db m (:db opts))]
+      (fetch-template! opts template stage tdir)
+      (let [manifest (manifest/read-manifest (str tdir))
+            nm       (rn/validate-name (or name "my-app") (:tokens manifest))
+            target   (target-path opts nm)]
+        (die-if-target-exists! target stage)
+        (let [features (effective-features manifest (:feature opts))
+              db       (effective-db manifest (:db opts))]
           (when-not yes (ui/info "Using defaults (interactive prompts WIP in v0.2)"))
-
-          ;; stage-2: render
-          (ui/step "rendering tokens …")
-          ;; copy tdir → scaffold and render in place
-          (let [scaffold (str (fs/path stage "scaffold"))]
-            (fs/copy-tree (str tdir) scaffold)
-            (render/render! scaffold m nm features db (v/current))
-
-            ;; stage-4: move
-            (ui/step "moving into place …")
-            (cfs/move-into-place! scaffold target)
-
-            ;; stage-5: post-scaffold
-            (when (:git? opts)
-              (ui/step "git init + initial commit …")
-              (ps/git-init! target))
-            (ps/install! target opts)
-
+          (let [scaffold (render-into-stage! tdir stage manifest nm features db)]
+            (finalize! scaffold target opts)
             (ui/ok (str "Created " nm)))))
       (catch Exception e
-        (cfs/cleanup! stage)
-        (let [data (ex-data e)]
-          (ui/fail (.getMessage e))
-          (cond
-            (:manifest? data)     (exit 6)
-            (:collision? data)    (exit 3)
-            (:fetch? data)        (exit 7)
-            (:features? data)     (exit 8)
-            (:name? data)         (exit 4)
-            (:postscaffold? data) (exit 9)
-            :else                 (do (when (:debug opts) (.printStackTrace e))
-                                      (exit 1)))))
+        (handle-scaffold-failure! e opts))
       (finally
         (cfs/cleanup! stage)))))
 
@@ -117,5 +164,15 @@
                     (catch Exception e
                       (ui/fail (.getMessage e))
                       (exit 11)))
-        :scaffold (do (scaffold! options) (exit 0))))))
+        :scaffold (cond
+                    (and (:yes options) (not (:template options)))
+                    (do (ui/fail "Missing required option: --template ID (required with --yes)")
+                        (exit 2))
+                    :else
+                    (let [opts (prompt-missing options)]
+                      (try
+                        (scaffold! opts)
+                        (exit 0)
+                        (finally
+                          (cfs/cleanup! (::clone-stage opts))))))))))
 
