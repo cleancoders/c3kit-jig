@@ -127,6 +127,10 @@
   (let [f (java.io.File. (str "resources/prerendered/" (page-key->basename page-key) ".md"))]
     (when (.exists f) (slurp f))))
 
+;; @c3kit/feature !:ssr {
+(defn web-home [request] (web-rich-client request {}))
+;; @c3kit/feature !:ssr }
+
 ;; @c3kit/feature :ssr {
 (defn web-prerendered [page-key]
   (fn [request]
