@@ -1,7 +1,7 @@
 (ns acme.spec-helper
   (:require [c3kit.bucket.api :as db]
-            [acme.user.core :as user]
-            [acme.user.web :as user.web]
+            ;; @c3kit/feature :auth = [acme.user.core :as user]
+            ;; @c3kit/feature :auth = [acme.user.web :as user.web]
             [acme.email :as email]
             [acme.init :as init]
             [c3kit.apron.log :as log]
@@ -14,8 +14,10 @@
 (init/install-legend!)
 (init/configure-api!)
 (wire.routes/init! {:reload? true}) ;this solves a problem of route specs failing on re-run when using autorunner
+;; @c3kit/feature :content {
 (require '[acme.content])
 (acme.content/load!)
+;; @c3kit/feature :content }
 
 (defn stub-email []
   (around [it]
@@ -24,6 +26,7 @@
 
 (defn last-email [] (first (stub/last-invocation-of :send-email)))
 
+;; @c3kit/feature :auth {
 (defn speedy-hash [pw] (str "*hash*" pw "*hash*"))
 
 (defn with-fast-password-hash []
@@ -31,6 +34,7 @@
     (with-redefs [user/hash-password  speedy-hash
                   user/check-password (fn [pw hash] (= (speedy-hash pw) hash))]
       (it))))
+;; @c3kit/feature :auth }
 
 ;(defmacro test-web-handler-requires-lemon-user [handler]
 ;  `(it (str (name '~handler) " requires lemon user")
@@ -39,6 +43,7 @@
 ;       (should= "Please log in to proceed with your request." (flash/first-msg-text response#))
 ;       (should= :warn (flash/first-msg-level response#)))))
 ;
+;; @c3kit/feature :auth {
 (defmacro test-ajax-handler-requires-user [handler]
   `(it (str (name '~handler) " requires user")
      (let [response# (~handler {})]
@@ -51,3 +56,4 @@
      (let [user#     (db/tx :kind :user :email "joe@example.com")
            response# (~handler (user.web/authorize-user {} user#))]
        (wire-helper/should-ajax-redirect-to response# "/" "Access is restricted to admins."))))
+;; @c3kit/feature :auth }

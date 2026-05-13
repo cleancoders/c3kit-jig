@@ -1,6 +1,6 @@
 (ns acme.routes
   (:require [acme.config :as config]
-            [acme.destination :as destination]
+            ;; @c3kit/feature :auth = [acme.destination :as destination]
             [acme.version :as version]
             [c3kit.apron.corec :as ccc]
             [c3kit.apron.util :as util]

@@ -52,7 +52,7 @@
 
 (describe "web-post handler"
 
-  (test-data/with-memory-kinds :user)
+  (test-data/with-memory-schema)
   (before (sut/load!))
 
   (it "renders the rich-client layout with :seo/preview"
@@ -70,7 +70,7 @@
 
 (describe "web-list handler"
 
-  (test-data/with-memory-kinds :user)
+  (test-data/with-memory-schema)
   (before (sut/load!))
 
   (it "renders the rich-client layout with a list preview"
@@ -107,7 +107,7 @@
 
 (describe "Accept: text/markdown on content routes"
 
-  (test-data/with-memory-kinds :user)
+  (test-data/with-memory-schema)
   (before (sut/load!))
 
   (it "web-post returns markdown with front-matter when Accept: text/markdown"

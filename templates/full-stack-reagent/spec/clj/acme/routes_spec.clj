@@ -4,7 +4,7 @@
             [acme.routes :as routes]
             [acme.sandbox.core]
             [acme.spec-helper]
-            [acme.test-data :as test-data]
+            ;; @c3kit/feature :auth = [acme.test-data :as test-data]
             ;; @c3kit/feature :auth {
             [acme.user.ajax]
             [acme.user.api]
@@ -57,11 +57,13 @@
   ; Please keep these specs sorted alphabetically
 
   ;; web routes
+  ;; @c3kit/feature :ssr {
   (it "GET / serves prerendered home"
     (with-redefs [acme.layouts/prerendered-html (constantly "<h1>FROM PRERENDER</h1>")]
       (let [response (routes/handler {:uri "/" :request-method :get})]
         (should= 200 (:status response))
         (should (re-find #"FROM PRERENDER" (:body response))))))
+  ;; @c3kit/feature :ssr }
   ;; @c3kit/feature :auth {
   (test-route "/apple/oauth" :post acme.user.web/web-apple-oauth-login)
   (test-route "/forgot-password" :get acme.layouts/web-rich-client)
@@ -126,13 +128,13 @@
       (wire-helper/should-be-ajax-ok (routes/spinner :blah) nil)
       (should-have-invoked :sleep)))
 
-  ;; @c3kit/feature :auth {
+  ;; @c3kit/feature :content {
   (it "content catch-all is declared after explicit frontend routes"
-    (let [src (slurp "src/cljs/acme/routes.cljs")
-          explicit-pos (.indexOf src "/recover-password")
+    (let [src          (slurp "src/cljs/acme/routes.cljs")
+          sandbox-pos  (.indexOf src "/sandbox/")
           catchall-pos (.indexOf src "/:content-type")]
       (should (pos? catchall-pos))
-      (should (< explicit-pos catchall-pos))))
-  ;; @c3kit/feature :auth }
+      (should (< sandbox-pos catchall-pos))))
+  ;; @c3kit/feature :content }
 
   )

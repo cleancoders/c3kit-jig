@@ -9,7 +9,7 @@
 
 (describe "layouts"
   (with-stubs)
-  (test-data/with-memory-kinds :user)
+  (test-data/with-memory-schema)
 
   (it "rich client handler includes flash messages"
     (with-redefs [sut/rich-client (stub :layout/rich-client)]
@@ -44,8 +44,9 @@
         (should-not (re-find #"Your page is loading" body)))))
   )
 
+;; @c3kit/feature :ssr {
   (describe "prerendered-html + web-prerendered"
-    (test-data/with-memory-kinds :user)
+    (test-data/with-memory-schema)
 
     (it "prerendered-html returns nil when file missing"
       (should-be-nil (sut/prerendered-html :no-such-page)))
@@ -66,7 +67,7 @@
   )
 
   (describe "web-prerendered honors Accept: text/markdown"
-    (test-data/with-memory-kinds :user)
+    (test-data/with-memory-schema)
 
     (it "returns markdown when file exists and Accept matches"
       (with-redefs [sut/prerendered-html     (constantly "<h1>X</h1>")
@@ -82,3 +83,4 @@
         (let [response ((sut/web-prerendered :home) {:headers {"accept" "text/markdown"}})]
           (should= 200 (:status response))
           (should (re-find #"<h1>X</h1>" (:body response)))))))
+;; @c3kit/feature :ssr }

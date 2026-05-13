@@ -1,6 +1,5 @@
 (ns acme.email
   (:require [acme.config :as config]
-            [acme.markdown :as markdown]
             [c3kit.apron.log :as log]))
 
 ;; OSS template ships only :to-log. To send real email (e.g. via AWS SES),

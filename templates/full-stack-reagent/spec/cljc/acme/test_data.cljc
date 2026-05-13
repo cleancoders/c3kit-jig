@@ -1,7 +1,7 @@
 (ns acme.test-data
   (:require [acme.schema :as schema]
             #?(:clj [acme.spec-helper :as helper])
-            #?(:clj [acme.user.core :as user])
+            ;; @c3kit/feature :auth = #?(:clj [acme.user.core :as user])
             [c3kit.apron.corec :as ccc]
             [c3kit.apron.log :as log]
             [c3kit.bucket.api :as db]
@@ -33,11 +33,14 @@
     (reset! (e-atom entity) (db/tx values))
     (swap! initialized-entities conj entity)))
 
+;; @c3kit/feature :auth {
 (def road-runner (entity :user))
 (def coyote (entity :user))
+;; @c3kit/feature :auth }
 
 (defmulti -init-kind! identity)
 
+;; @c3kit/feature :auth {
 (defmethod -init-kind! :user [_]
   #?(:clj (when-not (= user/hash-password helper/speedy-hash)
             (log/report "SLOW PASSWORD HASH! Add (helper/with-fast-password-hash) to your spec")))
@@ -49,11 +52,20 @@
                               :name "Wiley Coyote"
                               :email "coyote@example.com"
                               :password #?(:clj (user/hash-password "light-bulb") :cljs nil))))
+;; @c3kit/feature :auth }
 
+;; @c3kit/feature !:auth {
+(def deps
+  ;; Add entities here with a list of entities they depend on (shallow).
+  {:all []})
+;; @c3kit/feature !:auth }
+
+;; @c3kit/feature :auth {
 (def deps
   ;; Add entities here with a list of entities they depend on (shallow).
   {:user []
    :all  [:user]})
+;; @c3kit/feature :auth }
 
 (defmethod -init-kind! :all [_])
 
@@ -77,6 +89,16 @@
 
 (def datomic-config {:impl :datomic :uri "datomic:mem://test"})
 
+;; @c3kit/feature !:auth {
+(defn with-kinds [config & kinds]
+  (list
+    (helperc/with-schemas config (map vector schema/full))
+    (before (reset! initialized-kinds #{})
+      (apply init! kinds))
+    (after (clear-entities!))))
+;; @c3kit/feature !:auth }
+
+;; @c3kit/feature :auth {
 (defn with-kinds [config & kinds]
   (list
     (helperc/with-schemas config (map vector schema/full))
@@ -84,9 +106,14 @@
     (before (reset! initialized-kinds #{})
       (apply init! kinds))
     (after (clear-entities!))))
+;; @c3kit/feature :auth }
 
 (defn with-memory-kinds [& kinds]
   (apply with-kinds {:impl :memory :store #?(:clj (atom nil) :cljs (reagent/atom nil))} kinds))
+
+(defn with-memory-schema []
+  (helperc/with-schemas {:impl :memory :store #?(:clj (atom nil) :cljs (reagent/atom nil))}
+                        (map vector schema/full)))
 
 #?(:clj (defn with-db-kinds [& kinds]
           (apply with-memory-kinds datomic-config kinds)))

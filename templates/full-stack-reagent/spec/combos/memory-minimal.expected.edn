@@ -1,0 +1,75 @@
+{:db       :memory
+ :features {:content false :ssr false :csp false :markdownc false :auth false}
+ :name     "my-app"
+
+ :must-exist     ["src/clj/my_app/main.clj"
+                  "src/clj/my_app/config.clj"
+                  "src/cljc/my_app/schema.cljc"
+                  "src/cljs/my_app/main.cljs"
+                  "bin/db"
+                  "deps.edn"
+                  "LICENSE"
+                  "README.md"]
+
+ :must-not-exist ["bin/db.template.memory"
+                  "bin/db.template.sqlite"
+                  "bin/db.template.postgres"
+                  "bin/db.template.datomic-pro"
+                  "c3kit-template.edn"
+                  "c3kit-template.bb"
+                  "README.scaffold.md"
+                  ".c3kit-create-context.edn"
+                  ;; content feature off
+                  "content/"
+                  "src/clj/my_app/content.clj"
+                  "src/clj/my_app/markdown.clj"
+                  "src/cljs/my_app/content_page.cljs"
+                  "spec/clj/my_app/content_spec.clj"
+                  "spec/clj/my_app/markdown_spec.clj"
+                  "spec/cljs/my_app/content_page_spec.cljs"
+                  ;; ssr feature off
+                  "package.json"
+                  "resources/prerender/"
+                  "resources/prerendered/"
+                  "src/clj/my_app/prerender.clj"
+                  "spec/clj/my_app/prerender_spec.clj"
+                  "dev/my_app/prerender.cljs"
+                  "dev/my_app/prerender_pages.cljs"
+                  "dev/my_app/prerender_preamble.js"
+                  ;; csp feature off
+                  "src/clj/my_app/security/"
+                  "spec/clj/my_app/security/"
+                  ;; markdownc feature off
+                  "src/cljc/my_app/markdownc.cljc"
+                  "spec/cljc/my_app/markdownc_spec.cljc"
+                  ;; auth feature off
+                  "src/clj/my_app/user.clj"
+                  "src/clj/my_app/user/"
+                  "src/clj/my_app/session.clj"
+                  "src/clj/my_app/destination.clj"
+                  "src/cljc/my_app/user/"
+                  "src/cljs/my_app/user.cljs"
+                  "src/cljs/my_app/forgot_password.cljs"
+                  "src/cljs/my_app/recover_password.cljs"
+                  "spec/clj/my_app/user/"
+                  "spec/clj/my_app/session_spec.clj"
+                  "spec/clj/my_app/destination_spec.clj"
+                  "spec/cljs/my_app/user_spec.cljs"
+                  "spec/cljs/my_app/forgot_password_spec.cljs"
+                  "spec/cljs/my_app/recover_password_spec.cljs"]
+
+ :file-contains  {"src/clj/my_app/config.clj" ["memory-local"
+                                                ":bucket memory-local"
+                                                "MyApp"]
+                  "deps.edn"                  ["com.cleancoders.c3kit/apron"]}
+
+ :file-not-contains {"src/clj/my_app/config.clj" [":csp"
+                                                   "sqlite-local"
+                                                   "datomic-local"
+                                                   "postgres-local"
+                                                   "replaced by line below at scaffold"]
+                     "src/clj/my_app/main.clj"    ["prerender!"
+                                                   "content/load!"]
+                     "deps.edn"                   ["my.datomic.com"
+                                                   "aws-java-sdk"
+                                                   "@c3kit/"]}}

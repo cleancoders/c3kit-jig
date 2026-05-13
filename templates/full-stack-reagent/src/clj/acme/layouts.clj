@@ -2,8 +2,8 @@
   (:require [acme.config :as config]
             [acme.http-util :as http-util]
             [acme.layoutc :as layoutc]
-            [acme.user :as user]
-            [c3kit.apron.legend :as legend]
+            ;; @c3kit/feature :auth = [acme.user :as user]
+            ;; @c3kit/feature :auth = [c3kit.apron.legend :as legend]
             [c3kit.apron.utilc :as utilc]
             [c3kit.wire.api :as api]
             [c3kit.wire.assets :refer [add-fingerprint]]
@@ -98,6 +98,22 @@
            (assoc options
              :head (elem/javascript-tag (str "goog.require('acme.main');")))))
 
+;; @c3kit/feature !:auth {
+(defn build-rich-client-payload [request]
+  {:user   nil
+   :flash  (flash/messages request)
+   :config {
+            :anti-forgery-token (jwt/client-id request)
+            :ws-csrf-token      (jwt/client-id request)
+            :api-version        (api/version)
+            :environment        config/environment
+            :google-client-id   (-> config/env :google-oauth :client-id)
+            :acme-root          (-> config/env :cleancoders-auth :url-root)
+            :host               config/host
+            }})
+;; @c3kit/feature !:auth }
+
+;; @c3kit/feature :auth {
 (defn build-rich-client-payload [request]
   {:user   (some-> request user/current legend/present!)
    :flash  (flash/messages request)
@@ -110,6 +126,7 @@
             :acme-root          (-> config/env :cleancoders-auth :url-root)
             :host               config/host
             }})
+;; @c3kit/feature :auth }
 
 (defn web-rich-client
   "Load the default web page and let the client side take over."
