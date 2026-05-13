@@ -91,6 +91,15 @@
         :help     (do (println (args/help)) (exit 0))
         :error    (do (ui/fail error) (println (args/help)) (exit 2))
         :list     (do (ui/info "List of templates not yet implemented.") (exit 0))
-        :upgrade  (do (ui/info "Upgrade not yet implemented.") (exit 0))
+        :upgrade  (try
+                    (let [bin (System/getProperty "babashka.file")
+                          r   (v/check-and-download! bin)]
+                      (case r
+                        :up-to-date (ui/info "already on latest")
+                        :upgraded   (ui/ok "upgraded — re-run your command"))
+                      (exit 0))
+                    (catch Exception e
+                      (ui/fail (.getMessage e))
+                      (exit 11)))
         :scaffold (do (scaffold! options) (exit 0))))))
 
