@@ -1,47 +1,49 @@
 (ns c3kit-create.rename-spec
-  (:require [speclj.core :refer [describe it should= should-throw should should-not]]
+  (:require [speclj.core :refer [describe context it should= should-throw should should-not]]
             [c3kit-create.rename :as r]))
 
-(describe "rename/variants"
-  (it "computes all four variants for a kebab name"
-    (should= {:hyphen     "my-cool-app"
-              :underscore "my_cool_app"
-              :pascal     "MyCoolApp"
-              :upper      "MY_COOL_APP"}
-             (r/variants "my-cool-app"))))
+(describe "c3kit-create.rename"
 
-(describe "rename/replace-token"
-  (it "rewrites all variants of a source token in a string"
-    (should= "MyCoolApp / my_cool_app / my_cool_app / MY_COOL_APP_DEV"
-             (r/replace-token "Acme / acme / acme / ACME_DEV"
-                              "acme"
-                              {:hyphen true :underscore true :pascal true :upper-prefix true}
-                              (r/variants "my-cool-app")))))
+  (context "variants"
+    (it "computes all four variants for a kebab name"
+      (should= {:hyphen     "my-cool-app"
+                :underscore "my_cool_app"
+                :pascal     "MyCoolApp"
+                :upper      "MY_COOL_APP"}
+               (r/variants "my-cool-app"))))
 
-(describe "rename/replace-many"
-  (it "applies tokens in declared order; longest first"
-    (should= "MyCoolApp.foo my_cool_app.bar"
-             (r/replace-many "Acme.foo acme.bar"
-                             {"acme" {:hyphen true :underscore true :pascal true}}
-                             (r/variants "my-cool-app")))))
+  (context "replace-token"
+    (it "rewrites all variants of a source token in a string"
+      (should= "MyCoolApp / my_cool_app / my_cool_app / MY_COOL_APP_DEV"
+               (r/replace-token "Acme / acme / acme / ACME_DEV"
+                                "acme"
+                                {:hyphen true :underscore true :pascal true :upper-prefix true}
+                                (r/variants "my-cool-app")))))
 
-(describe "rename/reserved?"
-  (it "rejects clojure-ish reserved names"
-    (should (r/reserved? "clojure"))
-    (should (r/reserved? "java"))
-    (should (r/reserved? "cljs")))
+  (context "replace-many"
+    (it "applies tokens in declared order; longest first"
+      (should= "MyCoolApp.foo my_cool_app.bar"
+               (r/replace-many "Acme.foo acme.bar"
+                               {"acme" {:hyphen true :underscore true :pascal true}}
+                               (r/variants "my-cool-app")))))
 
-  (it "accepts user names"
-    (should-not (r/reserved? "my-app"))))
+  (context "reserved?"
+    (it "rejects clojure-ish reserved names"
+      (should (r/reserved? "clojure"))
+      (should (r/reserved? "java"))
+      (should (r/reserved? "cljs")))
 
-(describe "rename/validate-name"
-  (it "throws on names colliding with a template's source token"
-    (should-throw (r/validate-name "acme" {"acme" {:hyphen true}}))
-    (should-throw (r/validate-name "clojure" {})))
+    (it "accepts user names"
+      (should-not (r/reserved? "my-app"))))
 
-  (it "throws on names that fail regex"
-    (should-throw (r/validate-name "1bad" {}))
-    (should-throw (r/validate-name "" {})))
+  (context "validate-name"
+    (it "throws on names colliding with a template's source token"
+      (should-throw (r/validate-name "acme" {"acme" {:hyphen true}}))
+      (should-throw (r/validate-name "clojure" {})))
 
-  (it "returns the name on success"
-    (should= "my-app" (r/validate-name "my-app" {"acme" {:hyphen true}}))))
+    (it "throws on names that fail regex"
+      (should-throw (r/validate-name "1bad" {}))
+      (should-throw (r/validate-name "" {})))
+
+    (it "returns the name on success"
+      (should= "my-app" (r/validate-name "my-app" {"acme" {:hyphen true}})))))
