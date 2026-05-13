@@ -2,7 +2,7 @@
   (:require [acme.config :as config]
             [acme.errors :as errors]
             [acme.layouts :as layouts]
-            [acme.security.csp :as csp]
+            ;; @c3kit/feature :csp = [acme.security.csp :as csp]
             [acme.session :as session]
             [c3kit.apron.log :as log]
             [c3kit.apron.time :as time]
@@ -54,11 +54,15 @@
     (when-let [response (handler request)]
       (update response :headers #(merge security-headers %)))))
 
+;; @c3kit/feature :csp {
 (defn- maybe-wrap-csp [handler]
   (let [{:keys [enabled?] :as csp-cfg} (:csp config/env)]
     (if enabled?
-      (csp/wrap-csp handler (merge {:policy csp/default-policy} csp-cfg))
+      (let [wrap-csp       (util/resolve-var 'acme.security.csp/wrap-csp)
+            default-policy @(util/resolve-var 'acme.security.csp/default-policy)]
+        (wrap-csp handler (merge {:policy default-policy} csp-cfg)))
       handler)))
+;; @c3kit/feature :csp }
 
 ;; MDM - What's all this refresh/development hocus pocus?  An explanation owed.
 ;;  In development, we want changed code to automatically reload when a request is made.  Although simple in
@@ -74,7 +78,9 @@
 
 (defonce root-handler
   (-> (app-handler)
+      ;; @c3kit/feature :csp {
       maybe-wrap-csp
+      ;; @c3kit/feature :csp }
       wrap-security-headers
       errors/wrap-errors
       wrap-flash

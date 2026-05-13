@@ -71,21 +71,30 @@
   (sleep-for-10)
   (ajax/ok {} nil))
 
+;; @c3kit/feature :csp {
+(def csp-routes
+  (wire.routes/lazy-routes
+    {["/v1/csp-report" :post] acme.security.csp/csp-report-handler}))
+
+(defn- maybe-add-csp-routes [primary]
+  (if (-> config/env :csp :enabled?)
+    (compojure/routes primary csp-routes)
+    primary))
+;; @c3kit/feature :csp }
+
 (def api-handler
-  (let [csp-on?   (-> config/env :csp :enabled?)
-        primary   (wire.routes/lazy-routes
-                    {
-                     ["/version" :get]                              acme.version/api-get
-                     ["/v1/content/:type/:permalink" :get]          acme.content/api-fetch-post
-                     ["/user/signin" :post]                         acme.user.api/api-signin
-                     ["/user/signup" :post]                         acme.user.api/api-signup
-                     ["/user/forgot-password" :post]                acme.user.api/api-forgot-password
-                     ["/user/reset-password/:recovery-token" :post] acme.user.api/api-reset-password
-                     ["/user/social/:provider" :post]               acme.user.api/api-social-auth
-                     })
-        csp-extra (wire.routes/lazy-routes
-                    {["/v1/csp-report" :post] acme.security.csp/csp-report-handler})]
-    (-> (if csp-on? (compojure/routes primary csp-extra) primary)
+  (let [primary (wire.routes/lazy-routes
+                  {
+                   ["/version" :get]                              acme.version/api-get
+                   ["/v1/content/:type/:permalink" :get]          acme.content/api-fetch-post
+                   ["/user/signin" :post]                         acme.user.api/api-signin
+                   ["/user/signup" :post]                         acme.user.api/api-signup
+                   ["/user/forgot-password" :post]                acme.user.api/api-forgot-password
+                   ["/user/reset-password/:recovery-token" :post] acme.user.api/api-reset-password
+                   ["/user/social/:provider" :post]               acme.user.api/api-social-auth
+                   })]
+    (-> primary
+        ;; @c3kit/feature :csp = maybe-add-csp-routes
         (rest/wrap-rest {:keywords? true})
         (wire.routes/wrap-prefix "/api" api-not-found-handler))))
 

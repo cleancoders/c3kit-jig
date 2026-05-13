@@ -4,10 +4,13 @@
 (def ^:private base
   {:analytics-code "console.log('google analytics would have loaded for this page');"
    :log-level      :info
+   ;; @c3kit/feature :csp {
    :csp            {:enabled?       false
                     :enforce?       false
                     :report-handler nil
-                    :policy         nil}})
+                    :policy         nil}
+   ;; @c3kit/feature :csp }
+   })
 
 (def datomic-base
   {:impl                :datomic
