@@ -19,19 +19,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
       - uses: DeLaGuardo/setup-clojure@13.0
         with:
           cli: latest
           bb: 1.12.218
-      - name: Build CLI uberscript
+      - name: Build CLI uberscript (from repo root — bypass cli/bb.edn task)
         run: |
-          cd cli
-          mkdir -p dist
-          bb uberscript dist/c3kit-create.bb -cp src -m c3kit-create.main
-          ls -la dist/
-          echo "--- uberscript size ---"
-          wc -l dist/c3kit-create.bb
-          head -3 dist/c3kit-create.bb
+          mkdir -p cli/dist
+          bb uberscript cli/dist/c3kit-create.bb -cp cli/src -m c3kit-create.main
+          ls -la cli/dist/
+          wc -l cli/dist/c3kit-create.bb
+          head -3 cli/dist/c3kit-create.bb
       - uses: actions/upload-artifact@v4
         with:
           name: c3kit-create-uberscript
@@ -41,6 +43,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
       - uses: DeLaGuardo/setup-clojure@13.0
         with:
           cli: latest
@@ -66,6 +72,10 @@ jobs:
           - memory-no-ssr-no-content
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
       - uses: DeLaGuardo/setup-clojure@13.0
         with:
           cli: latest
@@ -85,6 +95,10 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
       - uses: DeLaGuardo/setup-clojure@13.0
         with:
           cli: latest
