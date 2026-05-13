@@ -1,7 +1,7 @@
 (ns acme.routes
   (:require-macros [secretary.core :refer [defroute]])
   (:require [accountant.core :as accountant]
-            [acme.content-page :as content-page]
+            ;; @c3kit/feature :content = [acme.content-page :as content-page]
             [acme.page :as page]
             [acme.recover-password :as recover-password]
             [c3kit.apron.log :as log]
@@ -41,6 +41,7 @@
 
   (sandbox-routes)
 
+  ;; @c3kit/feature :content {
   (defroute "/:content-type" [content-type]
     (content-page/install! content-type nil)
     (load-page! :content/page))
@@ -48,6 +49,7 @@
   (defroute "/:content-type/:permalink" [content-type permalink]
     (content-page/install! content-type permalink)
     (load-page! :content/page))
+  ;; @c3kit/feature :content }
 
   (hook-browser-navigation!))
 

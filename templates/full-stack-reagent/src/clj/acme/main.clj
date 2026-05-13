@@ -1,6 +1,6 @@
 (ns acme.main
   (:require [acme.config :as config]
-            [acme.content]
+            ;; @c3kit/feature :content = [acme.content]
             [acme.destination :as destination]
             [acme.init :as init]
             [acme.prerender]
@@ -41,7 +41,9 @@
   (log/set-level! (config/env :log-level :warn))
   (init/install-legend!)
   (init/configure-api!)
+  ;; @c3kit/feature :content {
   (acme.content/load!)
+  ;; @c3kit/feature :content }
   (destination/configure! (user.web/->AcmeDestinationAdapter))
   (maybe-init-dev)
   (.addShutdownHook (Runtime/getRuntime) (Thread. stop-all))

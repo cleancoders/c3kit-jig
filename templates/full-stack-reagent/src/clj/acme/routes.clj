@@ -86,7 +86,9 @@
   (let [primary (wire.routes/lazy-routes
                   {
                    ["/version" :get]                              acme.version/api-get
+                   ;; @c3kit/feature :content {
                    ["/v1/content/:type/:permalink" :get]          acme.content/api-fetch-post
+                   ;; @c3kit/feature :content }
                    ["/user/signin" :post]                         acme.user.api/api-signin
                    ["/user/signup" :post]                         acme.user.api/api-signup
                    ["/user/forgot-password" :post]                acme.user.api/api-forgot-password
@@ -136,12 +138,16 @@
      ["/sandbox/:page/:ns1/:ns2" :get] acme.sandbox.core/handler
      }))
 
+;; @c3kit/feature :content {
 (defn- content-routes-handler [request] ((acme.content/build-routes) request))
+;; @c3kit/feature :content }
 
 (defroutes handler
   api-handler
   ajax-routes-handler
   web-routes-handlers
+  ;; @c3kit/feature :content {
   content-routes-handler
+  ;; @c3kit/feature :content }
   (if config/production? ccc/noop dev-handler)
   )
