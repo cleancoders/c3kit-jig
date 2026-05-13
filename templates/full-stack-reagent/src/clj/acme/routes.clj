@@ -61,10 +61,12 @@
          (let [method (if (= :any method) nil method)]
            (compojure/compile-route method path 'req `((redirect-handler ~dest)))))))
 
+;; @c3kit/feature :auth {
 (def ws-handlers
   {
    :user/fetch-data 'acme.user.web/ws-fetch-user-data
    })
+;; @c3kit/feature :auth }
 
 (defn sleep-for-10 [] (Thread/sleep 10000))
 (defn spinner [_]
@@ -89,11 +91,13 @@
                    ;; @c3kit/feature :content {
                    ["/v1/content/:type/:permalink" :get]          acme.content/api-fetch-post
                    ;; @c3kit/feature :content }
+                   ;; @c3kit/feature :auth {
                    ["/user/signin" :post]                         acme.user.api/api-signin
                    ["/user/signup" :post]                         acme.user.api/api-signup
                    ["/user/forgot-password" :post]                acme.user.api/api-forgot-password
                    ["/user/reset-password/:recovery-token" :post] acme.user.api/api-reset-password
                    ["/user/social/:provider" :post]               acme.user.api/api-social-auth
+                   ;; @c3kit/feature :auth }
                    })]
     (-> primary
         ;; @c3kit/feature :csp = maybe-add-csp-routes
@@ -103,12 +107,16 @@
 (def ajax-routes-handler
   (-> (lazy-routes
         {
+         ;; @c3kit/feature :auth {
          ["/forgot-password" :post]  acme.user.ajax/ajax-forgot-password
          ["/recover-password" :post] acme.user.ajax/ajax-reset-password
+         ;; @c3kit/feature :auth }
          ["/spinner" :get]           acme.routes/spinner
+         ;; @c3kit/feature :auth {
          ["/user/csrf-token" :get]   acme.user.ajax/ajax-csrf-token
          ["/user/signin" :post]      acme.user.ajax/ajax-signin
          ["/user/signup" :post]      acme.user.ajax/ajax-signup
+         ;; @c3kit/feature :auth }
          })
       (wrap-prefix "/ajax" ajax/api-not-found-handler)
       ajax/wrap-ajax))
@@ -118,6 +126,7 @@
     {
      ["/" :get]                                 acme.layouts/web-home
      ["/error" :any]                            acme.errors/web-error
+     ;; @c3kit/feature :auth {
      ["/forgot-password" :get]                  acme.layouts/web-rich-client
      ["/google/oauth" :post]                    acme.user.web/web-google-oauth-login
      ["/apple/oauth" :post]                     acme.user.web/web-apple-oauth-login
@@ -126,6 +135,7 @@
      ["/signout" :any]                          acme.user.web/web-signout
      ["/signout/:reason" :any]                  acme.user.web/web-signout
      ["/user/websocket" :any]                   acme.user.web/websocket-open
+     ;; @c3kit/feature :auth }
      }))
 
 (def dev-handler

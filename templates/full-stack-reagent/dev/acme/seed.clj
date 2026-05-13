@@ -4,7 +4,8 @@
             [c3kit.apron.app :as app]
             [c3kit.bucket.api :as db])
   (:import (clojure.lang IDeref)
-           (org.mindrot.jbcrypt BCrypt)))
+           ;; @c3kit/feature :auth = (org.mindrot.jbcrypt BCrypt)
+           ))
 
 (defn init! []
   (assert config/development? "Seeding the database is only allowed in development")
@@ -40,16 +41,20 @@
 
 (defn entity [kind search-fields other-fields] (Entity. (atom nil) kind search-fields other-fields))
 
+;; @c3kit/feature :auth {
 ;; MDM - we add our own pw hash here because the normal generate different hashes causing confusing UPDATE messages.
 (def pw-salt "$2a$11$3yH8I8pZi6xSPbK4QmcPYe")
 (defn hashpw [pw] (BCrypt/hashpw pw pw-salt))
 
-(def road-runner (entity :user {:email "road-runner@acme.com"} {:name "Road Runner" :password (hashpw "meep-meep")}))
-(def wiley-coyote (entity :user {:email "coyote@acme.com"} {:name "Wiley Coyote" :password (hashpw "light-bulb")}))
+(def road-runner (entity :user {:email "road-runner@example.com"} {:name "Road Runner" :password (hashpw "meep-meep")}))
+(def wiley-coyote (entity :user {:email "coyote@example.com"} {:name "Wiley Coyote" :password (hashpw "light-bulb")}))
+;; @c3kit/feature :auth }
 
 (defn -main []
   (init!)
   (println "Seeding data...")
+  ;; @c3kit/feature :auth {
   @road-runner
   @wiley-coyote
+  ;; @c3kit/feature :auth }
   (System/exit 0))

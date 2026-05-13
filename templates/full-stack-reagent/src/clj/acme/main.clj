@@ -1,10 +1,10 @@
 (ns acme.main
   (:require [acme.config :as config]
             ;; @c3kit/feature :content = [acme.content]
-            [acme.destination :as destination]
+            ;; @c3kit/feature :auth = [acme.destination :as destination]
             [acme.init :as init]
             ;; @c3kit/feature :ssr = [acme.prerender]
-            [acme.user.web :as user.web]
+            ;; @c3kit/feature :auth = [acme.user.web :as user.web]
             [c3kit.apron.app :as app]
             [c3kit.apron.log :as log]
             [c3kit.apron.util :as util]
@@ -44,7 +44,11 @@
   ;; @c3kit/feature :content {
   (acme.content/load!)
   ;; @c3kit/feature :content }
-  (destination/configure! (user.web/->AcmeDestinationAdapter))
+  ;; @c3kit/feature :auth {
+  (let [configure!              (util/resolve-var 'acme.destination/configure!)
+        ->AcmeDestinationAdapter (util/resolve-var 'acme.user.web/->AcmeDestinationAdapter)]
+    (configure! (->AcmeDestinationAdapter)))
+  ;; @c3kit/feature :auth }
   (maybe-init-dev)
   (.addShutdownHook (Runtime/getRuntime) (Thread. stop-all))
   (.addShutdownHook (Runtime/getRuntime) (Thread. shutdown-agents))

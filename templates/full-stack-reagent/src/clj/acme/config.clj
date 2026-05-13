@@ -35,7 +35,8 @@
     :bucket datomic-local
     :host "http://localhost:8123"
     :log-level :trace
-    :jwt-secret "ACME_DEV_SECRET"))
+    ;; @c3kit/feature :auth = :jwt-secret "ACME_DEV_SECRET"
+    ))
 
 (def staging
   (assoc base
@@ -43,7 +44,8 @@
     :bucket datomic-staging
     :host "https://acme-staging.cleancoders.com"
     :log-level :trace
-    :jwt-secret "ACME_STAGING_SECRET"))
+    ;; @c3kit/feature :auth = :jwt-secret "ACME_STAGING_SECRET"
+    ))
 
 (def production
   (assoc base
@@ -51,7 +53,8 @@
     :bucket datomic-production
     :host "https://acme.cleancoders.com"
     :analytics-code "console.log('Replace me with Real Google Analytics Code.');"
-    :jwt-secret "ACME_PRODUCTION_SECRET"))
+    ;; @c3kit/feature :auth = :jwt-secret "ACME_PRODUCTION_SECRET"
+    ))
 
 (def environment (app/find-env "cc.env" "CC_ENV"))
 (def development? (= "development" environment))

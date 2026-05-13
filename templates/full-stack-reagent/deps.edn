@@ -9,14 +9,14 @@
              com.cleancoders.c3kit/bucket                              {:mvn/version "2.9.0"}
              com.cleancoders.c3kit/wire                                {:mvn/version "2.8.5"}
              com.datomic/peer                                          {:mvn/version "1.0.7482"}
-             com.google.api-client/google-api-client                   {:mvn/version "2.8.1"}
+             com.google.api-client/google-api-client                   {:mvn/version "2.8.1"} ; consumed by user.web; harmless if :auth off
              compojure/compojure                                       {:mvn/version "1.7.2"}
              dev.weavejester/medley                                    {:mvn/version "1.9.0"}
              hiccup/hiccup                                             {:mvn/version "2.0.0"}
              org.clojure/clojure                                       {:mvn/version "1.12.4"}
-             org.mindrot/jbcrypt                                       {:mvn/version "0.4"}
+             org.mindrot/jbcrypt                                       {:mvn/version "0.4"} ; consumed by seed.clj; harmless if :auth off
              markdown-to-hiccup/markdown-to-hiccup                       {:mvn/version "0.6.2"}
-             ring/ring-anti-forgery                                    {:mvn/version "1.4.0" :exclusions [commons-codec/commons-codec]}
+             ;; @c3kit/feature :auth = ring/ring-anti-forgery {:mvn/version "1.4.0" :exclusions [commons-codec/commons-codec]}
              }
  :aliases   {
              :test     {:extra-deps  {
@@ -38,7 +38,7 @@
              :migrate  {:main-opts ["-m" "c3kit.bucket.migration"]}
              :repl     {:main-opts ["-e" "(require,'acme.repl)" "-e" "(in-ns,'acme.repl)" "--repl"] :extra-paths ["dev"]}
              :run      {:main-opts ["-m" "acme.main"]}
-             :seed     {:main-opts ["-m" "acme.seed"] :extra-paths ["dev"]}
+             ;; @c3kit/feature :auth = :seed {:main-opts ["-m" "acme.seed"] :extra-paths ["dev"]}
              :server   {:jvm-opts ["-Xmx1g" "-server"] :main-opts ["-m" "acme.main"]}
              :spec     {:main-opts ["-m" "speclj.main" "-c"]}
              }

@@ -3,17 +3,17 @@
             [acme.errors :as errors]
             [acme.layouts :as layouts]
             ;; @c3kit/feature :csp = [acme.security.csp :as csp]
-            [acme.session :as session]
+            ;; @c3kit/feature :auth = [acme.session :as session]
             [c3kit.apron.log :as log]
             [c3kit.apron.time :as time]
             [c3kit.apron.util :as util]
             [c3kit.wire.assets :refer [wrap-asset-fingerprint]]
-            [c3kit.wire.jwt :as jwt]
-            [c3kit.wire.jwt :refer [wrap-jwt]]
+            ;; @c3kit/feature :auth = [c3kit.wire.jwt :as jwt]
+            ;; @c3kit/feature :auth = [c3kit.wire.jwt :refer [wrap-jwt]]
             [compojure.core :refer [defroutes]]
             [compojure.route :as route]
             [org.httpkit.server :refer [run-server]]
-            [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
+            ;; @c3kit/feature :auth = [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
             [ring.middleware.content-type :refer [wrap-content-type]]
             [ring.middleware.cookies :refer [wrap-cookies]]
             [ring.middleware.flash :refer [wrap-flash]]
@@ -64,6 +64,18 @@
       handler)))
 ;; @c3kit/feature :csp }
 
+;; @c3kit/feature :auth {
+(defn- wrap-auth-middleware [handler]
+  (let [session-wrap   (util/resolve-var 'acme.session/wrap-session)
+        anti-forgery   (util/resolve-var 'ring.middleware.anti-forgery/wrap-anti-forgery)
+        jwt-wrap       (util/resolve-var 'c3kit.wire.jwt/wrap-jwt)
+        create-strat   (util/resolve-var 'c3kit.wire.jwt/create-strategy)]
+    (-> handler
+        session-wrap
+        (anti-forgery {:strategy (create-strat)})
+        (jwt-wrap {:cookie-name "acme-token" :secret (:jwt-secret config/env) :lifespan (when config/development? (time/hours 336))}))))
+;; @c3kit/feature :auth }
+
 ;; MDM - What's all this refresh/development hocus pocus?  An explanation owed.
 ;;  In development, we want changed code to automatically reload when a request is made.  Although simple in
 ;;  principle, the mechanics of it give me a headache sometimes.
@@ -84,9 +96,7 @@
       wrap-security-headers
       errors/wrap-errors
       wrap-flash
-      session/wrap-session
-      (wrap-anti-forgery {:strategy (jwt/create-strategy)})
-      (wrap-jwt {:cookie-name "acme-token" :secret (:jwt-secret config/env) :lifespan (when config/development? (time/hours 336))})
+      ;; @c3kit/feature :auth = wrap-auth-middleware
       wrap-keyword-params
       wrap-multipart-params
       wrap-nested-params
