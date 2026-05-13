@@ -12,27 +12,63 @@
    ;; @c3kit/feature :csp }
    })
 
+;; @c3kit/db :datomic-pro {
 (def datomic-base
   {:impl                :datomic
    :migration-dir       "acme.migrations"
    :migration-ns-prefix "m"
    :migration-ns        'acme.migrations
-   :full-schema         'acme.schema/full
-   })
+   :full-schema         'acme.schema/full})
 
-(def datomic-local (merge datomic-base {:uri "datomic:dev://localhost:4334/acme"}))
-(def datomic-staging (merge datomic-base {:uri "datomic:ddb://us-west-2/cleancoders-acme-staging/acme"}))
-(def datomic-production (merge datomic-base {:uri "datomic:ddb://us-west-2/cleancoders-acme-production/acme"}))
+(def datomic-local      (merge datomic-base {:uri "datomic:dev://localhost:4334/acme"}))
+(def datomic-staging    (merge datomic-base {:uri "datomic:dev://localhost:4334/acme-staging"}))
+(def datomic-production (merge datomic-base {:uri "datomic:dev://localhost:4334/acme-production"}))
+;; @c3kit/db :datomic-pro }
 
+;; @c3kit/db :sqlite {
+(def sqlite-base
+  {:impl                :jdbc
+   :dialect             :sqlite
+   :migration-dir       "acme.migrations"
+   :migration-ns-prefix "m"
+   :migration-ns        'acme.migrations
+   :full-schema         'acme.schema/full})
+
+(def sqlite-local      (merge sqlite-base {:connection-uri "jdbc:sqlite:db/dev.sqlite"}))
+(def sqlite-staging    (merge sqlite-base {:connection-uri "jdbc:sqlite:db/staging.sqlite"}))
+(def sqlite-production (merge sqlite-base {:connection-uri "jdbc:sqlite:db/production.sqlite"}))
+;; @c3kit/db :sqlite }
+
+;; @c3kit/db :postgres {
+(def postgres-base
+  {:impl                :jdbc
+   :dialect             :postgres
+   :migration-dir       "acme.migrations"
+   :migration-ns-prefix "m"
+   :migration-ns        'acme.migrations
+   :full-schema         'acme.schema/full})
+
+(def postgres-local      (merge postgres-base {:connection-uri "jdbc:postgresql://localhost/acme_dev"}))
+(def postgres-staging    (merge postgres-base {:connection-uri "jdbc:postgresql://localhost/acme_staging"}))
+(def postgres-production (merge postgres-base {:connection-uri "jdbc:postgresql://localhost/acme_production"}))
+;; @c3kit/db :postgres }
+
+;; memory backend defined unconditionally — HEAD default + valid wizard choice
+(def memory-local      {:impl :memory :full-schema 'acme.schema/full})
+(def memory-staging    {:impl :memory :full-schema 'acme.schema/full})
+(def memory-production {:impl :memory :full-schema 'acme.schema/full})
 
 (def email-to-log {:client :to-log})
-(def email-ses {:client :ses})
 (def admin-email "Acme <admin@acme.com>")
 
 (def development
   (assoc base
     :email email-to-log
-    :bucket datomic-local
+    :bucket memory-local                           ;; HEAD default; replaced by line below at scaffold
+    ;; @c3kit/db :datomic-pro = :bucket datomic-local
+    ;; @c3kit/db :sqlite      = :bucket sqlite-local
+    ;; @c3kit/db :postgres    = :bucket postgres-local
+    ;; @c3kit/db :memory      = :bucket memory-local
     :host "http://localhost:8123"
     :log-level :trace
     ;; @c3kit/feature :auth = :jwt-secret "ACME_DEV_SECRET"
@@ -40,18 +76,26 @@
 
 (def staging
   (assoc base
-    :email email-ses
-    :bucket datomic-staging
-    :host "https://acme-staging.cleancoders.com"
+    :email email-to-log
+    :bucket memory-staging                         ;; HEAD default; replaced by line below at scaffold
+    ;; @c3kit/db :datomic-pro = :bucket datomic-staging
+    ;; @c3kit/db :sqlite      = :bucket sqlite-staging
+    ;; @c3kit/db :postgres    = :bucket postgres-staging
+    ;; @c3kit/db :memory      = :bucket memory-staging
+    :host "https://acme-staging.example.com"
     :log-level :trace
     ;; @c3kit/feature :auth = :jwt-secret "ACME_STAGING_SECRET"
     ))
 
 (def production
   (assoc base
-    :email email-ses
-    :bucket datomic-production
-    :host "https://acme.cleancoders.com"
+    :email email-to-log
+    :bucket memory-production                      ;; HEAD default; replaced by line below at scaffold
+    ;; @c3kit/db :datomic-pro = :bucket datomic-production
+    ;; @c3kit/db :sqlite      = :bucket sqlite-production
+    ;; @c3kit/db :postgres    = :bucket postgres-production
+    ;; @c3kit/db :memory      = :bucket memory-production
+    :host "https://acme.example.com"
     :analytics-code "console.log('Replace me with Real Google Analytics Code.');"
     ;; @c3kit/feature :auth = :jwt-secret "ACME_PRODUCTION_SECRET"
     ))
