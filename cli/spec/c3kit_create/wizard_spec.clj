@@ -38,20 +38,20 @@
     (it "explicit n"
       (with-out-str (with-stdin "n\n" #(should= false (w/prompt-yn "go" true))))))
 
-  (context "prompt-select"
-    (it "returns nth option for valid index"
-      (with-out-str
-        (with-stdin "2\n"
-                    #(should= :sqlite
-                              (w/prompt-select "Database"
-                                               [{:id :datomic-pro :label "Datomic"}
-                                                {:id :sqlite      :label "SQLite"}]
-                                               :datomic-pro)))))
-    (it "returns default on empty"
-      (with-out-str
-        (with-stdin "\n"
-                    #(should= :datomic-pro
-                              (w/prompt-select "Database"
-                                               [{:id :datomic-pro :label "Datomic"}
-                                                {:id :sqlite      :label "SQLite"}]
-                                               :datomic-pro)))))))
+  (it "prompt-select returns nth option for valid index"
+    (with-out-str
+      (with-stdin "2\n"
+                  #(should= :sqlite
+                            (w/prompt-select "Database"
+                                             [{:id :datomic-pro :label "Datomic"}
+                                              {:id :sqlite      :label "SQLite"}]
+                                             :datomic-pro)))))
+
+  (it "prompt-select returns default on empty"
+    (with-out-str
+      (with-stdin "\n"
+                  #(should= :datomic-pro
+                            (w/prompt-select "Database"
+                                             [{:id :datomic-pro :label "Datomic"}
+                                              {:id :sqlite      :label "SQLite"}]
+                                             :datomic-pro))))))

@@ -4,16 +4,14 @@
 
 (describe "c3kit-create.ui"
 
-  (context "tty?"
-    (it "is a boolean"
-      (should (contains? #{true false} (ui/tty?)))))
+  (it "tty? is a boolean"
+    (should (contains? #{true false} (ui/tty?))))
 
-  (context "colorize"
-    (it "wraps in ANSI when color is on"
-      (should= "[32mhi[0m" (ui/colorize :green "hi" true)))
+  (it "colorize wraps in ANSI when color is on"
+    (should= "[32mhi[0m" (ui/colorize :green "hi" true)))
 
-    (it "returns plain string when color is off"
-      (should= "hi" (ui/colorize :green "hi" false))))
+  (it "colorize returns plain string when color is off"
+    (should= "hi" (ui/colorize :green "hi" false)))
 
   (context "step / ok / fail"
     (it "step prints the message prefixed with arrow"

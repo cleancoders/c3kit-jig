@@ -4,37 +4,33 @@
 
 (describe "c3kit-create.rename"
 
-  (context "variants"
-    (it "computes all four variants for a kebab name"
-      (should= {:hyphen     "my-cool-app"
-                :underscore "my_cool_app"
-                :pascal     "MyCoolApp"
-                :upper      "MY_COOL_APP"}
-               (r/variants "my-cool-app"))))
+  (it "variants computes all four variants for a kebab name"
+    (should= {:hyphen     "my-cool-app"
+              :underscore "my_cool_app"
+              :pascal     "MyCoolApp"
+              :upper      "MY_COOL_APP"}
+             (r/variants "my-cool-app")))
 
-  (context "replace-token"
-    (it "rewrites all variants of a source token in a string"
-      (should= "MyCoolApp / my_cool_app / my_cool_app / MY_COOL_APP_DEV"
-               (r/replace-token "Acme / acme / acme / ACME_DEV"
-                                "acme"
-                                {:hyphen true :underscore true :pascal true :upper-prefix true}
-                                (r/variants "my-cool-app")))))
+  (it "replace-token rewrites all variants of a source token in a string"
+    (should= "MyCoolApp / my_cool_app / my_cool_app / MY_COOL_APP_DEV"
+             (r/replace-token "Acme / acme / acme / ACME_DEV"
+                              "acme"
+                              {:hyphen true :underscore true :pascal true :upper-prefix true}
+                              (r/variants "my-cool-app"))))
 
-  (context "replace-many"
-    (it "applies tokens in declared order; longest first"
-      (should= "MyCoolApp.foo my_cool_app.bar"
-               (r/replace-many "Acme.foo acme.bar"
-                               {"acme" {:hyphen true :underscore true :pascal true}}
-                               (r/variants "my-cool-app")))))
+  (it "replace-many applies tokens in declared order; longest first"
+    (should= "MyCoolApp.foo my_cool_app.bar"
+             (r/replace-many "Acme.foo acme.bar"
+                             {"acme" {:hyphen true :underscore true :pascal true}}
+                             (r/variants "my-cool-app"))))
 
-  (context "reserved?"
-    (it "rejects clojure-ish reserved names"
-      (should (r/reserved? "clojure"))
-      (should (r/reserved? "java"))
-      (should (r/reserved? "cljs")))
+  (it "reserved? rejects clojure-ish reserved names"
+    (should (r/reserved? "clojure"))
+    (should (r/reserved? "java"))
+    (should (r/reserved? "cljs")))
 
-    (it "accepts user names"
-      (should-not (r/reserved? "my-app"))))
+  (it "reserved? accepts user names"
+    (should-not (r/reserved? "my-app")))
 
   (context "validate-name"
     (it "throws on names colliding with a template's source token"
