@@ -1,0 +1,95 @@
+name: template-full-stack-reagent
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'templates/full-stack-reagent/**'
+      - 'cli/**'
+      - '.github/workflows/template-full-stack-reagent.yml'
+  pull_request:
+    paths:
+      - 'templates/full-stack-reagent/**'
+      - 'cli/**'
+      - '.github/workflows/template-full-stack-reagent.yml'
+  workflow_dispatch:
+
+jobs:
+  build-cli:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeLaGuardo/setup-clojure@13.0
+        with:
+          cli: latest
+          bb: latest
+      - name: Build CLI uberscript
+        run: |
+          mkdir -p cli/dist
+          bb uberscript cli/dist/c3kit-create.bb -cp cli/src -m c3kit-create.main
+      - uses: actions/upload-artifact@v4
+        with:
+          name: c3kit-create-uberscript
+          path: cli/dist/c3kit-create.bb
+
+  template-at-head:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeLaGuardo/setup-clojure@13.0
+        with:
+          cli: latest
+      - name: clj -M:test:spec inside template tree
+        run: |
+          cd templates/full-stack-reagent
+          clj -M:test:spec
+
+  scaffold-matrix:
+    needs: build-cli
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        combo:
+          - memory-defaults
+          - sqlite-defaults
+          - postgres-defaults
+          - datomic-pro-defaults
+          - memory-minimal
+          - memory-csp-on
+          - memory-no-auth
+          - memory-no-ssr-no-content
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeLaGuardo/setup-clojure@13.0
+        with:
+          cli: latest
+          bb: latest
+      - uses: actions/download-artifact@v4
+        with:
+          name: c3kit-create-uberscript
+          path: cli/dist/
+      - run: chmod +x cli/dist/c3kit-create.bb
+      - name: Run verify-scaffold for combo
+        run: |
+          cd templates/full-stack-reagent
+          bb dev/verify-scaffold.bb --combo ${{ matrix.combo }} --cli ${{ github.workspace }}/cli/dist/c3kit-create.bb
+
+  macos-smoke:
+    needs: build-cli
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeLaGuardo/setup-clojure@13.0
+        with:
+          cli: latest
+          bb: latest
+      - uses: actions/download-artifact@v4
+        with:
+          name: c3kit-create-uberscript
+          path: cli/dist/
+      - run: chmod +x cli/dist/c3kit-create.bb
+      - name: Single smoke combo on macOS
+        run: |
+          cd templates/full-stack-reagent
+          bb dev/verify-scaffold.bb --combo memory-defaults --cli ${{ github.workspace }}/cli/dist/c3kit-create.bb

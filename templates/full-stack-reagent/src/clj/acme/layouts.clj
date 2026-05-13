@@ -2,8 +2,10 @@
   (:require [acme.config :as config]
             [acme.http-util :as http-util]
             [acme.layoutc :as layoutc]
-            ;; @c3kit/feature :auth = [acme.user :as user]
-            ;; @c3kit/feature :auth = [c3kit.apron.legend :as legend]
+            ;; @c3kit/feature :auth {
+            [acme.user :as user]
+            [c3kit.apron.legend :as legend]
+            ;; @c3kit/feature :auth }
             [c3kit.apron.utilc :as utilc]
             [c3kit.wire.api :as api]
             [c3kit.wire.assets :refer [add-fingerprint]]

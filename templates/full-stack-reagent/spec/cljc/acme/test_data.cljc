@@ -1,7 +1,9 @@
 (ns acme.test-data
   (:require [acme.schema :as schema]
             #?(:clj [acme.spec-helper :as helper])
-            ;; @c3kit/feature :auth = #?(:clj [acme.user.core :as user])
+            ;; @c3kit/feature :auth {
+            #?(:clj [acme.user.core :as user])
+            ;; @c3kit/feature :auth }
             [c3kit.apron.corec :as ccc]
             [c3kit.apron.log :as log]
             [c3kit.bucket.api :as db]

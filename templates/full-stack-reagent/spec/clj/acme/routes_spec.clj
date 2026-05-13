@@ -4,8 +4,8 @@
             [acme.routes :as routes]
             [acme.sandbox.core]
             [acme.spec-helper]
-            ;; @c3kit/feature :auth = [acme.test-data :as test-data]
             ;; @c3kit/feature :auth {
+            [acme.test-data :as test-data]
             [acme.user.ajax]
             [acme.user.api]
             [acme.user.web]
