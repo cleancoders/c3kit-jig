@@ -1,0 +1,8 @@
+{
+  "name": "acme-prerender",
+  "private": true,
+  "devDependencies": {
+    "jsdom": "^24.0.0",
+    "turndown": "^7.1.3"
+  }
+}

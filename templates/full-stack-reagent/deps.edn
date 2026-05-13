@@ -1,0 +1,47 @@
+{
+ :paths     ["src/clj" "src/cljc" "src/cljs" "resources"]
+ :mvn/repos {"maven_central" {:url "https://repo.maven.apache.org/maven2/"}}
+ :deps      {
+             com.atlassian.commonmark/commonmark                       {:mvn/version "0.17.0"} ;; Markdown
+             com.atlassian.commonmark/commonmark-ext-gfm-strikethrough {:mvn/version "0.17.0"} ;; Github flavor markdown (strikethrough)
+             com.atlassian.commonmark/commonmark-ext-gfm-tables        {:mvn/version "0.17.0"} ;; Github flavor markdown (tables)
+             com.cleancoders.c3kit/apron                               {:mvn/version "2.5.0"}
+             com.cleancoders.c3kit/bucket                              {:mvn/version "2.9.0"}
+             com.cleancoders.c3kit/wire                                {:mvn/version "2.8.5"}
+             com.datomic/peer                                          {:mvn/version "1.0.7482"}  ; baseline; harmless if user picks another :db
+             ;; @c3kit/db :sqlite   = org.xerial/sqlite-jdbc {:mvn/version "3.46.0.0"}
+             ;; @c3kit/db :postgres = org.postgresql/postgresql {:mvn/version "42.7.4"}
+             com.google.api-client/google-api-client                   {:mvn/version "2.8.1"} ; consumed by user.web; harmless if :auth off
+             compojure/compojure                                       {:mvn/version "1.7.2"}
+             dev.weavejester/medley                                    {:mvn/version "1.9.0"}
+             hiccup/hiccup                                             {:mvn/version "2.0.0"}
+             org.clojure/clojure                                       {:mvn/version "1.12.4"}
+             org.mindrot/jbcrypt                                       {:mvn/version "0.4"} ; consumed by seed.clj; harmless if :auth off
+             markdown-to-hiccup/markdown-to-hiccup                       {:mvn/version "0.6.2"}
+             ;; @c3kit/feature :auth = ring/ring-anti-forgery {:mvn/version "1.4.0" :exclusions [commons-codec/commons-codec]}
+             }
+ :aliases   {
+             :test     {:extra-deps  {
+                                      clj-commons/secretary          {:mvn/version "1.2.5-SNAPSHOT"}
+                                      com.cleancoders.c3kit/scaffold {:mvn/version "2.3.2"}
+                                      org.clojure/clojurescript      {:mvn/version "1.12.134"}
+                                      speclj/speclj                  {:mvn/version "3.12.0"}
+                                      venantius/accountant           {:mvn/version "0.2.5"}
+                                      }
+                        ;:override-deps {com.cleancoders.c3kit/wire {:local/root "../../cleancoders/c3kit/wire"}}
+                        :extra-paths ["dev" "spec/clj" "spec/cljc" "spec/cljs"]}
+             :clean-db {:main-opts ["-m" "acme.clean-dev-db"]}
+             :cljs     {:main-opts ["-m" "acme.compile-cljs"]
+                        :extra-paths ["dev"]}
+             :css      {:main-opts ["-m" "c3kit.scaffold.css"]}
+             :dev      {:main-opts ["-m" "acme.dev"]}
+             :dev-     {:main-opts ["-m" "acme.dev" "cljs" "css"]}
+             :cljss    {:main-opts ["-m" "acme.dev" "cljs" "css"]}
+             :migrate  {:main-opts ["-m" "c3kit.bucket.migration"]}
+             :repl     {:main-opts ["-e" "(require,'acme.repl)" "-e" "(in-ns,'acme.repl)" "--repl"] :extra-paths ["dev"]}
+             :run      {:main-opts ["-m" "acme.main"]}
+             ;; @c3kit/feature :auth = :seed {:main-opts ["-m" "acme.seed"] :extra-paths ["dev"]}
+             :server   {:jvm-opts ["-Xmx1g" "-server"] :main-opts ["-m" "acme.main"]}
+             :spec     {:main-opts ["-m" "speclj.main" "-c"]}
+             }
+ }

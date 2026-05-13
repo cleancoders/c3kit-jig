@@ -19,7 +19,8 @@
   (apply str (map str/capitalize (str/split s #"-"))))
 
 (defn- upper-prefix-of [s]
-  (str (str/upper-case (str/replace s #"-" "_")) "_"))
+  (let [trimmed (str/replace s #"_+$" "")]
+    (str (str/upper-case (str/replace trimmed #"-" "_")) "_")))
 
 (defn replace-token
   "Rewrite every variant of source-token in `s` per the flag map, using user variants."

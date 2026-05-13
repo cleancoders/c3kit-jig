@@ -1,0 +1,53 @@
+{:db       :datomic-pro
+ :features {:content true :ssr true :csp false :markdownc true :auth true}
+ :name     "my-app"
+
+ :must-exist     ["src/clj/my_app/main.clj"
+                  "src/clj/my_app/config.clj"
+                  "src/clj/my_app/content.clj"
+                  "src/clj/my_app/prerender.clj"
+                  "src/clj/my_app/user.clj"
+                  "src/clj/my_app/user/web.clj"
+                  "src/cljc/my_app/schema.cljc"
+                  "src/cljc/my_app/markdownc.cljc"
+                  "src/cljc/my_app/user/schema.cljc"
+                  "src/cljs/my_app/main.cljs"
+                  "src/cljs/my_app/user.cljs"
+                  "src/cljs/my_app/forgot_password.cljs"
+                  "src/cljs/my_app/recover_password.cljs"
+                  "src/cljs/my_app/content_page.cljs"
+                  "dev/my_app/seed.clj"
+                  "content/blog"
+                  "package.json"
+                  "bin/db"
+                  "deps.edn"
+                  "LICENSE"
+                  "README.md"]
+
+ :must-not-exist ["bin/db.template.memory"
+                  "bin/db.template.sqlite"
+                  "bin/db.template.postgres"
+                  "bin/db.template.datomic-pro"
+                  "c3kit-template.edn"
+                  "c3kit-template.bb"
+                  "README.scaffold.md"
+                  ".c3kit-create-context.edn"]
+
+ :file-contains  {"src/clj/my_app/config.clj" ["datomic-local"
+                                                ":bucket datomic-local"
+                                                "MyApp"]
+                  "src/clj/my_app/main.clj"   ["my_app.content"
+                                               "my_app.prerender"
+                                               "my_app.user.web"]
+                  "deps.edn"                  ["com.cleancoders.c3kit/apron"
+                                               "org.mindrot/jbcrypt"
+                                               "markdown-to-hiccup"
+                                               "com.datomic/peer"]
+                  "bin/db"                    ["Datomic Pro"]}
+
+ :file-not-contains {"src/clj/my_app/config.clj" [":csp"
+                                                   "sqlite-local"
+                                                   "postgres-local"
+                                                   "replaced by line below at scaffold"]
+                     "deps.edn"                   ["aws-java-sdk"
+                                                   "@c3kit/"]}}

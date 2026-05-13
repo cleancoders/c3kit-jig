@@ -1,0 +1,61 @@
+{:ns-prefix   "acme"
+ :ignore-errors  ["goog/i18n/bidi.js"]
+ :ignore-console ["Failed to load resource"]
+ :env-keys    ["acme.env" "ACME_ENV"]
+ :run-cmd     "node resources/public/specs/speclj.js"
+ :development {:cache-analysis true
+               :optimizations  :none
+               :output-dir     "resources/public/cljs/"
+               :output-to      "resources/public/cljs/acme_dev.js"
+               :pretty-print   true
+               :source-map     true
+               :sources        ["spec/cljc" "spec/cljs" "src/cljc" "src/cljs"]
+               :specs          true
+               :verbose        false
+               :watch-fn       c3kit.scaffold.cljs/on-dev-compiled
+               :parallel-build true
+               }
+ :production  {
+               :cache-analysis false
+               :externs        ["dev/acme/externs/gapi.js"]
+               :infer-externs  true
+               :language-in    :es-next
+               :language-out   :no-transpile
+               :optimizations  :advanced
+               :output-dir     "resources/public/cljs/"
+               :output-to      "resources/public/cljs/acme.js"
+               :pretty-print   false
+               :sources        ["src/cljc" "src/cljs"]
+               :specs          false
+               :verbose        false
+               }
+ :staging     {
+               :cache-analysis false
+               :infer-externs  true
+               :language-in    :es-next
+               :language-out   :no-transpile
+               :optimizations  :whitespace
+               :output-dir     "resources/public/cljs/"
+               :output-to      "resources/public/cljs/acme.js"
+               :pretty-print   true
+               :pseudo-names   true
+               :sources        ["src/cljc" "src/cljs"]
+               :specs          false
+               :verbose        false
+               }
+ :prerender   {:cache-analysis false
+               :npm-deps       false
+               :infer-externs  true
+               :libs           []
+               :main           "acme.prerender"
+               :optimizations  :simple
+               :output-dir     "resources/prerender/"
+               :output-to      "resources/prerender/prerender.js"
+               :pretty-print   false
+               :sources        ["src/cljc" "src/cljs" "dev"]
+               :specs          false
+               :target         :nodejs
+               :language-in    :es-next
+               :language-out   :no-transpile
+               :verbose        false}
+ }

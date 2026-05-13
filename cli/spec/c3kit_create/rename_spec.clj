@@ -18,6 +18,13 @@
                               {:hyphen true :underscore true :pascal true :upper-prefix true}
                               (r/variants "my-cool-app"))))
 
+  (it "replace-token handles uppercase source token (e.g. ACME_) for :upper-prefix"
+    (should= "MY_COOL_APP_ENV / MY_COOL_APP_DEV_SECRET"
+             (r/replace-token "ACME_ENV / ACME_DEV_SECRET"
+                              "ACME_"
+                              {:upper-prefix true}
+                              (r/variants "my-cool-app"))))
+
   (it "replace-many applies tokens in declared order; longest first"
     (should= "MyCoolApp.foo my_cool_app.bar"
              (r/replace-many "Acme.foo acme.bar"

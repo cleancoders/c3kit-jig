@@ -28,6 +28,12 @@
   (or (:template-dir opts)
       (System/getenv "C3KIT_TEMPLATES")))
 
+;; NOTE on requiring-resolve: bb's sci analyzer on Linux (1.12.218) fails to
+;; resolve `fetch/clone-repo!` and `fetch/list-local-templates` at analysis time
+;; even though the require above is correct and the symbols exist. macOS-bb
+;; resolves them fine. Using requiring-resolve defers symbol lookup to runtime,
+;; sidestepping the analysis-phase failure.
+
 (defn- ensure-template-dir
   "Return opts with `:template-dir` set. If already set, no-op. Otherwise clones
    the upstream repo into a tmp stage and sets `:template-dir` to its templates/
@@ -36,13 +42,14 @@
   (if (resolve-templates-dir opts)
     opts
     (let [stage (cfs/stage-dir)
-          tdir  (fetch/clone-repo! REPO-URL (or (:template-ref opts) DEFAULT-REF) stage)]
+          tdir  ((requiring-resolve 'c3kit-create.fetch/clone-repo!)
+                 REPO-URL (or (:template-ref opts) DEFAULT-REF) stage)]
       (assoc opts :template-dir tdir ::clone-stage stage))))
 
 (defn- prompt-template [opts]
   (let [opts'   (ensure-template-dir opts)
         tdir    (resolve-templates-dir opts')
-        choices (fetch/list-local-templates tdir)]
+        choices ((requiring-resolve 'c3kit-create.fetch/list-local-templates) tdir)]
     (when-not (seq choices)
       (throw (ex-info (str "no templates available in " tdir) {:fetch? true})))
     (let [menu (mapv (fn [c] {:id (:id c) :label (:label c)}) choices)
