@@ -7,13 +7,32 @@ on:
     branches: [main]
 
 jobs:
-  placeholder:
-    name: placeholder (phase 0)
-    runs-on: ubuntu-latest
+  cli:
+    name: CLI (bb test + lint)
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        bb: ['1.12.218']
     steps:
       - uses: actions/checkout@v4
-      - name: Report status
+
+      - uses: DeLaGuardo/setup-clojure@v12
+        with:
+          bb: ${{ matrix.bb }}
+
+      - name: clj-kondo
         run: |
-          echo "c3kit-starter is in Phase 0 bootstrap."
-          echo "Real CI jobs (CLI tests, template scaffold checks) will be added"
-          echo "when their sub-specs are implemented. See docs/specs/."
+          curl -sLO https://raw.githubusercontent.com/clj-kondo/clj-kondo/master/script/install-clj-kondo
+          chmod +x install-clj-kondo
+          ./install-clj-kondo --dir "$HOME/.local/bin"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: bb test
+        working-directory: cli
+        run: bb test
+
+      - name: bb lint
+        working-directory: cli
+        run: bb lint
+        continue-on-error: true  # TODO: fix pre-existing clj-kondo warnings, then remove this
