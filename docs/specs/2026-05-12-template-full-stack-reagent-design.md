@@ -479,7 +479,8 @@ Inverse marker `;; @c3kit/feature !:auth =` provides a stub `:jwt-secret` placeh
 
 Markers gate:
 - `web-prerendered` fn (`@c3kit/feature :ssr`).
-- Markdown rendering in `web-rich-client`'s `:seo/preview` path (`@c3kit/feature :content`).
+
+**Correction (post-implementation):** Original spec assumed `acme.layouts` contained markdown rendering for `:seo/preview`. It does not — `web-rich-client` accepts an arbitrary preview string via `hutil/raw-string`, and `web-prerendered` slurps pre-rendered HTML/markdown files as raw text. Markdown rendering lives in `acme.content` (consumed by `acme.markdown`) and `acme.email`. No `:content` markers in this file.
 
 ### 6.7 `src/cljc/acme/schema.cljc`
 
@@ -685,7 +686,7 @@ Count of inline marker blocks (excluding `:delete-when-off` whole-file/whole-dir
 | `src/clj/acme/config.clj` | 0 | 0 | 1 block | 0 | 1 line | 4 blocks |
 | `src/clj/acme/routes.clj` | 1 block | 0 | 2 blocks | 0 | 2 blocks | 0 |
 | `src/clj/acme/http.clj` | 0 | 0 | 2 blocks | 0 | ~4 blocks | 0 |
-| `src/clj/acme/layouts.clj` | 1 block | 1 block | 0 | 0 | 0 | 0 |
+| `src/clj/acme/layouts.clj` | 0 | 1 block | 0 | 0 | 0 | 0 |
 | `src/cljc/acme/schema.cljc` | 0 | 0 | 0 | 0 | 1 block + 1 line | 0 |
 | `src/cljs/acme/main.cljs` | 1 line | 0 | 0 | 0 | 3 lines + 1 block | 0 |
 | `src/cljs/acme/routes.cljs` | 0 | 0 | 0 | 0 | 1-2 blocks | 0 |
