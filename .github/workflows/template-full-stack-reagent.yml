@@ -15,30 +15,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-cli:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '21'
-      - uses: DeLaGuardo/setup-clojure@13.0
-        with:
-          cli: latest
-          bb: 1.12.218
-      - name: Build CLI uberscript (from repo root — bypass cli/bb.edn task)
-        run: |
-          mkdir -p cli/dist
-          bb uberscript cli/dist/c3kit-create.bb -cp cli/src -m c3kit-create.main
-          ls -la cli/dist/
-          wc -l cli/dist/c3kit-create.bb
-          head -3 cli/dist/c3kit-create.bb
-      - uses: actions/upload-artifact@v4
-        with:
-          name: c3kit-create-uberscript
-          path: cli/dist/c3kit-create.bb
-
   template-at-head:
     runs-on: ubuntu-latest
     steps:
@@ -56,7 +32,6 @@ jobs:
           clojure -M:test:spec
 
   scaffold-matrix:
-    needs: build-cli
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -80,18 +55,14 @@ jobs:
         with:
           cli: latest
           bb: 1.12.218
-      - uses: actions/download-artifact@v4
-        with:
-          name: c3kit-create-uberscript
-          path: cli/dist/
-      - run: chmod +x cli/dist/c3kit-create.bb
       - name: Run verify-scaffold for combo
         run: |
           cd templates/full-stack-reagent
-          bb dev/verify-scaffold.bb --combo ${{ matrix.combo }} --cli ${{ github.workspace }}/cli/dist/c3kit-create.bb
+          bb dev/verify-scaffold.bb \
+            --combo ${{ matrix.combo }} \
+            --cli-cp ${{ github.workspace }}/cli/src
 
   macos-smoke:
-    needs: build-cli
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -103,12 +74,9 @@ jobs:
         with:
           cli: latest
           bb: 1.12.218
-      - uses: actions/download-artifact@v4
-        with:
-          name: c3kit-create-uberscript
-          path: cli/dist/
-      - run: chmod +x cli/dist/c3kit-create.bb
       - name: Single smoke combo on macOS
         run: |
           cd templates/full-stack-reagent
-          bb dev/verify-scaffold.bb --combo memory-defaults --cli ${{ github.workspace }}/cli/dist/c3kit-create.bb
+          bb dev/verify-scaffold.bb \
+            --combo memory-defaults \
+            --cli-cp ${{ github.workspace }}/cli/src

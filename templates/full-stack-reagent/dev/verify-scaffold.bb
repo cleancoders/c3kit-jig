@@ -1,8 +1,16 @@
 #!/usr/bin/env bb
-;; Usage: bb dev/verify-scaffold.bb --combo <name> [--cli <path>]
+;; Usage: bb dev/verify-scaffold.bb --combo <name> [--cli <path>] [--cli-cp <src-dir>]
 ;;
 ;; Reads spec/combos/<combo>.expected.edn, invokes c3kit-create against
 ;; templates/full-stack-reagent in --template-dir mode, then asserts.
+;;
+;; Two invocation modes for the CLI:
+;;   --cli <path>        — pre-built uberscript (bb <uberscript> args)
+;;   --cli-cp <src-dir>  — run from source via classpath (bb -cp <dir> -m c3kit-create.main args)
+;;
+;; CI prefers --cli-cp to sidestep an uberscript-inlining issue where bb's
+;; sci analyzer on Linux fails to resolve cross-namespace symbols in the
+;; assembled uberscript.
 
 (ns verify-scaffold
   (:require [babashka.fs :as fs]
@@ -13,15 +21,16 @@
 
 (def opts-spec
   [["-c" "--combo COMBO" "Combo name (matches spec/combos/<combo>.expected.edn)"]
-   ["-C" "--cli PATH"   "Path to c3kit-create uberscript"
+   ["-C" "--cli PATH"   "Path to c3kit-create uberscript (.bb file)"
     :default (str (System/getProperty "user.dir") "/../../cli/dist/c3kit-create.bb")]
+   [nil  "--cli-cp PATH" "Path to cli source dir (use bb -cp <path> -m c3kit-create.main instead of an uberscript)"]
    [nil  "--keep-tmp"   "Don't delete scaffold tmp dir on success (for debugging)"]])
 
 (defn fail [msg]
   (println "FAIL:" msg)
   (System/exit 1))
 
-(defn run [{:keys [combo cli keep-tmp]}]
+(defn run [{:keys [combo cli cli-cp keep-tmp]}]
   (when-not combo (fail "missing --combo"))
   (let [script-dir  (System/getProperty "user.dir")
         combo-file  (str script-dir "/spec/combos/" combo ".expected.edn")
@@ -33,14 +42,17 @@
         templates-dir (str script-dir "/..")
         feat-flags  (mapcat (fn [[k v]] ["--feature" (str (name k) "=" (boolean v))])
                             (:features expected))
-        cli-args    (concat [cli (:name expected)
+        cli-prefix  (if cli-cp
+                      ["bb" "-cp" cli-cp "-m" "c3kit-create.main"]
+                      ["bb" cli])
+        cli-args    (concat [(:name expected)
                              "--template-dir" templates-dir
                              "--template" "full-stack-reagent"
                              "--db" (name (:db expected))
                              "--yes" "--no-git"]
                             feat-flags)
-        _           (println "Scaffolding:" (str/join " " (rest cli-args)))
-        {:keys [exit out err]} (apply p/sh {:dir tmp} "bb" cli-args)
+        _           (println "Scaffolding:" (str/join " " (concat cli-prefix cli-args)))
+        {:keys [exit out err]} (apply p/sh {:dir tmp} (concat cli-prefix cli-args))
         _           (println out)
         _           (when (seq err) (println "stderr:" err))
         _           (when-not (zero? exit) (fail (str "CLI exit " exit)))]
