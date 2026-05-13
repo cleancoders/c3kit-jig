@@ -34,3 +34,7 @@ resources/prerendered/
 
 # bb uberscript build output (CLI release artifacts live under cli/dist/)
 cli/dist/
+
+# Worktrees
+.worktrees/
+.claude/worktrees/
