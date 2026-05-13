@@ -3,21 +3,40 @@
             [c3kit-create.main :as main]
             [babashka.fs :as fs]))
 
-(defn- run-main! [argv]
-  (let [exit-atom (atom nil)]
-    (with-redefs [main/exit (fn [c]
-                              (reset! exit-atom c)
-                              (throw (ex-info "exit" {:code c})))]
-      (try
-        (binding [*err* (java.io.StringWriter.)
-                  *out* (java.io.StringWriter.)]
-          (apply main/-main argv))
-        (catch clojure.lang.ExceptionInfo _ nil)))
-    @exit-atom))
+(defn- run-main!
+  ([argv] (run-main! argv ""))
+  ([argv stdin-text]
+   (let [exit-atom (atom nil)]
+     (with-redefs [main/exit (fn [c]
+                               (reset! exit-atom c)
+                               (throw (ex-info "exit" {:code c})))]
+       (try
+         (binding [*err* (java.io.StringWriter.)
+                   *out* (java.io.StringWriter.)
+                   *in*  (java.io.BufferedReader. (java.io.StringReader. stdin-text))]
+           (apply main/-main argv))
+         (catch clojure.lang.ExceptionInfo _ nil)))
+     @exit-atom)))
 
 (defn- tfix [] (str (fs/path (System/getProperty "user.dir") "test-fixtures")))
 
 (describe "e2e scaffold against tiny-fixture"
+  (it "--yes without --template exits 2 (non-interactive demands explicit)"
+    (should= 2 (run-main! ["--yes"]))
+    (should= 2 (run-main! ["my-app" "--yes"])))
+
+  (it "prompts for missing --name and lets user pick template from list"
+    (let [work (str (fs/create-temp-dir))]
+      (try
+        ;; stdin: name="my-app", then choose template #1 from the listed menu
+        (let [code (run-main! ["--template-dir" (tfix)
+                                "--target-parent" work
+                                "--no-git"]
+                              "my-app\n1\n")]
+          (should= 0 code)
+          (should (fs/exists? (fs/path work "my-app" "src" "my_app" "core.clj"))))
+        (finally (fs/delete-tree work)))))
+
   (it "produces a working scaffold with defaults"
     (let [work (str (fs/create-temp-dir))]
       (try

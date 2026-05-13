@@ -2,13 +2,29 @@
  :deps  {org.clojure/tools.cli {:mvn/version "1.1.230"}
          speclj/speclj         {:mvn/version "3.12.0"}}
  :tasks
- {test       {:doc      "Run all tests"
+ {c3kit-create {:doc      "Run the CLI from source. e.g. bb c3kit-create --help"
+                :requires ([c3kit-create.main]
+                           [babashka.fs :as bfs])
+                :task     (let [dir-with-templates? (fn [d]
+                                                      (and (bfs/exists? d)
+                                                           (some (fn [sub] (and (bfs/directory? sub)
+                                                                                (bfs/exists? (bfs/path sub "c3kit-template.edn"))))
+                                                                 (bfs/list-dir d))))
+                                default-dir         (first (filter dir-with-templates?
+                                                                   ["../templates" "test-fixtures"]))
+                                user-set?           (some (fn [a] (= a "--template-dir")) *command-line-args*)
+                                args                (if (and default-dir (not user-set?))
+                                                      (concat ["--template-dir" default-dir] *command-line-args*)
+                                                      *command-line-args*)]
+                            (apply c3kit-create.main/-main args))}
+  test       {:doc      "Run all tests"
               :requires ([speclj.cli])
               :task     (speclj.cli/run "-c" "spec")}
-  uberscript {:doc  "Build cli/dist/c3kit-create.bb"
-              :task (do (require '[babashka.fs :as fs])
-                        (fs/create-dirs "dist")
-                        (shell "bb" "uberscript" "dist/c3kit-create.bb"
-                               "-m" "c3kit-create.main"))}
+  uberscript {:doc              "Build cli/dist/c3kit-create.bb"
+              :override-builtin true
+              :task             (do (require '[babashka.fs :as fs])
+                                    (fs/create-dirs "dist")
+                                    (shell "bb" "uberscript" "dist/c3kit-create.bb"
+                                           "-m" "c3kit-create.main"))}
   lint       {:doc  "Run clj-kondo"
               :task (shell "clj-kondo" "--lint" "src" "spec")}}}
