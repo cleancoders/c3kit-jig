@@ -11,7 +11,6 @@
                   "src/cljs/my_app/main.cljs"
                   "src/cljs/my_app/content_page.cljs"
                   "content/blog"
-                  "resources/prerender/prerender.js"
                   "package.json"
                   "bin/db"
                   "deps.edn"

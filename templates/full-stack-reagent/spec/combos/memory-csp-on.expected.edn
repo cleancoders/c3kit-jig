@@ -19,7 +19,6 @@
                   "src/cljs/my_app/content_page.cljs"
                   "dev/my_app/seed.clj"
                   "content/blog"
-                  "resources/prerender/prerender.js"
                   "package.json"
                   "bin/db"
                   "deps.edn"
