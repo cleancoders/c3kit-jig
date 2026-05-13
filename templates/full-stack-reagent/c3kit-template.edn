@@ -1,0 +1,88 @@
+{:id          :full-stack-reagent
+ :name        "Full-stack Reagent"
+ :description "Clojure backend + Reagent frontend with c3kit; optional SSR, CSP, content pipeline, client-side markdown, JWT auth"
+ :version     "0.1.0"
+ :min-cli     "0.1.0"
+ :test-only?  false
+
+ :tokens      {"acme"  {:hyphen     true
+                        :underscore true
+                        :pascal     true}
+               "ACME_" {:upper-prefix true}}
+
+ :secrets     [{:placeholder "ACME_DEV_SECRET"        :bytes 24}
+               {:placeholder "ACME_STAGING_SECRET"    :bytes 24}
+               {:placeholder "ACME_PRODUCTION_SECRET" :bytes 24}]
+
+ :features    [{:id      :content
+                :prompt  "Markdown content pipeline?"
+                :default true
+                :delete-when-off ["content/"
+                                  "src/clj/{{acme}}/content.clj"
+                                  "src/clj/{{acme}}/markdown.clj"
+                                  "src/cljs/{{acme}}/content_page.cljs"
+                                  "spec/clj/{{acme}}/content_spec.clj"
+                                  "spec/clj/{{acme}}/markdown_spec.clj"
+                                  "spec/cljs/{{acme}}/content_page_spec.cljs"]}
+
+               {:id      :ssr
+                :prompt  "SSR/prerender (Reagent + Node)?"
+                :default true
+                :delete-when-off ["package.json"
+                                  "resources/prerender/"
+                                  "resources/prerendered/"
+                                  "src/clj/{{acme}}/prerender.clj"
+                                  "spec/clj/{{acme}}/prerender_spec.clj"
+                                  "dev/{{acme}}/prerender.cljs"
+                                  "dev/{{acme}}/prerender_pages.cljs"
+                                  "dev/{{acme}}/prerender_preamble.js"]}
+
+               {:id      :csp
+                :prompt  "Content Security Policy plugin?"
+                :default false
+                :delete-when-off ["src/clj/{{acme}}/security/"
+                                  "spec/clj/{{acme}}/security/"]}
+
+               {:id      :markdownc
+                :prompt  "Client-side markdown (CLJC)?"
+                :default true
+                :delete-when-off ["src/cljc/{{acme}}/markdownc.cljc"
+                                  "spec/cljc/{{acme}}/markdownc_spec.cljc"]}
+
+               {:id      :auth
+                :prompt  "JWT auth?"
+                :default true
+                :delete-when-off ["src/clj/{{acme}}/user.clj"
+                                  "src/clj/{{acme}}/user/"
+                                  "src/clj/{{acme}}/session.clj"
+                                  "src/clj/{{acme}}/destination.clj"
+                                  "src/cljc/{{acme}}/user/"
+                                  "src/cljs/{{acme}}/user.cljs"
+                                  "src/cljs/{{acme}}/forgot_password.cljs"
+                                  "src/cljs/{{acme}}/recover_password.cljs"
+                                  "spec/clj/{{acme}}/user/"
+                                  "spec/clj/{{acme}}/session_spec.clj"
+                                  "spec/clj/{{acme}}/destination_spec.clj"
+                                  "spec/cljs/{{acme}}/user_spec.cljs"
+                                  "spec/cljs/{{acme}}/forgot_password_spec.cljs"
+                                  "spec/cljs/{{acme}}/recover_password_spec.cljs"]}]
+
+ :db          {:prompt  "Database"
+               :options [{:id :datomic-pro :label "Datomic Pro (free, single-jar transactor)"}
+                         {:id :sqlite      :label "SQLite (JDBC)"}
+                         {:id :postgres    :label "Postgres (JDBC)"}
+                         {:id :memory      :label "In-memory (dev only)"}]
+               :default :datomic-pro}
+
+ :next-steps  [{:cmd "cd {{name}}"           :doc nil}
+               {:cmd "bin/db"                :doc "start the database (per-backend script)"}
+               {:cmd "clj -M:test:migrate"   :doc "run migrations"}
+               {:cmd "clj -M:test:seed"      :doc "seed dev data (auth only)"}
+               {:cmd "clj -M:test:spec"      :doc "run Clojure specs"}
+               {:cmd "clj -M:test:cljs"      :doc "run ClojureScript specs (auto-watch)"}
+               {:cmd "clj -M:test:css"       :doc "compile CSS (auto-watch)"}
+               {:cmd "clj -M:test:cljss"    :doc "compile CLJS + CSS (auto-watch, combined)"}
+               {:cmd "clj -M:test:dev"      :doc "server + specs + cljs in one process"}
+               {:cmd "clj -M:test:run"      :doc "server only"}]
+
+ :hook?       true}
