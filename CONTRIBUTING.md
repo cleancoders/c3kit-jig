@@ -16,7 +16,7 @@ The current roadmap is in [`docs/specs/2026-05-12-c3kit-starter-roadmap-design.m
 
 Three sub-projects are unblocked once the repo is bootstrapped. Each gets its own sub-spec before any code is written:
 
-- [ ] `c3kit-create` CLI sub-spec + plan + implementation
+- [x] `c3kit-create` CLI sub-spec + plan + implementation
 - [ ] `templates/full-stack-reagent` sub-spec + plan + implementation
 - [ ] `templates/fe-vanilla` sub-spec + plan + implementation
 

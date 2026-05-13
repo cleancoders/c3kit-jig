@@ -2,7 +2,7 @@
 
 Vite-style scaffolder for full-stack Clojure / ClojureScript projects, part of the [c3kit](https://github.com/cleancoders/c3kit) collection.
 
-> **Status:** Phase 0 bootstrap. The CLI and templates are not yet implemented. See [`docs/specs/2026-05-12-c3kit-starter-roadmap-design.md`](docs/specs/2026-05-12-c3kit-starter-roadmap-design.md) for the roadmap.
+> **Status:** CLI is available; templates are in progress. See [`docs/specs/2026-05-12-c3kit-starter-roadmap-design.md`](docs/specs/2026-05-12-c3kit-starter-roadmap-design.md) for the roadmap.
 
 ## Install (planned)
 
@@ -27,8 +27,8 @@ c3kit-create --list         # list available templates
 | `full-stack-reagent`     | Clojure backend + Reagent frontend (c3kit, Datomic, opt SSR) | phase 1    |
 | `fe-vanilla`             | ClojureScript SPA, no framework                              | phase 1    |
 | `fe-reagent`             | ClojureScript SPA with Reagent + optional SSG build          | phase 2    |
-| `fe-ssg`                 | Static-site generator (Clojure-Astro)                        | phase 2    |
-| `full-stack-non-reagent` | Backend + non-Reagent CLJS frontend                          | phase 2    |
+| `fe-ssg`                 | Static-site generator (Clj-Astro)                            | phase 2    |
+| `full-stack-non-reagent` | Backend + non-Reagent CLJS frontend                          | phase 2 (lowest priority) |
 
 ## Repo layout
 

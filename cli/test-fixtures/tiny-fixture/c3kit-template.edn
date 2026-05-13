@@ -1,0 +1,24 @@
+{:id          :tiny-fixture
+ :name        "Tiny Fixture"
+ :description "Test-only template for CLI e2e specs."
+ :version     "0.1.0"
+ :min-cli     "0.1.0"
+ :test-only?  true
+
+ :tokens {"acme"  {:hyphen true :underscore true :pascal true}
+          "ACME_" {:upper-prefix true}}
+
+ :secrets [{:placeholder "ACME_DEV_SECRET" :bytes 16}]
+
+ :features [{:id :ssr     :prompt "SSR?"     :default true
+             :delete-when-off ["resources/Acme.css"]}
+            {:id :legacy  :prompt "Legacy?"  :default true
+             :delete-when-off ["src/acme_legacy/"]}]
+
+ :db {:prompt  "Database"
+      :options [{:id :sqlite   :label "SQLite"}
+                {:id :postgres :label "Postgres"}]
+      :default :sqlite}
+
+ :next-steps [{:cmd "cd {{name}}"   :doc nil}
+              {:cmd "ls"            :doc "list files"}]}
