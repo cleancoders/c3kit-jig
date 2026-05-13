@@ -14,7 +14,9 @@
             [acme.layout :as layout]
             ;; @c3kit/feature :auth = [acme.recover-password]
             [acme.routes :as router]
+            ;; @c3kit/feature :auth {
             [acme.user :as user]
+            ;; @c3kit/feature :auth }
             [reagent.dom :as dom]
             ))
 
@@ -44,7 +46,9 @@
   (init/configure-api!)
   (let [{:keys [config user flash]} (utilc/<-transit payload-src)]
     (load-config config)
+    ;; @c3kit/feature :auth {
     (user/install-and-connect! user)
+    ;; @c3kit/feature :auth }
     (run! flash/add! flash)
     (dispatch-and-render)
     (establish-session {})))

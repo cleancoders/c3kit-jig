@@ -3,7 +3,9 @@
   (:require [accountant.core :as accountant]
             ;; @c3kit/feature :content = [acme.content-page :as content-page]
             [acme.page :as page]
+            ;; @c3kit/feature :auth {
             [acme.recover-password :as recover-password]
+            ;; @c3kit/feature :auth }
             [c3kit.apron.log :as log]
             [c3kit.wire.js :as wjs]
             [secretary.core :as secretary]))
@@ -34,10 +36,12 @@
   (secretary/set-config! :prefix "")
 
   (defroute "/" [] (load-page! :home))
+  ;; @c3kit/feature :auth {
   (defroute "/forgot-password" [] (load-page! :forgot-password))
   (defroute "/recover-password/:recovery-token" [recovery-token]
     (reset! recover-password/recovery-token recovery-token)
     (load-page! :recover-password))
+  ;; @c3kit/feature :auth }
 
   (sandbox-routes)
 

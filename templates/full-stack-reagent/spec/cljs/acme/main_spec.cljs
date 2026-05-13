@@ -6,7 +6,9 @@
             [acme.main :as sut]
             [acme.page :as page]
             [acme.routes :as router]
+            ;; @c3kit/feature :auth {
             [acme.user :as user]
+            ;; @c3kit/feature :auth }
             [c3kit.apron.log :as log]
             [c3kit.apron.utilc :as util]
             [c3kit.wire.flash :as flash]
@@ -35,10 +37,12 @@
         (log/capture-logs
           (it))))
 
+    ;; @c3kit/feature :auth {
     (it "installs user"
       (let [user {:kind :user :id 123}]
         (sut/main (util/->transit {:user user}))
         (should= user @user/current)))
+    ;; @c3kit/feature :auth }
 
     (it "installs flash"
       (let [flash (flashc/warn "Hello")]

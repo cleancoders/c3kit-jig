@@ -2,7 +2,9 @@
   (:require-macros [acme.spec-helperc :refer [it-routes]]
                    [speclj.core :refer [around before context describe it should= stub with-stubs]])
   (:require [acme.page :as page]
+            ;; @c3kit/feature :auth {
             [acme.recover-password :as recover-password]
+            ;; @c3kit/feature :auth }
             [acme.routes :as sut]
             [secretary.core :as secretary]
             [speclj.core]))
@@ -16,9 +18,11 @@
   (around [it] (with-redefs [sut/load-page! (stub :load-page!)] (it)))
 
   (it-routes "/" :home)
+  ;; @c3kit/feature :auth {
   (it-routes "/forgot-password" :forgot-password)
   (it-routes "/recover-password/blah" :recover-password
     (should= "blah" @recover-password/recovery-token))
+  ;; @c3kit/feature :auth }
 
   (context "sandbox"
     (before (sut/sandbox-routes))
