@@ -1,0 +1,7 @@
+{
+ :source-dir  "dev/acme/styles"
+ :var         acme.styles.main/screen
+ :output-file "resources/public/css/acme.css"
+ :flags       {:pretty-print? true
+               :vendors       ["webkit" "moz" "o"]}
+ }

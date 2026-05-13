@@ -1,0 +1,236 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+cd "$PROJECT_ROOT"
+
+# ---- Helpers ----
+
+usage() {
+  echo "Usage: bin/setup <project-name>"
+  echo ""
+  echo "  project-name  A hyphenated, lowercase name (e.g. my-cool-app)"
+  echo "                Must match: ^[a-z][a-z0-9]*(-[a-z0-9]+)*\$"
+  exit 1
+}
+
+to_pascal() {
+  local input="$1" IFS='-' result=""
+  local parts
+  read -ra parts <<< "$input"
+  for part in "${parts[@]}"; do
+    result+="$(tr '[:lower:]' '[:upper:]' <<< "${part:0:1}")${part:1}"
+  done
+  echo "$result"
+}
+
+sed_replace() {
+  if sed --version 2>/dev/null | grep -q 'GNU'; then
+    sed -i "$@"
+  else
+    sed -i '' "$@"
+  fi
+}
+
+# ---- Validate ----
+
+[[ $# -ne 1 ]] && usage
+
+PROJECT_NAME="$1"
+
+if [[ ! "$PROJECT_NAME" =~ ^[a-z][a-z0-9]*(-[a-z0-9]+)*$ ]]; then
+  echo "Error: Invalid project name '$PROJECT_NAME'"
+  echo "Must be lowercase, start with a letter, and use hyphens to separate words."
+  echo "Examples: my-app, cool-project, todo"
+  exit 1
+fi
+
+if [[ ! -f deps.edn ]]; then
+  echo "Error: Must be run from the project root (where deps.edn is)."
+  exit 1
+fi
+
+if ! command -v python3 &>/dev/null; then
+  echo "Error: python3 is required to generate JWT secrets."
+  exit 1
+fi
+
+# ---- Derive name variants ----
+
+HYPHEN="$PROJECT_NAME"
+UNDERSCORE="${PROJECT_NAME//-/_}"
+PASCAL="$(to_pascal "$PROJECT_NAME")"
+
+# ---- Generate JWT secrets ----
+
+DEV_SECRET=$(python3 -c "import os; print(os.urandom(24).hex())")
+STAGING_SECRET=$(python3 -c "import os; print(os.urandom(24).hex())")
+PRODUCTION_SECRET=$(python3 -c "import os; print(os.urandom(24).hex())")
+
+# ---- Confirm ----
+
+echo ""
+echo "  Project name:  $PROJECT_NAME"
+echo "  Hyphenated:    $HYPHEN       (namespaces, config keys)"
+echo "  Underscored:   $UNDERSCORE   (directories, JS/CSS filenames)"
+echo "  PascalCase:    $PASCAL       (display name, types)"
+echo ""
+read -rp "Proceed with rename? [y/N] " confirm
+if [[ ! "$confirm" =~ ^[yY]$ ]]; then
+  echo "Aborted."
+  exit 0
+fi
+
+echo ""
+echo "Renaming project..."
+
+# ---- Replace file contents (most specific first) ----
+# Order matters: specific patterns before general catch-all.
+#   1-3:  UPPERCASE JWT secret placeholders
+#   4:    AcmeDestinationAdapter (before generic Acme)
+#   5:    Acme (PascalCase catch-all)
+#   6-7:  JavaScript context references (underscored namespace)
+#   8-10: JS/CSS output filenames (underscored)
+#   11:   dev/acme filesystem path (underscored)
+#   12:   acme catch-all (hyphenated, for Clojure namespaces)
+
+replace_acme() {
+  sed_replace \
+    -e "s|ACME_DEV_SECRET|${DEV_SECRET}|g" \
+    -e "s|ACME_STAGING_SECRET|${STAGING_SECRET}|g" \
+    -e "s|ACME_PRODUCTION_SECRET|${PRODUCTION_SECRET}|g" \
+    -e "s|AcmeDestinationAdapter|${PASCAL}DestinationAdapter|g" \
+    -e "s|Acme|${PASCAL}|g" \
+    -e "s|acme\.main\.main(|${UNDERSCORE}.main.main(|g" \
+    -e "s|'acme\.main'|'${UNDERSCORE}.main'|g" \
+    -e "s|acme_dev|${UNDERSCORE}_dev|g" \
+    -e "s|acme\.css|${UNDERSCORE}.css|g" \
+    -e "s|acme\.js|${UNDERSCORE}.js|g" \
+    -e "s|dev/acme|dev/${UNDERSCORE}|g" \
+    -e "s|acme|${HYPHEN}|g" \
+    "$1"
+}
+
+while IFS= read -r file; do
+  replace_acme "$file"
+done < <(find . -type f \( \
+  -name "*.clj" -o \
+  -name "*.cljc" -o \
+  -name "*.cljs" -o \
+  -name "*.edn" -o \
+  -name "*.html" -o \
+  -name "*.md" -o \
+  -name "*.json" -o \
+  -name "*.js" \) \
+  -not -path "./.git/*" \
+  -not -path "./node_modules/*" \
+  -not -path "./resources/public/cljs/*" \
+  -not -path "./resources/public/js/*")
+
+[[ -f .gitignore ]] && replace_acme .gitignore
+
+echo "  File contents updated."
+
+# ---- Rename directories (depth-first) ----
+
+find . -depth -type d -name "acme" \
+  -not -path "./.git/*" \
+  -not -path "./node_modules/*" | while IFS= read -r dir; do
+  mv "$dir" "$(dirname "$dir")/${UNDERSCORE}"
+done
+
+echo "  Directories renamed."
+
+# ---- Reset README ----
+
+cat > README.md << EOF
+# ${PASCAL}
+
+## Setup
+
+### System Requirements
+
+    # Java 1.17
+
+    # Clojure command line
+    brew install clojure
+
+    # NPM/Node for running cljs specs
+    brew install npm
+
+    # Install node packages
+    npm install
+
+### Compile CSS & JavaScript
+
+    # compile css
+    clj -M:test:css once
+
+    # compile css (auto-recompile on change)
+    clj -M:test:css auto
+
+    # compile cljs to javascript
+    clj -M:test:cljs once
+
+    # compile cljs (auto-recompile on change)
+    clj -M:test:cljs
+
+For production:
+
+    CC_ENV=production clj -M:test:css once
+    CC_ENV=production clj -M:test:cljs once
+
+## Database
+
+    # Run the database
+    bin/db
+
+    # Run Migrations
+    clj -M:test:migrate
+
+    # Seed Development Database
+    clj -M:test:seed
+
+## Testing
+
+    # clojure specs
+    clj -M:test:spec
+
+    # clojure specs (auto-run on change)
+    clj -M:test:spec -a
+
+    # clojurescript specs
+    clj -M:test:cljs once
+
+    # clojurescript specs (auto-run on change)
+    clj -M:test:cljs auto
+
+## Development
+
+    # run the server
+    clj -M:test:run
+
+    # run the server, specs, and cljs in one process
+    clj -M:test:dev
+
+    # start the REPL
+    clj -M:repl
+EOF
+
+echo "  README reset."
+
+# ---- Self-delete ----
+
+rm -- "$0"
+
+# ---- Done ----
+
+echo ""
+echo "Done! Your project '${PROJECT_NAME}' is ready."
+echo ""
+echo "Next steps:"
+echo "  1. Review the changes: git diff"
+echo "  2. Compile assets: clj -M:test:dev- to compile CSS and CLJS with auto-runners"
+echo "  3. Start developing: clj -M:test:run to start local server"
+echo ""

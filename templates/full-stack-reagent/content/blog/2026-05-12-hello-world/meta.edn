@@ -1,0 +1,5 @@
+{:title        "Hello, world"
+ :description  "First post in the starter template."
+ :published?   true
+ :published-at "2026-05-12"
+ :tags         ["intro"]}

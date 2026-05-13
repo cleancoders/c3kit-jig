@@ -1,0 +1,53 @@
+(ns acme.routes
+  (:require-macros [secretary.core :refer [defroute]])
+  (:require [accountant.core :as accountant]
+            [acme.content-page :as content-page]
+            [acme.page :as page]
+            [acme.recover-password :as recover-password]
+            [c3kit.apron.log :as log]
+            [c3kit.wire.js :as wjs]
+            [secretary.core :as secretary]))
+
+(defn dispatch! [uri]
+  (log/debug "dispatching: " uri)
+  (secretary/dispatch! uri))
+
+(defn locate-route [route]
+  (let [result (secretary/locate-route route)]
+    (log/debug "locate-route: " route " -> " result)
+    result))
+
+(defn- hook-browser-navigation! []
+  (accountant/configure-navigation! {:nav-handler dispatch! :path-exists? locate-route}))
+
+(defn load-page! [page]
+  (page/transition page)
+  (wjs/scroll-to-top)
+  (wjs/page-title= (page/title page))
+  (page/install-page! page))
+
+(defn sandbox-routes []
+  (defroute "/sandbox/:page" [page] (load-page! (keyword (str "sandbox/" page))))
+  )
+
+(defn app-routes []
+  (secretary/set-config! :prefix "")
+
+  (defroute "/" [] (load-page! :home))
+  (defroute "/forgot-password" [] (load-page! :forgot-password))
+  (defroute "/recover-password/:recovery-token" [recovery-token]
+    (reset! recover-password/recovery-token recovery-token)
+    (load-page! :recover-password))
+
+  (sandbox-routes)
+
+  (defroute "/:content-type" [content-type]
+    (content-page/install! content-type nil)
+    (load-page! :content/page))
+
+  (defroute "/:content-type/:permalink" [content-type permalink]
+    (content-page/install! content-type permalink)
+    (load-page! :content/page))
+
+  (hook-browser-navigation!))
+
