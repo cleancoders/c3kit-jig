@@ -1,0 +1,35 @@
+name: release
+
+on:
+  push:
+    tags: ['cli-v*']
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: DeLaGuardo/setup-clojure@v12
+        with:
+          bb: '1.12.218'
+
+      - name: bb test
+        working-directory: cli
+        run: bb test
+
+      - name: build uberscript
+        working-directory: cli
+        run: bb uberscript
+
+      - name: compute sha256
+        working-directory: cli
+        run: |
+          sha256sum dist/c3kit-create.bb | cut -d' ' -f1 > dist/c3kit-create.bb.sha256
+          ls -lah dist
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            cli/dist/c3kit-create.bb
+            cli/dist/c3kit-create.bb.sha256
