@@ -43,11 +43,11 @@
             (log/report "SLOW PASSWORD HASH! Add (helper/with-fast-password-hash) to your spec")))
   (init-entity! road-runner (db/tx :kind :user
                                    :name "Road Runner"
-                                   :email "road-runner@acme.com"
+                                   :email "road-runner@example.com"
                                    :password #?(:clj (user/hash-password "meep-meep") :cljs nil)))
   (init-entity! coyote (db/tx :kind :user
                               :name "Wiley Coyote"
-                              :email "coyote@acme.com"
+                              :email "coyote@example.com"
                               :password #?(:clj (user/hash-password "light-bulb") :cljs nil))))
 
 (def deps

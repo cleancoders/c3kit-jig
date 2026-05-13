@@ -3,7 +3,7 @@
             [ring.middleware.session.cookie :refer [cookie-store]]))
 
 (def cookie-name "acme-session")
-(def session-encryption-key (byte-array 16 (.getBytes "Acme-Session-Key")))
+(def session-encryption-key (byte-array 16 (.getBytes "c3kit-session-k!")))
 (def config {:store        (cookie-store {:key session-encryption-key})
              :cookie-name  cookie-name
              :cookie-attrs {:http-only true :secure true}})

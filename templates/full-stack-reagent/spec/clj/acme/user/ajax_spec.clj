@@ -39,13 +39,13 @@
         (should-contain :errors (ajax/payload response))))
 
     (it "not a current user"
-      (let [response (sut/ajax-signin {:params {:email "not-a-user@acme.com" :password "password"}})]
+      (let [response (sut/ajax-signin {:params {:email "not-a-user@example.com" :password "password"}})]
         (should-be-ajax-fail response "Invalid username or password")
         (should-contain :errors (ajax/payload response))))
 
     (it "inactive user"
       (db/tx @test-data/coyote :password nil)
-      (let [response (sut/ajax-signin {:params {:email "coyote@acme.com" :password "password"}})]
+      (let [response (sut/ajax-signin {:params {:email "coyote@example.com" :password "password"}})]
         (should-be-ajax-fail response "Invalid username or password")
         (should-contain :errors (ajax/payload response))))
 
@@ -55,7 +55,7 @@
         (should-contain :errors (ajax/payload response))))
 
     (it "incorrect password"
-      (let [response (sut/ajax-signin {:params {:email "road-runner@acme.com" :password "invalid"}})]
+      (let [response (sut/ajax-signin {:params {:email "road-runner@example.com" :password "invalid"}})]
         (should-be-ajax-fail response "Invalid username or password")
         (should-contain :errors (ajax/payload response))))
 
@@ -82,7 +82,7 @@
       (let [response (sut/ajax-forgot-password {:params {:email (:email @test-data/coyote)}})]
         (should-be-ajax-ok response "Please check your email to recover your account.")
         (should (uuid? (schema/->uuid (:recovery-token @test-data/coyote))))
-        (should= {:to      "coyote@acme.com"
+        (should= {:to      "coyote@example.com"
                   :from    config/admin-email
                   :subject "Acme: Recover your account"
                   :text    (str "Click this link to recover your Acme account:\n\n" config/host "/recover-password/" (:recovery-token @test-data/coyote))}

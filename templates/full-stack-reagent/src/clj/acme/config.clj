@@ -59,7 +59,7 @@
 (def memory-production {:impl :memory :full-schema 'acme.schema/full})
 
 (def email-to-log {:client :to-log})
-(def admin-email "Acme <admin@acme.com>")
+(def admin-email "Acme <admin@example.com>")
 
 (def development
   (assoc base

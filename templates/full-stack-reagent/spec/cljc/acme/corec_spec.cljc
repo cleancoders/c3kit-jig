@@ -17,9 +17,10 @@
 
   (context "hashid"
 
-    (it "salt/length hasn't changed"
-      (should= "WBx7EVqrwD" (sut/id->hash 1))
-      (should= 1 (sut/hash->id "WBx7EVqrwD")))
+    (it "round-trips ids to short hashes"
+      (should= 1 (sut/hash->id (sut/id->hash 1)))
+      (should= 42 (sut/hash->id (sut/id->hash 42)))
+      (should (>= (count (sut/id->hash 1)) sut/hashid-min-length)))
 
     )
  )

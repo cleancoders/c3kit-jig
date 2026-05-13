@@ -24,9 +24,9 @@
     (should-not-have-invoked :ajax/get!))
 
   (it "sends an email to recover password"
-    (wire-helper/change! "#-email" "coyote@acme.com")
-    (should= "coyote@acme.com" (wire-helper/value "#-email"))
+    (wire-helper/change! "#-email" "coyote@example.com")
+    (should= "coyote@example.com" (wire-helper/value "#-email"))
     (wire-helper/click! "#-send")
-    (should-have-invoked-ajax-post "/ajax/forgot-password" {:email "coyote@acme.com"} ccc/noop))
+    (should-have-invoked-ajax-post "/ajax/forgot-password" {:email "coyote@example.com"} ccc/noop))
   )
 

@@ -48,6 +48,6 @@
   `(it (str (name '~handler) " requires admin")
      (let [response# (~handler {})]
        (wire-helper/should-ajax-redirect-to response# "/" "Please sign in to proceed."))
-     (let [user#     (db/tx :kind :user :email "joe@acme.com")
+     (let [user#     (db/tx :kind :user :email "joe@example.com")
            response# (~handler (user.web/authorize-user {} user#))]
        (wire-helper/should-ajax-redirect-to response# "/" "Access is restricted to admins."))))
