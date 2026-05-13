@@ -283,9 +283,9 @@ Marker syntax per CLI sub-spec §6.1. Block markers: `;; @c3kit/feature :<id> {`
              compojure/compojure                {:mvn/version "1.7.2"}
              dev.weavejester/medley             {:mvn/version "1.9.0"}
              hiccup/hiccup                      {:mvn/version "2.0.0"}
+             markdown-to-hiccup/markdown-to-hiccup {:mvn/version "0.6.2"}   ; consumed by acme.markdownc; harmless if :markdownc off
              org.clojure/clojure                {:mvn/version "1.12.4"}
              ;; @c3kit/feature :auth = org.mindrot/jbcrypt {:mvn/version "0.4"}
-             ;; @c3kit/feature :markdownc = markdown-to-hiccup/markdown-to-hiccup {:mvn/version "0.6.2"}
              ;; @c3kit/feature :auth = ring/ring-anti-forgery {:mvn/version "1.4.0" :exclusions [commons-codec/commons-codec]}
              }
  ;; aliases unchanged from proprietary, with :seed alias gated:
@@ -680,7 +680,7 @@ Count of inline marker blocks (excluding `:delete-when-off` whole-file/whole-dir
 
 | File | :content | :ssr | :csp | :markdownc | :auth | :db |
 |---|---:|---:|---:|---:|---:|---:|
-| `deps.edn` | 3 lines | 0 | 0 | 1 line | 3 lines | 4 lines |
+| `deps.edn` | 3 lines | 0 | 0 | 0 | 3 lines | 4 lines |
 | `src/clj/acme/main.clj` | 1 block | 1 block | 0 | 0 | 1 block | 0 |
 | `src/clj/acme/config.clj` | 0 | 0 | 1 block | 0 | 1 line | 4 blocks |
 | `src/clj/acme/routes.clj` | 1 block | 0 | 2 blocks | 0 | 2 blocks | 0 |
@@ -690,7 +690,7 @@ Count of inline marker blocks (excluding `:delete-when-off` whole-file/whole-dir
 | `src/cljs/acme/main.cljs` | 1 line | 0 | 0 | 0 | 3 lines + 1 block | 0 |
 | `src/cljs/acme/routes.cljs` | 0 | 0 | 0 | 0 | 1-2 blocks | 0 |
 | `dev/acme/seed.clj` | 0 | 0 | 0 | 0 | 1 block | 0 |
-| **Total** | **~6** | **~2** | **~5** | **~1** | **~12-14** | **~8** |
+| **Total** | **~6** | **~2** | **~5** | **~0** | **~12-14** | **~8** |
 
 Target ceiling: ≤30 inline marker blocks across the template. Auth is the heaviest; if its block count exceeds 14, the plan refactors auth into clearer namespace barriers (e.g., move JWT middleware composition into an `acme.auth.middleware` ns that becomes a whole-file delete).
 
