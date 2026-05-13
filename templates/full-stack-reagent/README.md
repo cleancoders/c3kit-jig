@@ -1,161 +1,91 @@
-# Clean Coders Starter App
+# Template: full-stack-reagent
 
-A full-stack Clojure/ClojureScript starter template for new projects.
+Source for the `c3kit-create` `full-stack-reagent` template. End users
+don't read this file — it's for contributors who maintain the template.
 
-## Getting Started
+The README that ships with scaffolded projects is `README.scaffold.md`
+(the CLI renames it to `README.md` after copying).
 
-After creating your project from this template, run the setup script to personalize it:
+## What this template produces
 
-    bin/setup <project-name>
+A Clojure + ClojureScript app scaffold with:
 
-For example:
+- Clojure backend (Compojure, c3kit/wire HTTP)
+- Reagent frontend (CLJS + secretary/accountant routing)
+- c3kit/{apron, bucket, wire, scaffold} ecosystem
+- Optional features (defaults in parens):
+  - `:content` (on) — markdown content pipeline + auto-routes
+  - `:ssr` (on) — Reagent SSR via Node prerender
+  - `:csp` (off) — Content Security Policy middleware
+  - `:markdownc` (on) — client-side markdown rendering (CLJC)
+  - `:auth` (on) — JWT auth + user kind + signin/signup/forgot/recover
+- Database backends:
+  - `:datomic-pro` (default) — Datomic Pro free tier, single-jar transactor
+  - `:sqlite` — JDBC SQLite (single-file)
+  - `:postgres` — JDBC Postgres
+  - `:memory` — c3kit/bucket in-memory (dev only)
 
-    bin/setup my-cool-app
+## Scaffold the template locally
 
-This will:
-- Rename all `acme` namespaces, directories, and references to your project name
-- Generate unique JWT secrets for each environment
-- Reset this README for your new project
+From the c3kit-starter repo root with a built CLI uberscript:
 
-### Setup
-#### System Requirements
-
-    # Java 1.17
-
-    # Clojure command line
-    brew install clojure
-
-CSS and Javascript need to be compiled:
-
-    # compile just the css once
-    clj -M:test:css once
-
-    # compile css whenever style files are changed
-    clj -M:test:css auto
-
-    # compile just cljs to javascript once (also runs tests)
-    clj -M:test:cljs once
-
-    # compile cljs and run tests when ever a file changes
-    clj -M:test:cljs
-
-For production:
-
-    CC_ENV=production clj -M:test:css once
-    CC_ENV=production clj -M:test:cljs once
-
-### Database Setup
-
-    # Run the database
-    You'll need a Datamic Pro database running locally, like the one in the Clean Coders repo. 
-
-    # Run Migrations
-    clj -M:test:migrate
-
-    # Seed Development Database
-    clj -M:test:seed
-
-### Adding a new `:kind`
-
-1. Add the schema to `acme.schema/full`
-2. Add an implementation of `acme.test-data/-init-kind!` with the `:kind`
-3. Add appropriate records in `acme.test-data/deps`
-
-### Running tests
-
-    # clojure specs:
-    clj -M:test:spec
-
-    # clojure specs automatically running when fileds are changed:
-    clj -M:test:spec -a
-
-    # clojurescript specs
-    clj -M:test:cljs once
-
-    # clojurescript specs automatically running when files are changed:
-    clj -M:test:cljs auto
-
-    # recompile css & cljs specs automatically when files are changed:
-    clj -M:test:dev-
-
-### Development
-
-    # run the server
-    clj -M:test:run
-
-    # run the server, specs, and cljs in one process
-    clj -M:test:dev
-
-    # start the REPL
-    clj -M:repl
-
-## Content Pipeline
-
-Drop a directory under `content/<type>/<permalink>/` containing:
-
-- `meta.edn` — `{:title "..." :description "..." :published? true :published-at "YYYY-MM-DD" :tags [...]}`
-- `content.md` — the body
-- (optional) images, referenced via standard markdown image syntax
-
-The starter scans `content/` at boot and auto-registers:
-
-- `GET /<type>` — index page (rich-client HTML or markdown depending on `Accept`).
-- `GET /<type>/:permalink` — detail page.
-- `GET /api/v1/content/<type>/<permalink>` — JSON payload returning `{:meta {...} :body <hiccup>}` for the frontend.
-
-Directory names that collide with reserved routes (`api`, `ajax`, `sandbox`, `signout`, etc.) cause `acme.content/load!` to throw on boot.
-
-### Markdown Negotiation
-
-Content routes and prerendered pages honor `Accept: text/markdown` (and `text/plain` as a fallback). Useful for AI agents that prefer source over rendered HTML.
-
-```
-curl -H "Accept: text/markdown" http://localhost:8123/blog/2026-05-12-hello-world
+```sh
+./cli/dist/c3kit-create.bb test-app \
+  --template-dir templates \
+  --template full-stack-reagent \
+  --db sqlite \
+  --feature csp=true \
+  --yes
 ```
 
-For prerendered pages, the markdown file is produced by `turndown` during prerender. If the markdown file isn't present, the handler falls back to the HTML shell.
+## Run the template tree at HEAD
 
-## Server-Side Rendering (SSR)
+The template is a runnable Clojure project at HEAD (literal `acme` tokens
+preserved; marker comments are invisible to the Clojure reader). The
+in-memory backend is the HEAD default `:bucket`.
 
-Pages can opt into pre-rendering via `(defmethod acme.page/prerender? :my-page [_] true)`. On server boot:
-
-1. `acme.prerender/prerender!` checks for `resources/prerender/prerender.js` and `node`.
-2. Builds a transit payload (config + content posts).
-3. Shells out to `node resources/prerender/prerender.js <payload-path>`.
-4. The Node process renders each opted-in page to a string via `reagent.dom.server/render-to-string` and writes `<key>.html` + `<key>.md` into `resources/prerendered/`.
-5. Page route handlers use `acme.layouts/web-prerendered` to serve the cached HTML as `:seo/preview` (replaced by the live CLJS app on boot — "clear-and-render", no hydration).
-
-Setup:
-
-```
-npm install
-clj -M:test:cljs once    # compiles both the dev bundle and the prerender bundle
-clj -M:run               # boot the server; prerender runs after server start
+```sh
+cd templates/full-stack-reagent
+clj -M:test:spec       # all specs pass on the memory backend
+clj -M:test:cljs once  # cljs compile + tests
 ```
 
-The pipeline self-disables when `prerender.js` isn't built or `node` isn't installed — guard logs a warning and the server continues.
+## Marker syntax cheat-sheet
 
-## Optional: Content Security Policy
-
-Off by default. Enable per environment in `src/clj/acme/config.clj`:
+Markers gate optional features and DB selection. The CLI strips them at
+scaffold time per the rules in
+[`docs/specs/2026-05-12-c3kit-create-cli-design.md`](../../docs/specs/2026-05-12-c3kit-create-cli-design.md) §6.1.
 
 ```clojure
-:csp {:enabled? true
-      :enforce? false       ;; true emits Content-Security-Policy; false emits ...-Report-Only
-      :policy   nil}        ;; nil uses acme.security.csp/default-policy
+;; @c3kit/feature :csp {           ;; block on/off
+…
+;; @c3kit/feature :csp }
+
+;; @c3kit/feature :csp = (require …)   ;; line-toggle (kept verbatim when on)
+
+;; @c3kit/feature !:auth {         ;; inverse — included when off
+…
+;; @c3kit/feature !:auth }
+
+;; @c3kit/db :sqlite {             ;; same shape for db selection
+…
+;; @c3kit/db :sqlite }
 ```
 
-The default policy is conservative (`'self'` + `'unsafe-inline'`/`'unsafe-eval'` for the Closure dev loader). Production deployments should narrow `script-src` to specific hosts. Violation reports POST to `/api/v1/csp-report` and log via `c3kit.apron.log/warn`.
+## Post-scaffold hook
 
-## Optional: Frontend Markdown Rendering
+`c3kit-template.bb` runs after marker stripping and rename. It:
 
-`acme.markdownc` (a CLJC ns) parses markdown to hiccup client-side. Not required by default. To use it in a component:
+1. Reads `.c3kit-create-context.edn` (CLI sub-spec §7.2).
+2. Generates `bin/db` from the selected `:db`.
+3. Reconciles the HEAD-default `:bucket` line in `config.clj`.
+4. Drops the `:seed` alias when `:auth` is off (defense-in-depth).
+5. Greps for residual `@c3kit/*` markers; exits non-zero if any remain.
 
-```clojure
-(:require [acme.markdownc :as md])
+Unit test: `bb spec/hook_test.bb`.
 
-(defn my-component []
-  [:div (md/->hiccup "# Hi from the browser")])
-```
+## CI coverage
 
-Component-syntax shortcodes in markdown bodies are supported via `(md/register-component! :my-tag my-component-fn)` and `(md/resolve-components hiccup-tree)`.
+`.github/workflows/template-full-stack-reagent.yml` in the c3kit-starter
+repo scaffolds this template across a `{db × feature-combo}` matrix and
+runs `clj -M:test:spec` + `clj -M:test:cljs once` against each output.
