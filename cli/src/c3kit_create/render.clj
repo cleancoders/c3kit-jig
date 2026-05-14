@@ -68,6 +68,42 @@
           (fs/delete-tree full)
           (fs/delete full))))))
 
+(defn- segments [^java.io.File f stage-root]
+  (let [rel (.relativize (.toPath (fs/file stage-root)) (.toPath f))]
+    (->> (iterator-seq (.iterator rel))
+         (map str)
+         (vec))))
+
+(defn- feature-dir-match? [segs ns-token feature-name]
+  (loop [s segs]
+    (cond
+      (< (count s) 2)                                false
+      (and (= (first s) ns-token)
+           (= (second s) feature-name))              true
+      :else                                          (recur (rest s)))))
+
+(defn- feature-file-match? [segs ns-token feature-name]
+  (and (>= (count segs) 2)
+       (= (nth segs (- (count segs) 2)) ns-token)
+       (some #(= (last segs) (str feature-name "." %))
+             ["clj" "cljc" "cljs"])))
+
+(defn- apply-feature-dir-deletes! [stage-dir manifest features]
+  (let [ns-token (or (:namespace-token manifest) "acme")]
+    (doseq [feat (:features manifest)
+            :let [id  (:id feat)
+                  on? (get features id (:default feat))]
+            :when (not on?)]
+      (let [fname (name id)]
+        (doseq [^java.io.File f (vec (file-seq (fs/file stage-dir)))
+                :when (.exists f)
+                :let  [segs (segments f stage-dir)]]
+          (when (or (feature-dir-match? segs ns-token fname)
+                    (and (.isFile f) (feature-file-match? segs ns-token fname)))
+            (if (.isDirectory f)
+              (fs/delete-tree (.getAbsolutePath f))
+              (fs/delete-if-exists (.getAbsolutePath f)))))))))
+
 (defn- rename-readme! [stage-dir]
   (let [src (fs/path stage-dir "README.scaffold.md")
         tgt (fs/path stage-dir "README.md")]
@@ -105,6 +141,7 @@
       (replace-secrets! secret-map file))
     (doseq [file (visit-all-files stage-dir)]
       (rewrite-content! tokens user features db-choice file))
+    (apply-feature-dir-deletes! stage-dir manifest features)
     (rename-paths! tokens user stage-dir)
     (apply-deletes! stage-dir manifest features user)
     (rename-readme! stage-dir)

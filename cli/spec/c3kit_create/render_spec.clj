@@ -84,6 +84,35 @@
       (should-not (fs/exists? (fs/path stage ".c3kit-create-context.edn")))
       (fs/delete-tree stage)))
 
+  (it "render! deletes <ns-token>/<feature> directories and single-file features when feature off"
+    (let [stage (str (fs/create-temp-dir))]
+      (fs/create-dirs (fs/path stage "src" "clj" "acme" "auth"))
+      (spit (fs/file (fs/path stage "src" "clj" "acme" "auth" "user.clj")) "(ns acme.auth.user)")
+      (fs/create-dirs (fs/path stage "src" "cljc" "acme"))
+      (spit (fs/file (fs/path stage "src" "cljc" "acme" "markdownc.cljc")) "(ns acme.markdownc)")
+      (fs/create-dirs (fs/path stage "spec" "clj" "acme" "auth"))
+      (spit (fs/file (fs/path stage "spec" "clj" "acme" "auth" "user_spec.clj")) "(ns acme.auth.user-spec)")
+      (spit (fs/file (fs/path stage "src" "clj" "acme" "main.clj")) "(ns acme.main)")
+      (spit (fs/file (fs/path stage "c3kit-template.edn"))
+            (pr-str {:id :tiny :name "Tiny" :description "x" :version "0.1.0" :min-cli "0.1.0"
+                     :namespace-token "acme"
+                     :tokens   {"acme" {:hyphen true :underscore true :pascal true}}
+                     :secrets  []
+                     :features [{:id :auth :prompt "" :default true}
+                                {:id :markdownc :prompt "" :default true}]
+                     :next-steps [{:cmd "x"}]}))
+      (r/render! stage
+                 (edn/read-string (slurp (fs/file (fs/path stage "c3kit-template.edn"))))
+                 "my-app"
+                 {:auth false :markdownc false}
+                 {}
+                 "0.1.0-SNAPSHOT")
+      (should-not (fs/exists? (fs/path stage "src" "clj" "my_app" "auth")))
+      (should-not (fs/exists? (fs/path stage "src" "cljc" "my_app" "markdownc.cljc")))
+      (should-not (fs/exists? (fs/path stage "spec" "clj" "my_app" "auth")))
+      (should     (fs/exists? (fs/path stage "src" "clj" "my_app" "main.clj")))
+      (fs/delete-tree stage)))
+
   (it "render! aborts with ex-info when hook exits non-zero"
     (let [stage    (str (fs/create-temp-dir))
           manifest {:id :hooked :name "H" :description "x"
