@@ -2,20 +2,30 @@
   (:require-macros [secretary.core :refer [defroute]])
   (:require [accountant.core :as accountant]
             ;; @c3kit/feature :content = [acme.content-page :as content-page]
+            [acme.core :as core]
             [acme.page :as page]
             ;; @c3kit/feature :auth {
             [acme.recover-password :as recover-password]
             ;; @c3kit/feature :auth }
             [c3kit.apron.log :as log]
             [c3kit.wire.js :as wjs]
+            [clojure.string :as str]
+            [reagent.core :as r]
             [secretary.core :as secretary]))
+
+(defn- strip-hash [uri]
+  (first (str/split uri #"#" 2)))
+
+(defn- hash-fragment [uri]
+  (second (str/split uri #"#" 2)))
 
 (defn dispatch! [uri]
   (log/debug "dispatching: " uri)
-  (secretary/dispatch! uri))
+  (reset! core/thing-to-scroll-to (hash-fragment uri))
+  (secretary/dispatch! (strip-hash uri)))
 
 (defn locate-route [route]
-  (let [result (secretary/locate-route route)]
+  (let [result (secretary/locate-route (strip-hash route))]
     (log/debug "locate-route: " route " -> " result)
     result))
 
@@ -26,7 +36,8 @@
   (page/transition page)
   (wjs/scroll-to-top)
   (wjs/page-title= (page/title page))
-  (page/install-page! page))
+  (page/install-page! page)
+  (r/after-render #(core/scroll-to-thing-in-url core/thing-to-scroll-to)))
 
 (defn sandbox-routes []
   (defroute "/sandbox/:page" [page] (load-page! (keyword (str "sandbox/" page))))
@@ -56,4 +67,3 @@
   ;; @c3kit/feature :content }
 
   (hook-browser-navigation!))
-
