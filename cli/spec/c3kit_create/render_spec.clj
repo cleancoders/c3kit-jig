@@ -134,6 +134,39 @@
       (should-not (fs/exists? (fs/path stage "resources" "prerender")))
       (fs/delete-tree stage)))
 
+  (it "render! renames db template and deletes siblings"
+    (let [stage (str (fs/create-temp-dir))]
+      (fs/create-dirs (fs/path stage "bin"))
+      (spit (fs/file (fs/path stage "bin" "db.template.sqlite"))
+            "#!/usr/bin/env bash\necho sqlite\n")
+      (spit (fs/file (fs/path stage "bin" "db.template.memory"))
+            "#!/usr/bin/env bash\necho memory\n")
+      (spit (fs/file (fs/path stage "bin" "db.template.postgres"))
+            "#!/usr/bin/env bash\necho postgres\n")
+      (spit (fs/file (fs/path stage "c3kit-template.edn"))
+            (pr-str {:id :tiny :name "Tiny" :description "x" :version "0.1.0" :min-cli "0.1.0"
+                     :tokens {} :secrets [] :features []
+                     :db {:prompt "Database"
+                          :options [{:id :sqlite :label "SQLite"}
+                                    {:id :memory :label "Mem"}
+                                    {:id :postgres :label "PG"}]
+                          :default :sqlite
+                          :template "bin/db.template.{{db}}"
+                          :sibling-glob "bin/db.template.*"}
+                     :next-steps [{:cmd "x"}]}))
+      (r/render! stage
+                 (edn/read-string (slurp (fs/file (fs/path stage "c3kit-template.edn"))))
+                 "my-app"
+                 {}
+                 {:db :sqlite}
+                 "0.1.0-SNAPSHOT")
+      (should     (fs/exists? (fs/path stage "bin" "db")))
+      (should     (re-find #"sqlite" (slurp (fs/file (fs/path stage "bin" "db")))))
+      (should-not (fs/exists? (fs/path stage "bin" "db.template.sqlite")))
+      (should-not (fs/exists? (fs/path stage "bin" "db.template.memory")))
+      (should-not (fs/exists? (fs/path stage "bin" "db.template.postgres")))
+      (fs/delete-tree stage)))
+
   (it "render! aborts with ex-info when hook exits non-zero"
     (let [stage    (str (fs/create-temp-dir))
           manifest {:id :hooked :name "H" :description "x"

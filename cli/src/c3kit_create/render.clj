@@ -116,6 +116,22 @@
         (fs/delete-tree full)
         (fs/delete-if-exists full)))))
 
+(defn- apply-db-rename! [stage-dir manifest db-choice]
+  (when-let [db-cfg (:db manifest)]
+    (when-let [chosen (:db db-choice)]
+      (let [tmpl-pattern (:template db-cfg)
+            sibling-glob (:sibling-glob db-cfg)]
+        (when (and tmpl-pattern sibling-glob)
+          (let [chosen-path (str/replace tmpl-pattern "{{db}}" (name chosen))
+                src         (fs/path stage-dir chosen-path)
+                dst         (fs/path stage-dir "bin" "db")]
+            (when (fs/exists? src)
+              (fs/delete-if-exists dst)
+              (fs/move (str src) (str dst))
+              (.setExecutable (fs/file dst) true))
+            (doseq [m (fs/glob stage-dir sibling-glob)]
+              (fs/delete-if-exists (str m)))))))))
+
 (defn- rename-readme! [stage-dir]
   (let [src (fs/path stage-dir "README.scaffold.md")
         tgt (fs/path stage-dir "README.md")]
@@ -142,6 +158,7 @@
 (defn render!
   "In-place rewrite of `stage-dir`:
    1. secrets, 2. tokens + markers, 3. feature-dir deletes, 3.5. :extras deletes,
+   3.6. db template rename (bin/db.template.<db> → bin/db, siblings deleted),
    4. path renames, 5. :delete-when-off deletes, 6. README.scaffold.md → README.md,
    7. write .c3kit-create-context.edn, 8. invoke template hook (if :hook? manifest),
    9. cleanup hook + manifest files.
@@ -156,6 +173,7 @@
       (rewrite-content! tokens user features db-choice file))
     (apply-feature-dir-deletes! stage-dir manifest features)
     (apply-extras-deletes! stage-dir manifest features)
+    (apply-db-rename! stage-dir manifest db-choice)
     (rename-paths! tokens user stage-dir)
     (apply-deletes! stage-dir manifest features user)
     (rename-readme! stage-dir)
