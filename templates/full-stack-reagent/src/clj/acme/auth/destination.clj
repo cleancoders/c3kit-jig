@@ -1,4 +1,4 @@
-(ns acme.destination
+(ns acme.auth.destination
   "Save the destination of an unauthenticated user while they deal with the signin process.  Once authenticated,
   send them where they wanted to go.
 

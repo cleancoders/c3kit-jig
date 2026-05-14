@@ -1,7 +1,7 @@
-(ns acme.user.ajax
-  (:require [acme.destination :as destination]
-            [acme.user.core :as user]
-            [acme.user.web :as web]
+(ns acme.auth.user.ajax
+  (:require [acme.auth.destination :as destination]
+            [acme.auth.user.core :as user]
+            [acme.auth.user.web :as web]
             [c3kit.apron.legend :as legend]
             [c3kit.wire.ajax :as ajax]
             [c3kit.wire.jwt :as jwt]

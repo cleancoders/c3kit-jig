@@ -1,6 +1,6 @@
 (ns acme.routes
   (:require [acme.config :as config]
-            ;; @c3kit/feature :auth = [acme.destination :as destination]
+            ;; @c3kit/feature :auth = [acme.auth.destination :as destination]
             [acme.version :as version]
             [c3kit.apron.corec :as ccc]
             [c3kit.apron.util :as util]
@@ -64,7 +64,7 @@
 ;; @c3kit/feature :auth {
 (def ws-handlers
   {
-   :user/fetch-data 'acme.user.web/ws-fetch-user-data
+   :user/fetch-data 'acme.auth.user.web/ws-fetch-user-data
    })
 ;; @c3kit/feature :auth }
 
@@ -90,11 +90,11 @@
                    ["/v1/content/:type/:permalink" :get]          acme.content/api-fetch-post
                    ;; @c3kit/feature :content }
                    ;; @c3kit/feature :auth {
-                   ["/user/signin" :post]                         acme.user.api/api-signin
-                   ["/user/signup" :post]                         acme.user.api/api-signup
-                   ["/user/forgot-password" :post]                acme.user.api/api-forgot-password
-                   ["/user/reset-password/:recovery-token" :post] acme.user.api/api-reset-password
-                   ["/user/social/:provider" :post]               acme.user.api/api-social-auth
+                   ["/user/signin" :post]                         acme.auth.user.api/api-signin
+                   ["/user/signup" :post]                         acme.auth.user.api/api-signup
+                   ["/user/forgot-password" :post]                acme.auth.user.api/api-forgot-password
+                   ["/user/reset-password/:recovery-token" :post] acme.auth.user.api/api-reset-password
+                   ["/user/social/:provider" :post]               acme.auth.user.api/api-social-auth
                    ;; @c3kit/feature :auth }
                    })]
     (-> primary
@@ -106,14 +106,14 @@
   (-> (lazy-routes
         {
          ;; @c3kit/feature :auth {
-         ["/forgot-password" :post]  acme.user.ajax/ajax-forgot-password
-         ["/recover-password" :post] acme.user.ajax/ajax-reset-password
+         ["/forgot-password" :post]  acme.auth.user.ajax/ajax-forgot-password
+         ["/recover-password" :post] acme.auth.user.ajax/ajax-reset-password
          ;; @c3kit/feature :auth }
          ["/spinner" :get]           acme.routes/spinner
          ;; @c3kit/feature :auth {
-         ["/user/csrf-token" :get]   acme.user.ajax/ajax-csrf-token
-         ["/user/signin" :post]      acme.user.ajax/ajax-signin
-         ["/user/signup" :post]      acme.user.ajax/ajax-signup
+         ["/user/csrf-token" :get]   acme.auth.user.ajax/ajax-csrf-token
+         ["/user/signin" :post]      acme.auth.user.ajax/ajax-signin
+         ["/user/signup" :post]      acme.auth.user.ajax/ajax-signup
          ;; @c3kit/feature :auth }
          })
       (wrap-prefix "/ajax" ajax/api-not-found-handler)
@@ -126,13 +126,13 @@
      ["/error" :any]                            acme.errors/web-error
      ;; @c3kit/feature :auth {
      ["/forgot-password" :get]                  acme.layouts/web-rich-client
-     ["/google/oauth" :post]                    acme.user.web/web-google-oauth-login
-     ["/apple/oauth" :post]                     acme.user.web/web-apple-oauth-login
+     ["/google/oauth" :post]                    acme.auth.user.web/web-google-oauth-login
+     ["/apple/oauth" :post]                     acme.auth.user.web/web-apple-oauth-login
      ["/recover-password/:recovery-token" :get] acme.layouts/web-rich-client
-     ["/redirect" :get]                         acme.destination/web-redirect
-     ["/signout" :any]                          acme.user.web/web-signout
-     ["/signout/:reason" :any]                  acme.user.web/web-signout
-     ["/user/websocket" :any]                   acme.user.web/websocket-open
+     ["/redirect" :get]                         acme.auth.destination/web-redirect
+     ["/signout" :any]                          acme.auth.user.web/web-signout
+     ["/signout/:reason" :any]                  acme.auth.user.web/web-signout
+     ["/user/websocket" :any]                   acme.auth.user.web/websocket-open
      ;; @c3kit/feature :auth }
      }))
 

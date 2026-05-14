@@ -6,9 +6,9 @@
             [acme.spec-helper]
             ;; @c3kit/feature :auth {
             [acme.test-data :as test-data]
-            [acme.user.ajax]
-            [acme.user.api]
-            [acme.user.web]
+            [acme.auth.user.ajax]
+            [acme.auth.user.api]
+            [acme.auth.user.web]
             ;; @c3kit/feature :auth }
             [c3kit.wire.spec-helper :as wire-helper]
             [c3kit.wire.websocket :as ws]
@@ -65,27 +65,27 @@
         (should (re-find #"FROM PRERENDER" (:body response))))))
   ;; @c3kit/feature :ssr }
   ;; @c3kit/feature :auth {
-  (test-route "/apple/oauth" :post acme.user.web/web-apple-oauth-login)
+  (test-route "/apple/oauth" :post acme.auth.user.web/web-apple-oauth-login)
   (test-route "/forgot-password" :get acme.layouts/web-rich-client)
-  (test-route "/google/oauth" :post acme.user.web/web-google-oauth-login)
+  (test-route "/google/oauth" :post acme.auth.user.web/web-google-oauth-login)
   (test-route "/recover-password/foo" :get acme.layouts/web-rich-client)
   ;; @c3kit/feature :auth }
   (test-route "/sandbox/example-page" :get acme.sandbox.core/handler)
   ;; @c3kit/feature :auth {
-  (test-route "/signout" :any acme.user.web/web-signout)
-  (test-route "/user/websocket" :any acme.user.web/websocket-open)
+  (test-route "/signout" :any acme.auth.user.web/web-signout)
+  (test-route "/user/websocket" :any acme.auth.user.web/websocket-open)
   ;; @c3kit/feature :auth }
 
   ;; ajax routes
   ;; @c3kit/feature :auth {
-  (test-route "/ajax/forgot-password" :post acme.user.ajax/ajax-forgot-password)
-  (test-route "/ajax/recover-password" :post acme.user.ajax/ajax-reset-password)
+  (test-route "/ajax/forgot-password" :post acme.auth.user.ajax/ajax-forgot-password)
+  (test-route "/ajax/recover-password" :post acme.auth.user.ajax/ajax-reset-password)
   ;; @c3kit/feature :auth }
   (test-route "/ajax/spinner" :get acme.routes/spinner)
   ;; @c3kit/feature :auth {
-  (test-route "/ajax/user/csrf-token" :get acme.user.ajax/ajax-csrf-token)
-  (test-route "/ajax/user/signin" :post acme.user.ajax/ajax-signin)
-  (test-route "/ajax/user/signup" :post acme.user.ajax/ajax-signup)
+  (test-route "/ajax/user/csrf-token" :get acme.auth.user.ajax/ajax-csrf-token)
+  (test-route "/ajax/user/signin" :post acme.auth.user.ajax/ajax-signin)
+  (test-route "/ajax/user/signup" :post acme.auth.user.ajax/ajax-signup)
   ;; @c3kit/feature :auth }
 
   ;; api routes
@@ -93,17 +93,17 @@
   (test-route "/api/v1/content/blog/2026-05-12-hello-world" :get acme.content/api-fetch-post)
   ;; @c3kit/feature :content }
   ;; @c3kit/feature :auth {
-  (test-route "/api/user/forgot-password" :post acme.user.api/api-forgot-password)
-  (test-route "/api/user/reset-password/some-token" :post acme.user.api/api-reset-password)
-  (test-route "/api/user/signin" :post acme.user.api/api-signin)
-  (test-route "/api/user/signup" :post acme.user.api/api-signup)
-  (test-route "/api/user/social/google" :post acme.user.api/api-social-auth)
-  (test-route "/api/user/social/apple" :post acme.user.api/api-social-auth)
+  (test-route "/api/user/forgot-password" :post acme.auth.user.api/api-forgot-password)
+  (test-route "/api/user/reset-password/some-token" :post acme.auth.user.api/api-reset-password)
+  (test-route "/api/user/signin" :post acme.auth.user.api/api-signin)
+  (test-route "/api/user/signup" :post acme.auth.user.api/api-signup)
+  (test-route "/api/user/social/google" :post acme.auth.user.api/api-social-auth)
+  (test-route "/api/user/social/apple" :post acme.auth.user.api/api-social-auth)
   ;; @c3kit/feature :auth }
 
   ;; websocket handlers
   ;; @c3kit/feature :auth {
-  (test-webs :user/fetch-data acme.user.web/ws-fetch-user-data)
+  (test-webs :user/fetch-data acme.auth.user.web/ws-fetch-user-data)
   ;; @c3kit/feature :auth }
 
   ;; content auto-routes

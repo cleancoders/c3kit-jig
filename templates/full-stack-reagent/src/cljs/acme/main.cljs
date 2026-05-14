@@ -8,14 +8,14 @@
             [c3kit.wire.js :as wjs]
             [acme.config :as config]
             ;; @c3kit/feature :content = [acme.content-page]
-            ;; @c3kit/feature :auth = [acme.forgot-password]
+            ;; @c3kit/feature :auth = [acme.auth.forgot-password]
             [acme.home]
             [acme.init :as init]
             [acme.layout :as layout]
-            ;; @c3kit/feature :auth = [acme.recover-password]
+            ;; @c3kit/feature :auth = [acme.auth.recover-password]
             [acme.routes :as router]
             ;; @c3kit/feature :auth {
-            [acme.user :as user]
+            [acme.auth.user :as user]
             ;; @c3kit/feature :auth }
             [reagent.dom :as dom]
             ))

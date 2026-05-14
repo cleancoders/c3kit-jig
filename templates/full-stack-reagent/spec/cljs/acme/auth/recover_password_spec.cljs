@@ -1,10 +1,10 @@
-(ns acme.recover-password-spec
+(ns acme.auth.recover-password-spec
   (:require-macros [c3kit.wire.spec-helperc :refer [should-have-invoked-ajax-post]]
                    [speclj.core :refer [before describe it should should-not with-stubs]])
   (:require [acme.core :as core]
             [acme.layout :as layout]
             [acme.page :as page]
-            [acme.recover-password :as sut]
+            [acme.auth.recover-password :as sut]
             [c3kit.wire.spec-helper :as wire]))
 
 (describe "Recover Password"

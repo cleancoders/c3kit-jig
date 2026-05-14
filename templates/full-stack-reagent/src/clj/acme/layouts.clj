@@ -3,7 +3,7 @@
             [acme.http-util :as http-util]
             [acme.layoutc :as layoutc]
             ;; @c3kit/feature :auth {
-            [acme.user :as user]
+            [acme.auth.user :as user]
             [c3kit.apron.legend :as legend]
             ;; @c3kit/feature :auth }
             [c3kit.apron.utilc :as utilc]

@@ -1,6 +1,6 @@
-(ns acme.user.core-spec
+(ns acme.auth.user.core-spec
   (:require [acme.spec-helper :as spec-helper]
-            [acme.user.core :as sut]
+            [acme.auth.user.core :as sut]
             [speclj.core :refer :all]))
 
 (describe "User Core"

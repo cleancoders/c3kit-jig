@@ -1,4 +1,4 @@
-(ns acme.recover-password
+(ns acme.auth.recover-password
   (:require [acme.core :as core]
             [acme.page :as page]
             [c3kit.wire.ajax :as ajax]

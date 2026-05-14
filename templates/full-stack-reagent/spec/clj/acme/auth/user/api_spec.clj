@@ -1,8 +1,8 @@
-(ns acme.user.api-spec
+(ns acme.auth.user.api-spec
   (:require [acme.spec-helper :as spec-helper]
             [acme.test-data :as test-data]
-            [acme.user.api :as sut]
-            [acme.user.core :as core]
+            [acme.auth.user.api :as sut]
+            [acme.auth.user.core :as core]
             [c3kit.apron.legend :as legend]
             [c3kit.wire.spec-helper :as wire-helper :refer [should-be-ajax-fail should-be-ajax-ok]]
             [speclj.core :refer :all]))

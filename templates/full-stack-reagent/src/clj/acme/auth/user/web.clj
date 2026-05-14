@@ -1,10 +1,10 @@
-(ns acme.user.web
+(ns acme.auth.user.web
   (:require [acme.config :as config]
-            [acme.destination :as destination]
+            [acme.auth.destination :as destination]
             [acme.layouts :as layouts]
-            [acme.session :as session]
-            [acme.user.core :as user]
-            [acme.user.corec :as userc]
+            [acme.auth.session :as session]
+            [acme.auth.user.core :as user]
+            [acme.auth.user.corec :as userc]
             [c3kit.apron.legend :as legend]
             [c3kit.apron.schema :as schema]
             [c3kit.bucket.api :as db]

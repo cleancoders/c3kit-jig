@@ -1,4 +1,4 @@
-(ns acme.forgot-password
+(ns acme.auth.forgot-password
   (:require [acme.page :as page]
             [c3kit.apron.corec :as ccc]
             [c3kit.wire.ajax :as ajax]

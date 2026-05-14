@@ -1,4 +1,4 @@
-(ns acme.user-spec
+(ns acme.auth.user-spec
   (:require-macros [c3kit.wire.spec-helperc :refer [should-have-invoked-ws should-not-select should-select]]
                    [speclj.core :refer [before context describe it should should-have-invoked should= stub with-stubs]])
   (:require [acme.core :as cc]
@@ -6,7 +6,7 @@
             [acme.page :as page]
             [acme.spec-helper]
             [acme.test-data :as test-data]
-            [acme.user :as sut]
+            [acme.auth.user :as sut]
             [c3kit.wire.spec-helper :as wire-helper]
             ;; @c3kit/feature :websocket = [c3kit.wire.websocket :as ws]
             ))

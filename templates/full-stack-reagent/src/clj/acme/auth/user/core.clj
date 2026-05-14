@@ -1,7 +1,7 @@
-(ns acme.user.core
+(ns acme.auth.user.core
   (:require [acme.config :as config]
             [acme.email :as email]
-            [acme.user.corec :as userc]
+            [acme.auth.user.corec :as userc]
             [buddy.core.keys.jwk.proto :as jwk]
             [buddy.core.keys.jwk.rsa]
             [buddy.sign.jwt :as buddy]

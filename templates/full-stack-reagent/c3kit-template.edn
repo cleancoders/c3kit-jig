@@ -45,21 +45,7 @@
 
                {:id      :auth
                 :prompt  "JWT auth?"
-                :default true
-                :delete-when-off ["src/clj/{{acme}}/user.clj"
-                                  "src/clj/{{acme}}/user/"
-                                  "src/clj/{{acme}}/session.clj"
-                                  "src/clj/{{acme}}/destination.clj"
-                                  "src/cljc/{{acme}}/user/"
-                                  "src/cljs/{{acme}}/user.cljs"
-                                  "src/cljs/{{acme}}/forgot_password.cljs"
-                                  "src/cljs/{{acme}}/recover_password.cljs"
-                                  "spec/clj/{{acme}}/user/"
-                                  "spec/clj/{{acme}}/session_spec.clj"
-                                  "spec/clj/{{acme}}/destination_spec.clj"
-                                  "spec/cljs/{{acme}}/user_spec.cljs"
-                                  "spec/cljs/{{acme}}/forgot_password_spec.cljs"
-                                  "spec/cljs/{{acme}}/recover_password_spec.cljs"]}
+                :default true}
 
                {:id      :websocket
                 :prompt  "WebSocket support (c3kit.wire.websocket)?"

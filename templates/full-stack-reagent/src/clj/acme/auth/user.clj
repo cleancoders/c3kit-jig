@@ -1,4 +1,4 @@
-(ns acme.user
+(ns acme.auth.user
   (:require [c3kit.bucket.api :as db]))
 
 (def id (comp :user-id :jwt/payload))

@@ -1,4 +1,4 @@
-(ns acme.user.corec
+(ns acme.auth.user.corec
   (:require [c3kit.apron.schema :as schema]
             [c3kit.bucket.api :as db]))
 

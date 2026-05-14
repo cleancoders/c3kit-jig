@@ -1,7 +1,7 @@
-(ns acme.forgot-password-spec
+(ns acme.auth.forgot-password-spec
   (:require-macros [c3kit.wire.spec-helperc :refer [should-have-invoked-ajax-post]]
                    [speclj.core :refer [before describe it should-not-have-invoked should= with-stubs]])
-  (:require [acme.forgot-password]
+  (:require [acme.auth.forgot-password]
             [acme.layout :as layout]
             [acme.page :as page]
             [c3kit.apron.corec :as ccc]

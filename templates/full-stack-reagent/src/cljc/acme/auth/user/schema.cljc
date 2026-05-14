@@ -1,4 +1,4 @@
-(ns acme.user.schema
+(ns acme.auth.user.schema
   (:require [c3kit.apron.schema :as s]))
 
 (def user

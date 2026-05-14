@@ -1,9 +1,9 @@
-(ns acme.user.web-spec
+(ns acme.auth.user.web-spec
   (:require [acme.config :as config]
             [acme.spec-helper :as spec-helper]
             [acme.test-data :as test-data]
-            [acme.user.core :as core]
-            [acme.user.web :as sut]
+            [acme.auth.user.core :as core]
+            [acme.auth.user.web :as sut]
             [c3kit.apron.legend :as legend]
             [c3kit.wire.flash :as flash]
             [c3kit.wire.jwt :as jwt]

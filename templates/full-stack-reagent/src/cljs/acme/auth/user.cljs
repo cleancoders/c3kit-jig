@@ -1,4 +1,4 @@
-(ns acme.user
+(ns acme.auth.user
   (:require
     [acme.core :as core]
     [acme.page :as page]

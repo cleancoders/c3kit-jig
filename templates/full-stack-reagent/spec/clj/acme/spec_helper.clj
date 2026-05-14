@@ -1,8 +1,8 @@
 (ns acme.spec-helper
   (:require [c3kit.bucket.api :as db]
             ;; @c3kit/feature :auth {
-            [acme.user.core :as user]
-            [acme.user.web :as user.web]
+            [acme.auth.user.core :as user]
+            [acme.auth.user.web :as user.web]
             ;; @c3kit/feature :auth }
             [acme.email :as email]
             [acme.init :as init]

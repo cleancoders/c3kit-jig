@@ -1,5 +1,5 @@
-(ns acme.destination-spec
-  (:require [acme.destination :as sut]
+(ns acme.auth.destination-spec
+  (:require [acme.auth.destination :as sut]
             [c3kit.wire.spec-helper :as wire]
             [speclj.core :refer :all]))
 

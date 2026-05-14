@@ -1,11 +1,11 @@
-(ns acme.user.google
+(ns acme.auth.user.apple
   (:require [c3kit.apron.utilc :as utilc]
             [c3kit.wire.rest :as rest]
-            [acme.user.core :as auth]))
+            [acme.auth.user.core :as auth]))
 
-(def pkey-host "https://www.googleapis.com/oauth2/v3/certs")
+(def pkey-host "https://appleid.apple.com/auth/keys")
 
-(defmethod auth/pkeys :google [_impl]
+(defmethod auth/pkeys :apple [_impl]
   (try
     (->> (rest/get! pkey-host nil)
          :body

@@ -1,4 +1,4 @@
-(ns acme.session
+(ns acme.auth.session
   (:require [ring.middleware.session :as ring-session]
             [ring.middleware.session.cookie :refer [cookie-store]]))
 

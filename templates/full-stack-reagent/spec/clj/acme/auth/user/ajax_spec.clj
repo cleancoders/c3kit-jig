@@ -1,9 +1,9 @@
-(ns acme.user.ajax-spec
+(ns acme.auth.user.ajax-spec
   (:require [acme.config :as config]
             [acme.spec-helper :as spec-helper]
             [acme.test-data :as test-data]
-            [acme.user.ajax :as sut]
-            [acme.user.core :as core]
+            [acme.auth.user.ajax :as sut]
+            [acme.auth.user.core :as core]
             [c3kit.apron.log :as log]
             [c3kit.apron.schema :as schema]
             [c3kit.bucket.api :as db]
