@@ -5,6 +5,8 @@
  :min-cli     "0.1.0"
  :test-only?  false
 
+ :namespace-token "acme"
+
  :tokens      {"acme"  {:hyphen     true
                         :underscore true
                         :pascal     true}
@@ -33,12 +35,14 @@
                 :prompt  "WebSocket support (c3kit.wire.websocket)?"
                 :default true}]
 
- :db          {:prompt  "Database"
-               :options [{:id :datomic-pro :label "Datomic Pro (free, single-jar transactor)"}
-                         {:id :sqlite      :label "SQLite (JDBC)"}
-                         {:id :postgres    :label "Postgres (JDBC)"}
-                         {:id :memory      :label "In-memory (dev only)"}]
-               :default :datomic-pro}
+ :db          {:prompt       "Database"
+               :options      [{:id :datomic-pro :label "Datomic Pro (free, single-jar transactor)"}
+                              {:id :sqlite      :label "SQLite (JDBC)"}
+                              {:id :postgres    :label "Postgres (JDBC)"}
+                              {:id :memory      :label "In-memory (dev only)"}]
+               :default      :datomic-pro
+               :template     "bin/db.template.{{db}}"
+               :sibling-glob "bin/db.template.*"}
 
  :next-steps  [{:cmd "cd {{name}}"           :doc nil}
                {:cmd "bin/db"                :doc "start the database (per-backend script)"}
