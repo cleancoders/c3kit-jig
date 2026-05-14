@@ -4,15 +4,15 @@
 
  :must-exist     ["src/clj/my_app/main.clj"
                   "src/clj/my_app/config.clj"
-                  "src/clj/my_app/user.clj"
-                  "src/clj/my_app/user/web.clj"
+                  "src/clj/my_app/auth/user.clj"
+                  "src/clj/my_app/auth/user/web.clj"
                   "src/cljc/my_app/schema.cljc"
                   "src/cljc/my_app/markdownc.cljc"
-                  "src/cljc/my_app/user/schema.cljc"
+                  "src/cljc/my_app/auth/user/schema.cljc"
                   "src/cljs/my_app/main.cljs"
-                  "src/cljs/my_app/user.cljs"
-                  "src/cljs/my_app/forgot_password.cljs"
-                  "src/cljs/my_app/recover_password.cljs"
+                  "src/cljs/my_app/auth/user.cljs"
+                  "src/cljs/my_app/auth/forgot_password.cljs"
+                  "src/cljs/my_app/auth/recover_password.cljs"
                   "dev/my_app/seed.clj"
                   "bin/db"
                   "deps.edn"
@@ -29,12 +29,10 @@
                   ".c3kit-create-context.edn"
                   ;; content feature off
                   "content/"
-                  "src/clj/my_app/content.clj"
-                  "src/clj/my_app/markdown.clj"
-                  "src/cljs/my_app/content_page.cljs"
-                  "spec/clj/my_app/content_spec.clj"
-                  "spec/clj/my_app/markdown_spec.clj"
-                  "spec/cljs/my_app/content_page_spec.cljs"
+                  "src/clj/my_app/content/"
+                  "src/cljs/my_app/content/"
+                  "spec/clj/my_app/content/"
+                  "spec/cljs/my_app/content/"
                   ;; ssr feature off
                   "package.json"
                   "resources/prerender/"
@@ -46,7 +44,7 @@
  :file-contains  {"src/clj/my_app/config.clj" ["memory-local"
                                                 ":bucket memory-local"
                                                 "MyApp"]
-                  "src/clj/my_app/main.clj"   ["my_app.user.web"]
+                  "src/clj/my_app/main.clj"   ["my_app.auth.user.web"]
                   "deps.edn"                  ["com.cleancoders.c3kit/apron"
                                                "org.mindrot/jbcrypt"
                                                "markdown-to-hiccup"]
