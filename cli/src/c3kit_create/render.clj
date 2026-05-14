@@ -129,9 +129,10 @@
 
 (defn render!
   "In-place rewrite of `stage-dir`:
-   1. tokens + markers, 2. secrets, 3. path renames,
-   4. README.scaffold.md → README.md, 5. write .c3kit-create-context.edn,
-   6. invoke template hook (if :hook? manifest), 7. cleanup hook + manifest files.
+   1. secrets, 2. tokens + markers, 3. feature-dir deletes, 4. path renames,
+   5. :delete-when-off deletes, 6. README.scaffold.md → README.md,
+   7. write .c3kit-create-context.edn, 8. invoke template hook (if :hook? manifest),
+   9. cleanup hook + manifest files.
    Caller validates manifest first."
   [stage-dir manifest user-name features db-choice cli-version]
   (let [tokens     (:tokens manifest)
