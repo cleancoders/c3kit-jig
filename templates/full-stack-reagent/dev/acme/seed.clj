@@ -52,9 +52,12 @@
 
 (defn -main []
   (init!)
-  (println "Seeding data...")
   ;; @c3kit/feature :auth {
+  (println "Seeding data...")
   @road-runner
   @wiley-coyote
   ;; @c3kit/feature :auth }
+  ;; @c3kit/feature !:auth {
+  (println "No seed data to load. Add entries to acme.seed/-main as needed.")
+  ;; @c3kit/feature !:auth }
   (System/exit 0))
