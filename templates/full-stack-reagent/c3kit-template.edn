@@ -23,11 +23,7 @@
                           "resources/prerender/"
                           "resources/prerendered/"]}
 
-               {:id      :markdownc
-                :prompt  "Client-side markdown (CLJC)?"
-                :default true
-                :delete-when-off ["src/cljc/{{acme}}/markdownc.cljc"
-                                  "spec/cljc/{{acme}}/markdownc_spec.cljc"]}
+               {:id :markdownc :prompt "Client-side markdown (CLJC)?" :default true}
 
                {:id      :auth
                 :prompt  "JWT auth?"
