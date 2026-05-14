@@ -105,6 +105,39 @@
           (should-not (fs/exists? (fs/path work "my-app" "resources" "MyApp.css"))))
         (finally (fs/delete-tree work)))))
 
+  (it "interactively prompts for features and db when --yes not passed"
+    (let [work (str (fs/create-temp-dir))]
+      (try
+        ;; stdin: ssr=n, legacy=n, db pick #2 (postgres)
+        (let [code (run-main! ["my-app" "-t" "tiny-fixture"
+                                    "--template-dir" (tfix)
+                                    "--target-parent" work
+                                    "--no-git"]
+                              "n\nn\n2\n")]
+          (should= 0 code)
+          (let [content (slurp (fs/file (fs/path work "my-app" "src" "my_app" "core.clj")))]
+            (should-not (re-find #"has-ssr\?" content))
+            (should     (re-find #"db-impl :postgres" content)))
+          (should-not (fs/exists? (fs/path work "my-app" "src" "my_app_legacy"))))
+        (finally (fs/delete-tree work)))))
+
+  (it "interactive prompts skip features overridden via CLI --feature"
+    (let [work (str (fs/create-temp-dir))]
+      (try
+        ;; ssr fixed off via CLI. stdin: legacy=y, db pick #1 (sqlite default)
+        (let [code (run-main! ["my-app" "-t" "tiny-fixture"
+                                    "--template-dir" (tfix)
+                                    "--target-parent" work
+                                    "--no-git"
+                                    "--feature" "ssr=false"]
+                              "y\n1\n")]
+          (should= 0 code)
+          (let [content (slurp (fs/file (fs/path work "my-app" "src" "my_app" "core.clj")))]
+            (should-not (re-find #"has-ssr\?" content))
+            (should     (re-find #"db-impl :sqlite" content)))
+          (should (fs/exists? (fs/path work "my-app" "src" "my_app_legacy"))))
+        (finally (fs/delete-tree work)))))
+
   (it ":delete-when-off removes directory for legacy=false"
     (let [work (str (fs/create-temp-dir))]
       (try

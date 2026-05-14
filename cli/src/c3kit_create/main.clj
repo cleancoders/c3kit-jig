@@ -86,6 +86,17 @@
                         {:name? true :reason :db-choice})))
       {:db chosen})))
 
+(defn- compute-features [manifest cli-feature yes?]
+  (if yes?
+    (effective-features manifest cli-feature)
+    (wizard/prompt-features-checkbox (:features manifest) cli-feature)))
+
+(defn- compute-db [manifest cli-db yes?]
+  (cond
+    (or yes? cli-db)   (effective-db manifest cli-db)
+    (:db manifest)     {:db (wizard/prompt-db (:db manifest) nil)}
+    :else              nil))
+
 (def ^:private ERROR-EXIT-CODE
   {:manifest?     6
    :collision?    3
@@ -142,9 +153,8 @@
             nm       (rn/validate-name (or name "my-app") (:tokens manifest))
             target   (target-path opts nm)]
         (die-if-target-exists! target stage)
-        (let [features (effective-features manifest (:feature opts))
-              db       (effective-db manifest (:db opts))]
-          (when-not yes (ui/info "Using defaults (interactive prompts WIP in v0.2)"))
+        (let [features (compute-features manifest (:feature opts) yes)
+              db       (compute-db manifest (:db opts) yes)]
           (let [scaffold (render-into-stage! tdir stage manifest nm features db)]
             (finalize! scaffold target opts)
             (ui/ok (str "Created " nm)))))
