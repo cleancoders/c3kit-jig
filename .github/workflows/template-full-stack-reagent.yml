@@ -31,6 +31,18 @@ jobs:
           cd templates/full-stack-reagent
           clojure -M:test:spec
 
+  hook-iso-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeLaGuardo/setup-clojure@13.0
+        with:
+          bb: 1.12.218
+      - name: Run c3kit-template.bb isolation test
+        run: |
+          cd templates/full-stack-reagent
+          bb spec/hook_test.bb
+
   scaffold-matrix:
     runs-on: ubuntu-latest
     strategy:
