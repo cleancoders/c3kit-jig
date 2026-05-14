@@ -104,6 +104,18 @@
               (fs/delete-tree (.getAbsolutePath f))
               (fs/delete-if-exists (.getAbsolutePath f)))))))))
 
+(defn- apply-extras-deletes! [stage-dir manifest features]
+  (doseq [feat (:features manifest)
+          :let [id  (:id feat)
+                on? (get features id (:default feat))]
+          :when (not on?)
+          path (:extras feat)
+          :let [full (str (fs/path stage-dir path))]]
+    (when (fs/exists? full)
+      (if (fs/directory? full)
+        (fs/delete-tree full)
+        (fs/delete full)))))
+
 (defn- rename-readme! [stage-dir]
   (let [src (fs/path stage-dir "README.scaffold.md")
         tgt (fs/path stage-dir "README.md")]
@@ -129,8 +141,8 @@
 
 (defn render!
   "In-place rewrite of `stage-dir`:
-   1. secrets, 2. tokens + markers, 3. feature-dir deletes, 4. path renames,
-   5. :delete-when-off deletes, 6. README.scaffold.md → README.md,
+   1. secrets, 2. tokens + markers, 3. feature-dir deletes, 3.5. :extras deletes,
+   4. path renames, 5. :delete-when-off deletes, 6. README.scaffold.md → README.md,
    7. write .c3kit-create-context.edn, 8. invoke template hook (if :hook? manifest),
    9. cleanup hook + manifest files.
    Caller validates manifest first."
@@ -143,6 +155,7 @@
     (doseq [file (visit-all-files stage-dir)]
       (rewrite-content! tokens user features db-choice file))
     (apply-feature-dir-deletes! stage-dir manifest features)
+    (apply-extras-deletes! stage-dir manifest features)
     (rename-paths! tokens user stage-dir)
     (apply-deletes! stage-dir manifest features user)
     (rename-readme! stage-dir)

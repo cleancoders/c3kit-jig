@@ -113,6 +113,27 @@
       (should     (fs/exists? (fs/path stage "src" "clj" "my_app" "main.clj")))
       (fs/delete-tree stage)))
 
+  (it "render! deletes :extras paths when feature off"
+    (let [stage (str (fs/create-temp-dir))]
+      (fs/create-dirs (fs/path stage "resources" "prerender"))
+      (spit (fs/file (fs/path stage "resources" "prerender" "index.html")) "<html>")
+      (spit (fs/file (fs/path stage "package.json")) "{}")
+      (spit (fs/file (fs/path stage "c3kit-template.edn"))
+            (pr-str {:id :tiny :name "Tiny" :description "x" :version "0.1.0" :min-cli "0.1.0"
+                     :tokens {} :secrets []
+                     :features [{:id :ssr :prompt "" :default true
+                                 :extras ["package.json" "resources/prerender/"]}]
+                     :next-steps [{:cmd "x"}]}))
+      (r/render! stage
+                 (edn/read-string (slurp (fs/file (fs/path stage "c3kit-template.edn"))))
+                 "my-app"
+                 {:ssr false}
+                 {}
+                 "0.1.0-SNAPSHOT")
+      (should-not (fs/exists? (fs/path stage "package.json")))
+      (should-not (fs/exists? (fs/path stage "resources" "prerender")))
+      (fs/delete-tree stage)))
+
   (it "render! aborts with ex-info when hook exits non-zero"
     (let [stage    (str (fs/create-temp-dir))
           manifest {:id :hooked :name "H" :description "x"
