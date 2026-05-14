@@ -16,7 +16,10 @@
                {:placeholder "ACME_STAGING_SECRET"    :bytes 24}
                {:placeholder "ACME_PRODUCTION_SECRET" :bytes 24}]
 
- :features    [{:id :content :prompt "Markdown content pipeline?" :default true}
+ :features    [{:id      :content
+                :prompt  "Markdown content pipeline?"
+                :default true
+                :extras  ["content/"]}
 
                {:id      :ssr
                 :prompt  "SSR/prerender (Reagent + Node)?"
