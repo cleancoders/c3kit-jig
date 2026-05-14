@@ -1,11 +1,11 @@
-(ns acme.content-spec
-  (:require [acme.content :as sut]
+(ns acme.content.core-spec
+  (:require [acme.content.core :as sut]
             [acme.spec-helper]
             [acme.test-data :as test-data]
             [clojure.java.io :as io]
             [speclj.core :refer :all]))
 
-(describe "acme.content discovery"
+(describe "acme.content.core discovery"
 
   (before (sut/load!))
 

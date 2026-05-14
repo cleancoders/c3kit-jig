@@ -17,8 +17,8 @@
 (init/configure-api!)
 (wire.routes/init! {:reload? true}) ;this solves a problem of route specs failing on re-run when using autorunner
 ;; @c3kit/feature :content {
-(require '[acme.content])
-(acme.content/load!)
+(require '[acme.content.core])
+(acme.content.core/load!)
 ;; @c3kit/feature :content }
 
 (defn stub-email []

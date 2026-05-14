@@ -14,16 +14,7 @@
                {:placeholder "ACME_STAGING_SECRET"    :bytes 24}
                {:placeholder "ACME_PRODUCTION_SECRET" :bytes 24}]
 
- :features    [{:id      :content
-                :prompt  "Markdown content pipeline?"
-                :default true
-                :delete-when-off ["content/"
-                                  "src/clj/{{acme}}/content.clj"
-                                  "src/clj/{{acme}}/markdown.clj"
-                                  "src/cljs/{{acme}}/content_page.cljs"
-                                  "spec/clj/{{acme}}/content_spec.clj"
-                                  "spec/clj/{{acme}}/markdown_spec.clj"
-                                  "spec/cljs/{{acme}}/content_page_spec.cljs"]}
+ :features    [{:id :content :prompt "Markdown content pipeline?" :default true}
 
                {:id      :ssr
                 :prompt  "SSR/prerender (Reagent + Node)?"

@@ -87,7 +87,7 @@
                   {
                    ["/version" :get]                              acme.version/api-get
                    ;; @c3kit/feature :content {
-                   ["/v1/content/:type/:permalink" :get]          acme.content/api-fetch-post
+                   ["/v1/content/:type/:permalink" :get]          acme.content.core/api-fetch-post
                    ;; @c3kit/feature :content }
                    ;; @c3kit/feature :auth {
                    ["/user/signin" :post]                         acme.auth.user.api/api-signin
@@ -147,7 +147,7 @@
      }))
 
 ;; @c3kit/feature :content {
-(defn- content-routes-handler [request] ((acme.content/build-routes) request))
+(defn- content-routes-handler [request] ((acme.content.core/build-routes) request))
 ;; @c3kit/feature :content }
 
 (defroutes handler

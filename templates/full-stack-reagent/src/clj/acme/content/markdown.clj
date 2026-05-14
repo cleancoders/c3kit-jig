@@ -1,4 +1,4 @@
-(ns acme.markdown
+(ns acme.content.markdown
   (:import (org.commonmark.ext.gfm.strikethrough Strikethrough StrikethroughExtension)
            (org.commonmark.ext.gfm.tables TableBlock TableBody TableCell TableHead TableRow TablesExtension)
            (org.commonmark.node BlockQuote BulletList Code Document Emphasis FencedCodeBlock HardLineBreak Heading HtmlBlock

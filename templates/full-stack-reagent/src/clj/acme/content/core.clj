@@ -1,7 +1,7 @@
-(ns acme.content
+(ns acme.content.core
   (:require [acme.http-util]
             [acme.layouts]
-            [acme.markdown]
+            [acme.content.markdown]
             [c3kit.wire.ajax]
             [clojure.edn :as edn]
             [clojure.java.io :as io]
@@ -59,7 +59,7 @@
 (defn find-post [type permalink] (get-in @index [type permalink]))
 
 (defn- render-post-preview [post]
-  (let [hiccup (acme.markdown/->hiccup (:markdown post))]
+  (let [hiccup (acme.content.markdown/->hiccup (:markdown post))]
     (hiccup.core/html hiccup)))
 
 (defn- render-list-preview [type posts]
@@ -147,5 +147,5 @@
       (c3kit.wire.ajax/ok
         {:meta      (:meta post)
          :permalink (:permalink post)
-         :body      (acme.markdown/->hiccup (:markdown post))})
+         :body      (acme.content.markdown/->hiccup (:markdown post))})
       (c3kit.wire.ajax/fail {:error "not-found"} 404))))

@@ -1,6 +1,6 @@
 (ns acme.prerender
   (:require [acme.config :as config]
-            [acme.content :as content]
+            [acme.content.core :as content]
             [c3kit.apron.log :as log]
             [c3kit.apron.utilc :as utilc]
             [clojure.java.io :as io]

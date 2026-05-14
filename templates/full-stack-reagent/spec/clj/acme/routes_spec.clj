@@ -1,6 +1,6 @@
 (ns acme.routes-spec
   (:require [acme.layouts]
-            ;; @c3kit/feature :content = [acme.content]
+            ;; @c3kit/feature :content = [acme.content.core]
             [acme.routes :as routes]
             [acme.sandbox.core]
             [acme.spec-helper]
@@ -50,7 +50,7 @@
   ;; @c3kit/feature :auth }
   (before (reset! args :none))
   ;; @c3kit/feature :content {
-  (before (acme.content/load!))
+  (before (acme.content.core/load!))
   ;; @c3kit/feature :content }
   (around [it] (with-redefs [c3kit.wire.api/version (constantly "fake-api-version")] (it)))
 
@@ -90,7 +90,7 @@
 
   ;; api routes
   ;; @c3kit/feature :content {
-  (test-route "/api/v1/content/blog/2026-05-12-hello-world" :get acme.content/api-fetch-post)
+  (test-route "/api/v1/content/blog/2026-05-12-hello-world" :get acme.content.core/api-fetch-post)
   ;; @c3kit/feature :content }
   ;; @c3kit/feature :auth {
   (test-route "/api/user/forgot-password" :post acme.auth.user.api/api-forgot-password)

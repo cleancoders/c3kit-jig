@@ -1,4 +1,4 @@
-(ns acme.content-page
+(ns acme.content.page
   (:require [acme.page :as page]
             [c3kit.wire.ajax :as ajax]))
 

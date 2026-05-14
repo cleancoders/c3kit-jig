@@ -1,5 +1,5 @@
-(ns acme.markdown-spec
-  (:require [acme.markdown :as sut]
+(ns acme.content.markdown-spec
+  (:require [acme.content.markdown :as sut]
             [speclj.core :refer :all]))
 
 (describe "Markdown"

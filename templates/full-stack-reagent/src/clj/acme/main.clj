@@ -1,6 +1,6 @@
 (ns acme.main
   (:require [acme.config :as config]
-            ;; @c3kit/feature :content = [acme.content]
+            ;; @c3kit/feature :content = [acme.content.core]
             ;; @c3kit/feature :auth = [acme.auth.destination :as destination]
             [acme.init :as init]
             ;; @c3kit/feature :ssr = [acme.prerender]
@@ -46,7 +46,7 @@
   (init/install-legend!)
   (init/configure-api!)
   ;; @c3kit/feature :content {
-  (acme.content/load!)
+  (acme.content.core/load!)
   ;; @c3kit/feature :content }
   ;; @c3kit/feature :auth {
   (let [configure!              (util/resolve-var 'acme.auth.destination/configure!)

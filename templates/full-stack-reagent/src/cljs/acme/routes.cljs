@@ -1,7 +1,7 @@
 (ns acme.routes
   (:require-macros [secretary.core :refer [defroute]])
   (:require [accountant.core :as accountant]
-            ;; @c3kit/feature :content = [acme.content-page :as content-page]
+            ;; @c3kit/feature :content = [acme.content.page :as content-page]
             [acme.core :as core]
             [acme.page :as page]
             ;; @c3kit/feature :auth {

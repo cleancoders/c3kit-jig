@@ -7,7 +7,7 @@
             [c3kit.wire.flash :as flash]
             [c3kit.wire.js :as wjs]
             [acme.config :as config]
-            ;; @c3kit/feature :content = [acme.content-page]
+            ;; @c3kit/feature :content = [acme.content.page]
             ;; @c3kit/feature :auth = [acme.auth.forgot-password]
             [acme.home]
             [acme.init :as init]

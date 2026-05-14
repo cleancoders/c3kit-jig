@@ -1,5 +1,5 @@
 (ns acme.prerender-spec
-  (:require [acme.content :as content]
+  (:require [acme.content.core :as content]
             [acme.prerender :as sut]
             [acme.spec-helper]
             [speclj.core :refer :all]
