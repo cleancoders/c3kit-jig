@@ -161,6 +161,7 @@
                  {:db :sqlite}
                  "0.1.0-SNAPSHOT")
       (should     (fs/exists? (fs/path stage "bin" "db")))
+      (should     (.canExecute (fs/file (fs/path stage "bin" "db"))))
       (should     (re-find #"sqlite" (slurp (fs/file (fs/path stage "bin" "db")))))
       (should-not (fs/exists? (fs/path stage "bin" "db.template.sqlite")))
       (should-not (fs/exists? (fs/path stage "bin" "db.template.memory")))
