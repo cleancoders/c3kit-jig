@@ -114,7 +114,7 @@
     (when (fs/exists? full)
       (if (fs/directory? full)
         (fs/delete-tree full)
-        (fs/delete full)))))
+        (fs/delete-if-exists full)))))
 
 (defn- rename-readme! [stage-dir]
   (let [src (fs/path stage-dir "README.scaffold.md")
