@@ -1,6 +1,6 @@
 {:id          :full-stack-reagent
  :name        "Full-stack Reagent"
- :description "Clojure backend + Reagent frontend with c3kit; optional SSR, CSP, content pipeline, client-side markdown, JWT auth"
+ :description "Clojure backend + Reagent frontend with c3kit; built-in CSP; optional SSR, content pipeline, client-side markdown, JWT auth"
  :version     "0.1.0"
  :min-cli     "0.1.0"
  :test-only?  false
@@ -36,12 +36,6 @@
                                   "dev/{{acme}}/prerender.cljs"
                                   "dev/{{acme}}/prerender_pages.cljs"
                                   "dev/{{acme}}/prerender_preamble.js"]}
-
-               {:id      :csp
-                :prompt  "Content Security Policy plugin?"
-                :default false
-                :delete-when-off ["src/clj/{{acme}}/security/"
-                                  "spec/clj/{{acme}}/security/"]}
 
                {:id      :markdownc
                 :prompt  "Client-side markdown (CLJC)?"

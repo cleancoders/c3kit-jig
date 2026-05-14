@@ -97,10 +97,13 @@ See the c3kit-starter wiki for deployment recipes contributed by the community.
 
 ## Optional Features
 
-The wizard offered five toggleable features at scaffold time. To re-enable
+The wizard offered four toggleable features at scaffold time. To re-enable
 a disabled feature, look at the proprietary template at the original
 repo for the deleted code; the marker comments document what each
 feature touched.
+
+Content Security Policy middleware (`acme.security.csp`) is built in;
+toggle it per env via the `:csp` map in `acme.config`.
 
 Features:
 
@@ -109,8 +112,6 @@ Features:
 - **SSR/prerender (`:ssr`)** — `(defmethod acme.page/prerender? :my-page [_] true)`
   opts a page in; Node + `resources/prerender/prerender.js` produce
   HTML + markdown caches.
-- **CSP (`:csp`)** — Content Security Policy middleware; toggle per env
-  in `acme.config`.
 - **Client-side markdown (`:markdownc`)** — `acme.markdownc` parses markdown
   to hiccup in the browser; useful for AI-agent payloads.
 - **JWT auth (`:auth`)** — signin/signup/forgot/recover flows + JWT cookie

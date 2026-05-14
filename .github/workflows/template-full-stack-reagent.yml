@@ -54,7 +54,6 @@ jobs:
           - postgres-defaults
           - datomic-pro-defaults
           - memory-minimal
-          - memory-csp-on
           - memory-no-auth
           - memory-no-ssr-no-content
           - memory-no-websocket

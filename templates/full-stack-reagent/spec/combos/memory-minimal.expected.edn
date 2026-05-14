@@ -1,5 +1,5 @@
 {:db       :memory
- :features {:content false :ssr false :csp false :markdownc false :auth false}
+ :features {:content false :ssr false :markdownc false :auth false}
  :name     "my-app"
 
  :must-exist     ["src/clj/my_app/main.clj"
@@ -36,9 +36,6 @@
                   "dev/my_app/prerender.cljs"
                   "dev/my_app/prerender_pages.cljs"
                   "dev/my_app/prerender_preamble.js"
-                  ;; csp feature off
-                  "src/clj/my_app/security/"
-                  "spec/clj/my_app/security/"
                   ;; markdownc feature off
                   "src/cljc/my_app/markdownc.cljc"
                   "spec/cljc/my_app/markdownc_spec.cljc"
@@ -63,8 +60,7 @@
                                                 "MyApp"]
                   "deps.edn"                  ["com.cleancoders.c3kit/apron"]}
 
- :file-not-contains {"src/clj/my_app/config.clj" [":csp"
-                                                   "sqlite-local"
+ :file-not-contains {"src/clj/my_app/config.clj" ["sqlite-local"
                                                    "datomic-local"
                                                    "postgres-local"
                                                    "replaced by line below at scaffold"]

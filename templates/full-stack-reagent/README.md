@@ -13,10 +13,11 @@ A Clojure + ClojureScript app scaffold with:
 - Clojure backend (Compojure, c3kit/wire HTTP)
 - Reagent frontend (CLJS + secretary/accountant routing)
 - c3kit/{apron, bucket, wire, scaffold} ecosystem
+- Built-in: Content Security Policy middleware (`acme.security.csp`,
+  toggle per env in `acme.config`)
 - Optional features (defaults in parens):
   - `:content` (on) — markdown content pipeline + auto-routes
   - `:ssr` (on) — Reagent SSR via Node prerender
-  - `:csp` (off) — Content Security Policy middleware
   - `:markdownc` (on) — client-side markdown rendering (CLJC)
   - `:auth` (on) — JWT auth + user kind + signin/signup/forgot/recover
 - Database backends:
@@ -34,7 +35,6 @@ From the c3kit-starter repo root with a built CLI uberscript:
   --template-dir templates \
   --template full-stack-reagent \
   --db sqlite \
-  --feature csp=true \
   --yes
 ```
 
@@ -57,11 +57,11 @@ scaffold time per the rules in
 [`docs/specs/2026-05-12-c3kit-create-cli-design.md`](../../docs/specs/2026-05-12-c3kit-create-cli-design.md) §6.1.
 
 ```clojure
-;; @c3kit/feature :csp {           ;; block on/off
+;; @c3kit/feature :auth {          ;; block on/off
 …
-;; @c3kit/feature :csp }
+;; @c3kit/feature :auth }
 
-;; @c3kit/feature :csp = (require …)   ;; line-toggle (kept verbatim when on)
+;; @c3kit/feature :auth = (require …)   ;; line-toggle (kept verbatim when on)
 
 ;; @c3kit/feature !:auth {         ;; inverse — included when off
 …

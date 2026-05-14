@@ -1,5 +1,5 @@
 {:db       :datomic-pro
- :features {:content true :ssr true :csp false :markdownc true :auth true}
+ :features {:content true :ssr true :markdownc true :auth true}
  :name     "my-app"
 
  :must-exist     ["src/clj/my_app/main.clj"
@@ -45,8 +45,7 @@
                                                "com.datomic/peer"]
                   "bin/db"                    ["Datomic Pro"]}
 
- :file-not-contains {"src/clj/my_app/config.clj" [":csp"
-                                                   "sqlite-local"
+ :file-not-contains {"src/clj/my_app/config.clj" ["sqlite-local"
                                                    "postgres-local"
                                                    "replaced by line below at scaffold"]
                      "deps.edn"                   ["aws-java-sdk"

@@ -73,7 +73,6 @@
   (sleep-for-10)
   (ajax/ok {} nil))
 
-;; @c3kit/feature :csp {
 (def csp-routes
   (wire.routes/lazy-routes
     {["/v1/csp-report" :post] acme.security.csp/csp-report-handler}))
@@ -82,7 +81,6 @@
   (if (-> config/env :csp :enabled?)
     (compojure/routes primary csp-routes)
     primary))
-;; @c3kit/feature :csp }
 
 (def api-handler
   (let [primary (wire.routes/lazy-routes
@@ -100,7 +98,7 @@
                    ;; @c3kit/feature :auth }
                    })]
     (-> primary
-        ;; @c3kit/feature :csp = maybe-add-csp-routes
+        maybe-add-csp-routes
         (rest/wrap-rest {:keywords? true})
         (wire.routes/wrap-prefix "/api" api-not-found-handler))))
 

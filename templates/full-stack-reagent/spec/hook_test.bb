@@ -30,7 +30,7 @@
       (str "{:name \"my-app\"\n"
            " :name-variants {:hyphen \"my-app\" :underscore \"my_app\" :pascal \"MyApp\"}\n"
            " :db :sqlite\n"
-           " :features {:content true :ssr true :csp false :markdownc true :auth true}\n"
+           " :features {:content true :ssr true :markdownc true :auth true}\n"
            " :secrets []\n"
            " :template :full-stack-reagent\n"
            " :template-version \"0.1.0\"\n"

@@ -1,5 +1,5 @@
 {:db       :sqlite
- :features {:content true :ssr true :csp false :markdownc true :auth true}
+ :features {:content true :ssr true :markdownc true :auth true}
  :name     "my-app"
 
  :must-exist     ["src/clj/my_app/main.clj"
@@ -45,8 +45,7 @@
                                                "org.xerial/sqlite-jdbc"]
                   "bin/db"                    ["SQLite ready"]}
 
- :file-not-contains {"src/clj/my_app/config.clj" [":csp"
-                                                   "datomic-local"
+ :file-not-contains {"src/clj/my_app/config.clj" ["datomic-local"
                                                    "postgres-local"
                                                    "replaced by line below at scaffold"]
                      "deps.edn"                   ["my.datomic.com"

@@ -2,7 +2,7 @@
   (:require [acme.config :as config]
             [acme.errors :as errors]
             [acme.layouts :as layouts]
-            ;; @c3kit/feature :csp = [acme.security.csp :as csp]
+            [acme.security.csp :as csp]
             ;; @c3kit/feature :auth = [acme.session :as session]
             [c3kit.apron.log :as log]
             [c3kit.apron.time :as time]
@@ -54,7 +54,6 @@
     (when-let [response (handler request)]
       (update response :headers #(merge security-headers %)))))
 
-;; @c3kit/feature :csp {
 (defn- maybe-wrap-csp [handler]
   (let [{:keys [enabled?] :as csp-cfg} (:csp config/env)]
     (if enabled?
@@ -62,7 +61,6 @@
             default-policy @(util/resolve-var 'acme.security.csp/default-policy)]
         (wrap-csp handler (merge {:policy default-policy} csp-cfg)))
       handler)))
-;; @c3kit/feature :csp }
 
 ;; @c3kit/feature :auth {
 (defn- wrap-auth-middleware [handler]
@@ -90,9 +88,7 @@
 
 (defonce root-handler
   (-> (app-handler)
-      ;; @c3kit/feature :csp {
       maybe-wrap-csp
-      ;; @c3kit/feature :csp }
       wrap-security-headers
       errors/wrap-errors
       wrap-flash

@@ -1,5 +1,5 @@
 {:db       :memory
- :features {:content true :ssr true :csp false :markdownc true :auth false}
+ :features {:content true :ssr true :markdownc true :auth false}
  :name     "my-app"
 
  :must-exist     ["src/clj/my_app/main.clj"
@@ -50,8 +50,7 @@
                                                "markdown-to-hiccup"]
                   "bin/db"                    ["In-memory backend"]}
 
- :file-not-contains {"src/clj/my_app/config.clj" [":csp"
-                                                   "sqlite-local"
+ :file-not-contains {"src/clj/my_app/config.clj" ["sqlite-local"
                                                    "datomic-local"
                                                    "postgres-local"
                                                    "replaced by line below at scaffold"]

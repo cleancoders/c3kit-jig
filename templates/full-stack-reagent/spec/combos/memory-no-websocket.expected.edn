@@ -1,5 +1,5 @@
 {:db       :memory
- :features {:content true :ssr true :csp false :markdownc true :auth true :websocket false}
+ :features {:content true :ssr true :markdownc true :auth true :websocket false}
  :name     "my-app"
 
  :must-exist     ["src/clj/my_app/main.clj"
