@@ -40,10 +40,10 @@
     (when-not (sequential? feats) (die ":features must be sequential"))
     (when (not= (count ids) (count (distinct ids)))
       (die "duplicate :features :id"))
-    (doseq [{:keys [delete-when-off]} feats
-            p delete-when-off]
+    (doseq [{:keys [delete-when-off extras]} feats
+            p (concat delete-when-off extras)]
       (when (or (str/starts-with? p "../") (str/includes? p "/.."))
-        (die (str ":delete-when-off escapes template root: " p))))))
+        (die (str ":delete-when-off/:extras escapes template root: " p))))))
 
 (defn- check-db [m]
   (when-let [db (:db m)]

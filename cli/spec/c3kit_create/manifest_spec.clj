@@ -52,4 +52,29 @@
     (should-throw (m/validate (assoc MIN-MANIFEST :features
                                       [{:id :a :prompt "" :default true
                                         :delete-when-off ["../bad"]}])
-                              "tiny"))))
+                              "tiny")))
+
+  (it "accepts :namespace-token at manifest root"
+    (let [m (assoc MIN-MANIFEST :namespace-token "acme")]
+      (should= m (m/validate m "tiny"))))
+
+  (it "accepts :extras on a feature"
+    (let [m (assoc MIN-MANIFEST
+                   :features [{:id :ssr :prompt "" :default true
+                               :extras ["package.json" "resources/prerender/"]}])]
+      (should= m (m/validate m "tiny"))))
+
+  (it "rejects :extras escaping template root"
+    (let [m (assoc MIN-MANIFEST
+                   :features [{:id :ssr :prompt "" :default true
+                               :extras ["../etc/passwd"]}])]
+      (should-throw (m/validate m "tiny"))))
+
+  (it "accepts :template and :sibling-glob on :db"
+    (let [m (assoc MIN-MANIFEST
+                   :db {:prompt "DB"
+                        :options [{:id :sqlite :label "SQLite"}]
+                        :default :sqlite
+                        :template "bin/db.template.{{db}}"
+                        :sibling-glob "bin/db.template.*"})]
+      (should= m (m/validate m "tiny")))))
