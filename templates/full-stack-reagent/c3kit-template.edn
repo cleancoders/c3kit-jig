@@ -19,14 +19,9 @@
                {:id      :ssr
                 :prompt  "SSR/prerender (Reagent + Node)?"
                 :default true
-                :delete-when-off ["package.json"
-                                  "resources/prerender/"
-                                  "resources/prerendered/"
-                                  "src/clj/{{acme}}/prerender.clj"
-                                  "spec/clj/{{acme}}/prerender_spec.clj"
-                                  "dev/{{acme}}/prerender.cljs"
-                                  "dev/{{acme}}/prerender_pages.cljs"
-                                  "dev/{{acme}}/prerender_preamble.js"]}
+                :extras  ["package.json"
+                          "resources/prerender/"
+                          "resources/prerendered/"]}
 
                {:id      :markdownc
                 :prompt  "Client-side markdown (CLJC)?"

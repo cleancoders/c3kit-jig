@@ -1,4 +1,4 @@
-(ns acme.prerender
+(ns acme.ssr.prerender
   (:require [acme.config :as config]
             [acme.content.core :as content]
             [c3kit.apron.log :as log]

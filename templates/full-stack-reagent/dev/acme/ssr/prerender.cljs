@@ -1,8 +1,8 @@
-(ns acme.prerender
+(ns acme.ssr.prerender
   (:require [acme.config :as config]
             [acme.init :as init]
             [acme.page :as page]
-            [acme.prerender-pages]
+            [acme.ssr.prerender-pages]
             [c3kit.apron.utilc :as utilc]
             [reagent.core :as r]
             [reagent.dom.server :as rds]))

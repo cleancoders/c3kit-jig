@@ -5,7 +5,7 @@
  :must-exist     ["src/clj/my_app/main.clj"
                   "src/clj/my_app/config.clj"
                   "src/clj/my_app/content.clj"
-                  "src/clj/my_app/prerender.clj"
+                  "src/clj/my_app/ssr/prerender.clj"
                   "src/clj/my_app/user.clj"
                   "src/clj/my_app/user/web.clj"
                   "src/cljc/my_app/schema.cljc"
@@ -39,7 +39,7 @@
                                                 "my_app.env"
                                                 "MY_APP_ENV"]
                   "src/clj/my_app/main.clj"   ["my_app.content"
-                                               "my_app.prerender"
+                                               "my_app.ssr.prerender"
                                                "my_app.user.web"
                                                "my_app.env"
                                                "MY_APP_ENV"]

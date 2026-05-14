@@ -1,6 +1,6 @@
-(ns acme.prerender-spec
+(ns acme.ssr.prerender-spec
   (:require [acme.content.core :as content]
-            [acme.prerender :as sut]
+            [acme.ssr.prerender :as sut]
             [acme.spec-helper]
             [speclj.core :refer :all]
             [speclj.stub :as stub]))
