@@ -46,28 +46,6 @@
           (fs/move (.getAbsolutePath p)
                    (.getAbsolutePath (java.io.File. (.getParentFile p) new-name))))))))
 
-(defn- resolve-delete-path [stage-dir tokens user path]
-  (let [with-placeholders (reduce (fn [s [token-name _]]
-                                    (str/replace s
-                                                 (str "{{" token-name "}}")
-                                                 (:underscore user)))
-                                  path tokens)
-        renamed (rn/replace-many with-placeholders tokens user)]
-    (str (fs/path stage-dir renamed))))
-
-(defn- apply-deletes! [stage-dir manifest features user]
-  (let [tokens (:tokens manifest)]
-    (doseq [feat (:features manifest)
-            :let [id  (:id feat)
-                  on? (get features id (:default feat))]
-            :when (not on?)
-            path (:delete-when-off feat)
-            :let [full (resolve-delete-path stage-dir tokens user path)]]
-      (when (fs/exists? full)
-        (if (fs/directory? full)
-          (fs/delete-tree full)
-          (fs/delete full))))))
-
 (defn- segments [^java.io.File f stage-root]
   (let [rel (.relativize (.toPath (fs/file stage-root)) (.toPath f))]
     (->> (iterator-seq (.iterator rel))
@@ -159,9 +137,9 @@
   "In-place rewrite of `stage-dir`:
    1. secrets, 2. tokens + markers, 3. feature-dir deletes, 3.5. :extras deletes,
    3.6. db template rename (bin/db.template.<db> → bin/db, siblings deleted),
-   4. path renames, 5. :delete-when-off deletes, 6. README.scaffold.md → README.md,
-   7. write .c3kit-create-context.edn, 8. invoke template hook (if :hook? manifest),
-   9. cleanup hook + manifest files.
+   4. path renames, 5. README.scaffold.md → README.md,
+   6. write .c3kit-create-context.edn, 7. invoke template hook (if :hook? manifest),
+   8. cleanup hook + manifest files.
    Caller validates manifest first."
   [stage-dir manifest user-name features db-choice cli-version]
   (let [tokens     (:tokens manifest)
@@ -175,7 +153,6 @@
     (apply-extras-deletes! stage-dir manifest features)
     (apply-db-rename! stage-dir manifest db-choice)
     (rename-paths! tokens user stage-dir)
-    (apply-deletes! stage-dir manifest features user)
     (rename-readme! stage-dir)
     (write-context! stage-dir manifest user-name user db-choice features
                     secret-map cli-version)

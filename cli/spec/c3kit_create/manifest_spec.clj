@@ -48,12 +48,6 @@
                                        :default :postgres})
                               "tiny")))
 
-  (it "rejects ../ in :delete-when-off paths"
-    (should-throw (m/validate (assoc MIN-MANIFEST :features
-                                      [{:id :a :prompt "" :default true
-                                        :delete-when-off ["../bad"]}])
-                              "tiny")))
-
   (it "accepts :namespace-token at manifest root"
     (let [m (assoc MIN-MANIFEST :namespace-token "acme")]
       (should= m (m/validate m "tiny"))))
