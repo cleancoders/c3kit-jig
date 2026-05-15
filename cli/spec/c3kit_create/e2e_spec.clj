@@ -91,7 +91,7 @@
           (should= 4 code))
         (finally (fs/delete-tree work)))))
 
-  (it ":delete-when-off removes file for ssr=false"
+  (it ":extras removes file for ssr=false"
     (let [work (str (fs/create-temp-dir))]
       (try
         (let [code (run-main! ["my-app" "-t" "tiny-fixture"
@@ -100,7 +100,7 @@
                                     "--feature" "ssr=false"
                                     "--yes"])]
           (should= 0 code)
-          ;; tiny-fixture's :ssr :delete-when-off → resources/Acme.css
+          ;; tiny-fixture's :ssr :extras → resources/Acme.css
           ;; → after path rename → resources/MyApp.css
           (should-not (fs/exists? (fs/path work "my-app" "resources" "MyApp.css"))))
         (finally (fs/delete-tree work)))))
@@ -138,7 +138,7 @@
           (should (fs/exists? (fs/path work "my-app" "src" "my_app_legacy"))))
         (finally (fs/delete-tree work)))))
 
-  (it ":delete-when-off removes directory for legacy=false"
+  (it ":extras removes directory for legacy=false"
     (let [work (str (fs/create-temp-dir))]
       (try
         (let [code (run-main! ["my-app" "-t" "tiny-fixture"
@@ -147,7 +147,7 @@
                                     "--feature" "legacy=false"
                                     "--yes"])]
           (should= 0 code)
-          ;; tiny-fixture's :legacy :delete-when-off → src/acme_legacy/
+          ;; tiny-fixture's :legacy :extras → src/acme_legacy/
           ;; → after path rename → src/my_app_legacy/
           (should-not (fs/exists? (fs/path work "my-app" "src" "my_app_legacy"))))
         (finally (fs/delete-tree work))))))

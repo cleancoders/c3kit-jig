@@ -3,7 +3,7 @@
             [acme.errors :as errors]
             [acme.layouts :as layouts]
             [acme.security.csp :as csp]
-            ;; @c3kit/feature :auth = [acme.session :as session]
+            ;; @c3kit/feature :auth = [acme.auth.session :as session]
             [c3kit.apron.log :as log]
             [c3kit.apron.time :as time]
             [c3kit.apron.util :as util]
@@ -64,7 +64,7 @@
 
 ;; @c3kit/feature :auth {
 (defn- wrap-auth-middleware [handler]
-  (let [session-wrap   (util/resolve-var 'acme.session/wrap-session)
+  (let [session-wrap   (util/resolve-var 'acme.auth.session/wrap-session)
         anti-forgery   (util/resolve-var 'ring.middleware.anti-forgery/wrap-anti-forgery)
         jwt-wrap       (util/resolve-var 'c3kit.wire.jwt/wrap-jwt)
         create-strat   (util/resolve-var 'c3kit.wire.jwt/create-strategy)]

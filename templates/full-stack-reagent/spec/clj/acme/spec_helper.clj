@@ -1,8 +1,8 @@
 (ns acme.spec-helper
   (:require [c3kit.bucket.api :as db]
             ;; @c3kit/feature :auth {
-            [acme.user.core :as user]
-            [acme.user.web :as user.web]
+            [acme.auth.user.core :as user]
+            [acme.auth.user.web :as user.web]
             ;; @c3kit/feature :auth }
             [acme.email :as email]
             [acme.init :as init]
@@ -17,8 +17,8 @@
 (init/configure-api!)
 (wire.routes/init! {:reload? true}) ;this solves a problem of route specs failing on re-run when using autorunner
 ;; @c3kit/feature :content {
-(require '[acme.content])
-(acme.content/load!)
+(require '[acme.content.core])
+(acme.content.core/load!)
 ;; @c3kit/feature :content }
 
 (defn stub-email []

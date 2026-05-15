@@ -61,11 +61,18 @@
 (def development
   (assoc base
     :email email-to-log
-    :bucket memory-local                           ;; HEAD default; replaced by line below at scaffold
-    ;; @c3kit/db :datomic-pro = :bucket datomic-local
-    ;; @c3kit/db :sqlite      = :bucket sqlite-local
-    ;; @c3kit/db :postgres    = :bucket postgres-local
-    ;; @c3kit/db :memory      = :bucket memory-local
+    ;; @c3kit/db :datomic-pro {
+    :bucket datomic-local
+    ;; @c3kit/db :datomic-pro }
+    ;; @c3kit/db :sqlite {
+    :bucket sqlite-local
+    ;; @c3kit/db :sqlite }
+    ;; @c3kit/db :postgres {
+    :bucket postgres-local
+    ;; @c3kit/db :postgres }
+    ;; @c3kit/db :memory {
+    :bucket memory-local
+    ;; @c3kit/db :memory }
     :host "http://localhost:8123"
     :log-level :trace
     ;; @c3kit/feature :auth = :jwt-secret "ACME_DEV_SECRET"
@@ -74,11 +81,18 @@
 (def staging
   (assoc base
     :email email-to-log
-    :bucket memory-staging                         ;; HEAD default; replaced by line below at scaffold
-    ;; @c3kit/db :datomic-pro = :bucket datomic-staging
-    ;; @c3kit/db :sqlite      = :bucket sqlite-staging
-    ;; @c3kit/db :postgres    = :bucket postgres-staging
-    ;; @c3kit/db :memory      = :bucket memory-staging
+    ;; @c3kit/db :datomic-pro {
+    :bucket datomic-staging
+    ;; @c3kit/db :datomic-pro }
+    ;; @c3kit/db :sqlite {
+    :bucket sqlite-staging
+    ;; @c3kit/db :sqlite }
+    ;; @c3kit/db :postgres {
+    :bucket postgres-staging
+    ;; @c3kit/db :postgres }
+    ;; @c3kit/db :memory {
+    :bucket memory-staging
+    ;; @c3kit/db :memory }
     :host "https://acme-staging.example.com"
     :log-level :trace
     ;; @c3kit/feature :auth = :jwt-secret "ACME_STAGING_SECRET"
@@ -87,11 +101,18 @@
 (def production
   (assoc base
     :email email-to-log
-    :bucket memory-production                      ;; HEAD default; replaced by line below at scaffold
-    ;; @c3kit/db :datomic-pro = :bucket datomic-production
-    ;; @c3kit/db :sqlite      = :bucket sqlite-production
-    ;; @c3kit/db :postgres    = :bucket postgres-production
-    ;; @c3kit/db :memory      = :bucket memory-production
+    ;; @c3kit/db :datomic-pro {
+    :bucket datomic-production
+    ;; @c3kit/db :datomic-pro }
+    ;; @c3kit/db :sqlite {
+    :bucket sqlite-production
+    ;; @c3kit/db :sqlite }
+    ;; @c3kit/db :postgres {
+    :bucket postgres-production
+    ;; @c3kit/db :postgres }
+    ;; @c3kit/db :memory {
+    :bucket memory-production
+    ;; @c3kit/db :memory }
     :host "https://acme.example.com"
     :analytics-code "console.log('Replace me with Real Google Analytics Code.');"
     ;; @c3kit/feature :auth = :jwt-secret "ACME_PRODUCTION_SECRET"

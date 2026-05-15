@@ -47,7 +47,7 @@
                :npm-deps       false
                :infer-externs  true
                :libs           []
-               :main           "acme.prerender"
+               :main           "acme.ssr.prerender"
                :optimizations  :simple
                :output-dir     "resources/prerender/"
                :output-to      "resources/prerender/prerender.js"

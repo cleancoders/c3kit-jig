@@ -5,7 +5,7 @@
             [acme.layout :as layout]
             [acme.page :as page]
             [acme.test-data :as test-data]
-            [acme.user :as user]
+            [acme.auth.user :as user]
             [c3kit.bucket.api :as db]
             [c3kit.wire.spec-helper :as wire-helper]))
 

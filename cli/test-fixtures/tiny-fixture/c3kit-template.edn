@@ -11,9 +11,9 @@
  :secrets [{:placeholder "ACME_DEV_SECRET" :bytes 16}]
 
  :features [{:id :ssr     :prompt "SSR?"     :default true
-             :delete-when-off ["resources/Acme.css"]}
+             :extras ["resources/Acme.css"]}
             {:id :legacy  :prompt "Legacy?"  :default true
-             :delete-when-off ["src/acme_legacy/"]}]
+             :extras ["src/acme_legacy/"]}]
 
  :db {:prompt  "Database"
       :options [{:id :sqlite   :label "SQLite"}

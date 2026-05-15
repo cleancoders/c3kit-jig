@@ -1,11 +1,11 @@
 (ns acme.routes
   (:require-macros [secretary.core :refer [defroute]])
   (:require [accountant.core :as accountant]
-            ;; @c3kit/feature :content = [acme.content-page :as content-page]
+            ;; @c3kit/feature :content = [acme.content.page :as content-page]
             [acme.core :as core]
             [acme.page :as page]
             ;; @c3kit/feature :auth {
-            [acme.recover-password :as recover-password]
+            [acme.auth.recover-password :as recover-password]
             ;; @c3kit/feature :auth }
             [c3kit.apron.log :as log]
             [c3kit.wire.js :as wjs]

@@ -20,7 +20,7 @@ node_modules/
 package-lock.json
 resources/prerender/
 resources/prerendered/
-dev/acme/prerender_pages.cljs
+dev/acme/ssr/prerender_pages.cljs
 pom.xml
 pom.xml.asc
 profiles.clj

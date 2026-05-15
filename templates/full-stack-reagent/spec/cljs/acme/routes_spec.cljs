@@ -4,7 +4,7 @@
   (:require [acme.core :as core]
             [acme.page :as page]
             ;; @c3kit/feature :auth {
-            [acme.recover-password :as recover-password]
+            [acme.auth.recover-password :as recover-password]
             ;; @c3kit/feature :auth }
             [acme.routes :as sut]
             [c3kit.wire.js :as wjs]

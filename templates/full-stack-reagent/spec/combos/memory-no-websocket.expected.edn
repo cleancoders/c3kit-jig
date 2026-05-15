@@ -5,7 +5,7 @@
  :must-exist     ["src/clj/my_app/main.clj"
                   "src/clj/my_app/config.clj"
                   "src/cljs/my_app/main.cljs"
-                  "src/cljs/my_app/user.cljs"
+                  "src/cljs/my_app/auth/user.cljs"
                   "src/cljs/my_app/forms.cljs"
                   "bin/db"
                   "deps.edn"
@@ -17,20 +17,20 @@
                   "README.scaffold.md"
                   ".c3kit-create-context.edn"]
 
- :file-contains  {"src/clj/my_app/config.clj"   ["memory-local"
-                                                  ":bucket memory-local"
-                                                  "MyApp"]
-                  "src/clj/my_app/main.clj"     ["my_app.content"
-                                                 "my_app.user.web"]
-                  "src/cljs/my_app/user.cljs"   ["install-and-connect!"
-                                                 "data-fetched?"]
-                  "src/cljs/my_app/forms.cljs"  ["attempt-submit"
-                                                 "ajax/post!"]}
+ :file-contains  {"src/clj/my_app/config.clj"        ["memory-local"
+                                                       ":bucket memory-local"
+                                                       "MyApp"]
+                  "src/clj/my_app/main.clj"          ["my_app.content.core"
+                                                      "my_app.auth.user.web"]
+                  "src/cljs/my_app/auth/user.cljs"   ["install-and-connect!"
+                                                      "data-fetched?"]
+                  "src/cljs/my_app/forms.cljs"       ["attempt-submit"
+                                                      "ajax/post!"]}
 
- :file-not-contains {"src/clj/my_app/main.clj"     ["c3kit.wire.websocket"
-                                                    "websocket/service"]
-                     "src/cljs/my_app/user.cljs"   ["c3kit.wire.websocket"
-                                                    "ws/start!"
-                                                    "ws/call!"]
-                     "src/cljs/my_app/forms.cljs"  ["c3kit.wire.websocket"
-                                                    "ws/call!"]}}
+ :file-not-contains {"src/clj/my_app/main.clj"          ["c3kit.wire.websocket"
+                                                         "websocket/service"]
+                     "src/cljs/my_app/auth/user.cljs"   ["c3kit.wire.websocket"
+                                                         "ws/start!"
+                                                         "ws/call!"]
+                     "src/cljs/my_app/forms.cljs"       ["c3kit.wire.websocket"
+                                                         "ws/call!"]}}

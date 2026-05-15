@@ -5,7 +5,7 @@
             [acme.modal :as modal]
             [acme.page :as page]
             [acme.test-data :as test-data]
-            [acme.user :as user]
+            [acme.auth.user :as user]
             [c3kit.wire.ajax :as ajax]
             [c3kit.wire.flash :as flash]
             [c3kit.wire.spec-helper :as wire-helper]))

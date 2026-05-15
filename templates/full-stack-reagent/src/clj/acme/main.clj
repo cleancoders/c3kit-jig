@@ -1,10 +1,10 @@
 (ns acme.main
   (:require [acme.config :as config]
-            ;; @c3kit/feature :content = [acme.content]
-            ;; @c3kit/feature :auth = [acme.destination :as destination]
+            ;; @c3kit/feature :content = [acme.content.core]
+            ;; @c3kit/feature :auth = [acme.auth.destination :as destination]
             [acme.init :as init]
-            ;; @c3kit/feature :ssr = [acme.prerender]
-            ;; @c3kit/feature :auth = [acme.user.web :as user.web]
+            ;; @c3kit/feature :ssr = [acme.ssr.prerender]
+            ;; @c3kit/feature :auth = [acme.auth.user.web :as user.web]
             [c3kit.apron.app :as app]
             [c3kit.apron.log :as log]
             [c3kit.apron.util :as util]
@@ -46,11 +46,11 @@
   (init/install-legend!)
   (init/configure-api!)
   ;; @c3kit/feature :content {
-  (acme.content/load!)
+  (acme.content.core/load!)
   ;; @c3kit/feature :content }
   ;; @c3kit/feature :auth {
-  (let [configure!              (util/resolve-var 'acme.destination/configure!)
-        ->AcmeDestinationAdapter (util/resolve-var 'acme.user.web/->AcmeDestinationAdapter)]
+  (let [configure!              (util/resolve-var 'acme.auth.destination/configure!)
+        ->AcmeDestinationAdapter (util/resolve-var 'acme.auth.user.web/->AcmeDestinationAdapter)]
     (configure! (->AcmeDestinationAdapter)))
   ;; @c3kit/feature :auth }
   (maybe-init-dev)
@@ -58,6 +58,6 @@
   (.addShutdownHook (Runtime/getRuntime) (Thread. shutdown-agents))
   (start-all)
   ;; @c3kit/feature :ssr {
-  (acme.prerender/prerender!)
+  (acme.ssr.prerender/prerender!)
   ;; @c3kit/feature :ssr }
   )

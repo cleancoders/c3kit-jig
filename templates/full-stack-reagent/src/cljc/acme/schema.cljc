@@ -1,7 +1,7 @@
 (ns acme.schema
   (:require [acme.bg-task :as bg-task]
             ;; @c3kit/feature :auth {
-            [acme.user.schema :as user.schema]
+            [acme.auth.user.schema :as user.schema]
             ;; @c3kit/feature :auth }
             ))
 

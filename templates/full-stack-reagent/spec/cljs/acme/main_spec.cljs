@@ -7,7 +7,7 @@
             [acme.page :as page]
             [acme.routes :as router]
             ;; @c3kit/feature :auth {
-            [acme.user :as user]
+            [acme.auth.user :as user]
             ;; @c3kit/feature :auth }
             [c3kit.apron.log :as log]
             [c3kit.apron.utilc :as util]
