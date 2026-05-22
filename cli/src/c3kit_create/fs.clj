@@ -1,6 +1,6 @@
 (ns c3kit-create.fs
   (:require [babashka.fs :as fs])
-  (:import [java.nio.file Files Path]
+  (:import [java.nio.file Files]
            [java.util UUID]))
 
 (defn stage-dir

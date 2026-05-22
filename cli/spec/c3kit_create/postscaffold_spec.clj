@@ -1,5 +1,5 @@
 (ns c3kit-create.postscaffold-spec
-  (:require [speclj.core :refer [describe it should= should should-not]]
+  (:require [speclj.core :refer [describe it should]]
             [c3kit-create.postscaffold :as ps]
             [babashka.fs :as fs]
             [babashka.process :as p]))

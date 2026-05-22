@@ -20,11 +20,18 @@
   test       {:doc      "Run all tests"
               :requires ([speclj.cli])
               :task     (speclj.cli/run "-c" "spec")}
-  uberscript {:doc              "Build cli/dist/c3kit-create.bb"
-              :override-builtin true
-              :task             (do (require '[babashka.fs :as fs])
-                                    (fs/create-dirs "dist")
-                                    (shell "bb" "uberscript" "dist/c3kit-create.bb"
-                                           "-m" "c3kit-create.main"))}
+  build      {:doc      "Build cli/dist/c3kit-create.bb"
+              :requires ([babashka.fs :as fs])
+              :task     (let [out "dist/c3kit-create.bb"]
+                          (fs/create-dirs "dist")
+                          (fs/delete-if-exists out)
+                          (shell "bb" "uberscript" out "-m" "c3kit-create.main")
+                          (spit out (str "#!/usr/bin/env bb\n" (slurp out)))
+                          (fs/set-posix-file-permissions out "rwxr-xr-x"))}
   lint       {:doc  "Run clj-kondo"
-              :task (shell "clj-kondo" "--lint" "src" "spec")}}}
+              :task (shell "clj-kondo" "--lint" "src" "spec")}
+  install    {:doc     "Build CLI from local source and install it via install.sh (same path users use)"
+              :depends [build]
+              :task    (let [bb-file (.getAbsolutePath (clojure.java.io/file "dist/c3kit-create.bb"))]
+                         (shell {:extra-env {"C3KIT_LOCAL_BB" bb-file}}
+                                "bash" "install.sh"))}}}

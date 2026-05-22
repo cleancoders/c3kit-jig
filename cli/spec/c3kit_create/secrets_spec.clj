@@ -1,7 +1,6 @@
 (ns c3kit-create.secrets-spec
-  (:require [speclj.core :refer [describe context it should= should should-not= should-not]]
-            [c3kit-create.secrets :as s]
-            [clojure.string :as str]))
+  (:require [speclj.core :refer [describe context it should= should should-not=]]
+            [c3kit-create.secrets :as s]))
 
 (describe "c3kit-create.secrets"
 

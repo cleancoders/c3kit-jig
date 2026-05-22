@@ -1,5 +1,5 @@
 (ns c3kit-create.ui-spec
-  (:require [speclj.core :refer [describe context it should= should should-not]]
+  (:require [speclj.core :refer [describe context it should= should]]
             [c3kit-create.ui :as ui]))
 
 (describe "c3kit-create.ui"

@@ -1,5 +1,5 @@
 (ns c3kit-create.version-spec
-  (:require [speclj.core :refer [describe it should= should]]
+  (:require [speclj.core :refer [describe it should=]]
             [c3kit-create.version :as v]))
 
 (describe "c3kit-create.version"

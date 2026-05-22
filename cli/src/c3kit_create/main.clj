@@ -9,20 +9,13 @@
             [c3kit-create.rename :as rn]
             [c3kit-create.ui :as ui]
             [c3kit-create.version :as v]
-            [c3kit-create.wizard :as wizard]
-            [clojure.string :as str])
+            [c3kit-create.wizard :as wizard])
   (:gen-class))
 
 (def REPO-URL "https://github.com/cleancoders/c3kit-starter")
 (def DEFAULT-REF "main")
 
 (defn exit [code] (System/exit code))
-
-(defn- non-blank [label]
-  (fn [v]
-    (when (str/blank? v)
-      (throw (ex-info (str label " is required") {})))
-    v))
 
 (defn- resolve-templates-dir [opts]
   (or (:template-dir opts)
@@ -154,10 +147,10 @@
             target   (target-path opts nm)]
         (die-if-target-exists! target stage)
         (let [features (compute-features manifest (:feature opts) yes)
-              db       (compute-db manifest (:db opts) yes)]
-          (let [scaffold (render-into-stage! tdir stage manifest nm features db)]
-            (finalize! scaffold target opts)
-            (ui/ok (str "Created " nm)))))
+              db       (compute-db manifest (:db opts) yes)
+              scaffold (render-into-stage! tdir stage manifest nm features db)]
+          (finalize! scaffold target opts)
+          (ui/ok (str "Created " nm))))
       (catch Exception e
         (handle-scaffold-failure! e opts))
       (finally

@@ -1,5 +1,5 @@
 (ns c3kit-create.fs-spec
-  (:require [speclj.core :refer [describe it should= should should-not should-throw]]
+  (:require [speclj.core :refer [describe it should should-not should-throw]]
             [c3kit-create.fs :as cfs]
             [babashka.fs :as fs]))
 

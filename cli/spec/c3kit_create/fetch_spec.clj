@@ -1,5 +1,5 @@
 (ns c3kit-create.fetch-spec
-  (:require [speclj.core :refer [describe it should= should should-throw]]
+  (:require [speclj.core :refer [describe it should should-throw]]
             [c3kit-create.fetch :as fetch]
             [babashka.fs :as fs]))
 

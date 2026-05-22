@@ -35,4 +35,11 @@ jobs:
       - name: bb lint
         working-directory: cli
         run: bb lint
-        continue-on-error: true  # TODO: fix pre-existing clj-kondo warnings, then remove this
+
+  shellcheck:
+    name: shellcheck install.sh
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: shellcheck
+        run: shellcheck cli/install.sh

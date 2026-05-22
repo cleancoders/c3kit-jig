@@ -1,5 +1,5 @@
 (ns c3kit-create.wizard-spec
-  (:require [speclj.core :refer [describe context it should= should should-not]]
+  (:require [speclj.core :refer [describe context it should= should]]
             [c3kit-create.wizard :as w]))
 
 (defn- with-stdin [text f]

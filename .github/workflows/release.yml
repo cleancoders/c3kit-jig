@@ -20,7 +20,7 @@ jobs:
 
       - name: build uberscript
         working-directory: cli
-        run: bb uberscript
+        run: bb build
 
       - name: compute sha256
         working-directory: cli
