@@ -1,0 +1,14 @@
+;; Speclj forms aren't linted — `:lint-as clojure.core/comment` skips them.
+;; Trade-off: no kondo coverage inside specs, but no false positives from
+;; describe/context/it/should* argument shapes. Replace with proper hooks
+;; if test coverage from kondo becomes worth the effort.
+{:lint-as {speclj.core/describe   clojure.core/comment
+           speclj.core/context    clojure.core/comment
+           speclj.core/it         clojure.core/comment
+           speclj.core/before     clojure.core/comment
+           speclj.core/before-all clojure.core/comment
+           speclj.core/after      clojure.core/comment
+           speclj.core/after-all  clojure.core/comment
+           speclj.core/around     clojure.core/comment
+           speclj.core/with       clojure.core/def
+           speclj.core/with-all   clojure.core/def}}

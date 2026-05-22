@@ -9,7 +9,7 @@
 
 # Clojure / CLJS
 .cpcache/
-.clj-kondo/
+.clj-kondo/.cache/
 .lsp/
 target/
 out/
