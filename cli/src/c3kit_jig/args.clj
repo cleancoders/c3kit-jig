@@ -15,24 +15,29 @@
         (FALSY  vlow) [(keyword k) false]
         :else (throw (ex-info (str "feature value must be bool, got: " (pr-str v)) {}))))))
 
-(def ^:private CREATE-OPTIONS
+(def ^:private PUBLIC-CREATE-OPTIONS
   [["-t" "--template ID"        "Template id (skip template prompt)"]
    [nil  "--template-ref REF"   "Git ref/tag/branch for template fetch"]
    [nil  "--template-dir PATH"  "Use local templates dir instead of fetching"]
    ["-y" "--yes"                "Accept all feature defaults, non-interactive"]
    [nil  "--install"            "Run `clj -P` and `npm install` after scaffold"]
    [nil  "--no-git"             "Skip `git init` and initial commit"
-    :id :git? :default true :parse-fn (constantly false)]
+    :id :git? :default true :default-desc "" :parse-fn (constantly false)]
    [nil  "--db ID"              "Database id (skip db prompt)"
     :parse-fn keyword]
    [nil  "--feature K=V"        "Override feature default (repeatable)"
     :id       :feature
     :default  {}
+    :default-desc ""
     :parse-fn parse-feature
     :assoc-fn (fn [m k [fk fv]] (update m k assoc fk fv))]
    [nil  "--debug"              "Print full stack traces on error"]
-   [nil  "--target-parent PATH" "(internal) override CWD for scaffold target"]
    ["-h" "--help"               "Show this help"]])
+
+;; Internal options are accepted by the parser but omitted from `help`.
+(def ^:private CREATE-OPTIONS
+  (conj PUBLIC-CREATE-OPTIONS
+        [nil "--target-parent PATH" "(internal) override CWD for scaffold target"]))
 
 (def ^:private SUBCOMMANDS
   {"create"  :scaffold
@@ -52,7 +57,7 @@
        "  version                     Print CLI version\n"
        "  help                        Show this help\n\n"
        "CREATE OPTIONS\n"
-       (:summary (cli/parse-opts [] CREATE-OPTIONS))))
+       (:summary (cli/parse-opts [] PUBLIC-CREATE-OPTIONS))))
 
 (defn- env-default [opts key env]
   (if (contains? opts key) opts

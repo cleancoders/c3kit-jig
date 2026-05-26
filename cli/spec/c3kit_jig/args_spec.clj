@@ -1,5 +1,5 @@
 (ns c3kit-jig.args-spec
-  (:require [speclj.core :refer [describe it should= should should-contain]]
+  (:require [speclj.core :refer [describe it should= should should-contain should-not-contain]]
             [c3kit-jig.args :as args]))
 
 (describe "args/parse"
@@ -83,4 +83,9 @@
                     (it "help mentions c3kit-jig"
                         (should-contain "c3kit-jig" (args/help)))
                     (it "help mentions create subcommand"
-                        (should-contain "create" (args/help)))))
+                        (should-contain "create" (args/help)))
+                    (it "help hides internal --target-parent option"
+                        (should-not-contain "target-parent" (args/help)))
+                    (it "help omits default-value column noise"
+                        (should-not-contain "{}" (args/help))
+                        (should-not-contain "true" (args/help)))))
