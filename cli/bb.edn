@@ -2,36 +2,40 @@
  :deps  {org.clojure/tools.cli {:mvn/version "1.1.230"}
          speclj/speclj         {:mvn/version "3.12.0"}}
  :tasks
- {c3kit-create {:doc      "Run the CLI from source. e.g. bb c3kit-create --help"
-                :requires ([c3kit-create.main]
-                           [babashka.fs :as bfs])
-                :task     (let [dir-with-templates? (fn [d]
-                                                      (and (bfs/exists? d)
-                                                           (some (fn [sub] (and (bfs/directory? sub)
-                                                                                (bfs/exists? (bfs/path sub "c3kit-template.edn"))))
-                                                                 (bfs/list-dir d))))
-                                default-dir         (first (filter dir-with-templates?
-                                                                   ["../templates" "test-fixtures"]))
-                                user-set?           (some (fn [a] (= a "--template-dir")) *command-line-args*)
-                                args                (if (and default-dir (not user-set?))
-                                                      (concat ["--template-dir" default-dir] *command-line-args*)
-                                                      *command-line-args*)]
-                            (apply c3kit-create.main/-main args))}
+ {c3kit-jig {:doc      "Run the CLI from source. e.g. bb c3kit-jig create my-app"
+             :requires ([c3kit-jig.main]
+                        [babashka.fs :as bfs])
+             :task     (let [dir-with-templates? (fn [d]
+                                                   (and (bfs/exists? d)
+                                                        (some (fn [sub] (and (bfs/directory? sub)
+                                                                             (bfs/exists? (bfs/path sub "c3kit-template.edn"))))
+                                                              (bfs/list-dir d))))
+                             default-dir         (first (filter dir-with-templates?
+                                                                ["../templates" "test-fixtures"]))
+                             args                *command-line-args*
+                             user-set?           (or (System/getenv "C3KIT_TEMPLATES")
+                                                     (some (fn [a] (= a "--template-dir")) args))
+                             args'               (if (and (= "create" (first args))
+                                                          default-dir
+                                                          (not user-set?))
+                                                   (concat ["create" "--template-dir" default-dir] (rest args))
+                                                   args)]
+                         (apply c3kit-jig.main/-main args'))}
   test       {:doc      "Run all tests"
               :requires ([speclj.cli])
               :task     (speclj.cli/run "-c" "spec")}
-  build      {:doc      "Build cli/dist/c3kit-create.bb"
+  build      {:doc      "Build cli/dist/c3kit-jig.bb"
               :requires ([babashka.fs :as fs])
-              :task     (let [out "dist/c3kit-create.bb"]
+              :task     (let [out "dist/c3kit-jig.bb"]
                           (fs/create-dirs "dist")
                           (fs/delete-if-exists out)
-                          (shell "bb" "uberscript" out "-m" "c3kit-create.main")
+                          (shell "bb" "uberscript" out "-m" "c3kit-jig.main")
                           (spit out (str "#!/usr/bin/env bb\n" (slurp out)))
                           (fs/set-posix-file-permissions out "rwxr-xr-x"))}
   lint       {:doc  "Run clj-kondo"
               :task (shell "clj-kondo" "--lint" "src" "spec")}
   install    {:doc     "Build CLI from local source and install it via install.sh (same path users use)"
               :depends [build]
-              :task    (let [bb-file (.getAbsolutePath (clojure.java.io/file "dist/c3kit-create.bb"))]
+              :task    (let [bb-file (.getAbsolutePath (clojure.java.io/file "dist/c3kit-jig.bb"))]
                          (shell {:extra-env {"C3KIT_LOCAL_BB" bb-file}}
                                 "bash" "install.sh"))}}}

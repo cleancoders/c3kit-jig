@@ -25,7 +25,7 @@
                   "c3kit-template.edn"
                   "c3kit-template.bb"
                   "README.scaffold.md"
-                  ".c3kit-create-context.edn"
+                  ".c3kit-jig-context.edn"
                   ;; auth feature off
                   "src/clj/my_app/auth/"
                   "src/cljc/my_app/auth/"

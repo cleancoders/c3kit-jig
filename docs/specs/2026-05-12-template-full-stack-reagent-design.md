@@ -3,7 +3,7 @@
 **Date:** 2026-05-12
 **Status:** Draft, pending approval
 **Parent specs:**
-- [`2026-05-12-c3kit-starter-roadmap-design.md`](2026-05-12-c3kit-starter-roadmap-design.md)
+- [`2026-05-12-c3kit-jig-roadmap-design.md`](2026-05-12-c3kit-jig-roadmap-design.md)
 - [`2026-05-12-c3kit-create-cli-design.md`](2026-05-12-c3kit-create-cli-design.md)
 
 **Scope:** Implementation contract for the `templates/full-stack-reagent/` template (T1) — one of three Phase 1 deliverables alongside the `c3kit-create` CLI (D0) and the FE-only vanilla CLJS template (T5).
@@ -43,7 +43,7 @@ Adapt the existing internal Clean Coders proprietary starter into an OSS-ready t
 
 ---
 
-## 3. Repository Layout (within `c3kit-starter` monorepo)
+## 3. Repository Layout (within `c3kit-jig` monorepo)
 
 ```
 templates/
@@ -572,7 +572,7 @@ The hook is a bb script (`#!/usr/bin/env bb`) and has access to bb stdlib (`baba
 
 ## 8. CI Workflow
 
-Path: `.github/workflows/template-full-stack-reagent.yml` in the c3kit-starter repo.
+Path: `.github/workflows/template-full-stack-reagent.yml` in the c3kit-jig repo.
 
 **Triggers:**
 - Push to `main` touching `templates/full-stack-reagent/**` or `cli/**`.

@@ -1,7 +1,7 @@
 # Acme
 
 Full-stack Clojure + ClojureScript project scaffolded from the
-[`c3kit-starter`](https://github.com/cleancoders/c3kit-starter)
+[`c3kit-jig`](https://github.com/cleancoders/c3kit-jig)
 `full-stack-reagent` template.
 
 ## System Requirements
@@ -87,7 +87,7 @@ This template doesn't prescribe a deployment target. Common options:
   deploy to EC2 or ECS.
 - **Container** — write a `Dockerfile` based on `eclipse-temurin:17-jre`.
 
-See the c3kit-starter wiki for deployment recipes contributed by the community.
+See the c3kit-jig wiki for deployment recipes contributed by the community.
 
 ## Adding a New `:kind`
 

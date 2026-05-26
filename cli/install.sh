@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO="cleancoders/c3kit-starter"
+REPO="cleancoders/c3kit-jig"
 INSTALL_DIR="${C3KIT_BIN_DIR:-$HOME/.c3kit/bin}"
-BIN_NAME="c3kit-create"
+BIN_NAME="c3kit-jig"
 ASSUME_YES="${C3KIT_YES:-0}"
 
 for arg in "$@"; do
@@ -11,7 +11,7 @@ for arg in "$@"; do
     -y|--yes) ASSUME_YES=1 ;;
     -h|--help)
       cat <<EOF
-c3kit-create installer
+c3kit-jig installer
 
 Usage: install.sh [-y|--yes]
 
@@ -77,7 +77,7 @@ fi
 # ─── plan ────────────────────────────────────────────────────────────────────
 
 echo
-bold "c3kit-create installer"
+bold "c3kit-jig installer"
 echo
 echo "  OS:           $uname_s ($(uname -m))"
 echo "  Install dir:  $INSTALL_DIR"

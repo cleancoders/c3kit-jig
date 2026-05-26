@@ -10,7 +10,7 @@
 
 **Parent spec:** [`docs/specs/2026-05-12-template-full-stack-reagent-design.md`](../specs/2026-05-12-template-full-stack-reagent-design.md). Section references in this plan (e.g., §6.3) point to that spec.
 
-**Working tree:** `/Users/alex-root-roatch/current-projects/c3kit-starter` on branch `template/full-stack-reagent` (already created, T1 spec commit `a79361b` is the tip).
+**Working tree:** `/Users/alex-root-roatch/current-projects/c3kit-jig` on branch `template/full-stack-reagent` (already created, T1 spec commit `a79361b` is the tip).
 
 **Source-of-truth (read-only):** `/Users/alex-root-roatch/current-projects/starter`. **Do not modify.**
 
@@ -65,7 +65,7 @@ Removed from proprietary:
 | `com.amazonaws/aws-java-sdk-*` deps | Drop from OSS; user adds back for AWS deployment |
 | `:ses` defmethod in `src/clj/acme/email.clj` | Tied to AWS SDK |
 
-Workflow added in the c3kit-starter repo:
+Workflow added in the c3kit-jig repo:
 
 | Path | Responsibility |
 |---|---|
@@ -207,7 +207,7 @@ Expected: `ok` printed; `deps.edn`, `src/`, `dev/`, `spec/`, `resources/`, `cont
 The repo currently has `templates/.gitkeep`. Remove it and copy:
 
 ```bash
-cd /Users/alex-root-roatch/current-projects/c3kit-starter
+cd /Users/alex-root-roatch/current-projects/c3kit-jig
 rm templates/.gitkeep
 mkdir -p templates/full-stack-reagent
 
@@ -248,7 +248,7 @@ If this fails, **stop**: something about the copy is incomplete. Inspect `clj -M
 - [ ] **Step 5: Commit**
 
 ```bash
-cd /Users/alex-root-roatch/current-projects/c3kit-starter
+cd /Users/alex-root-roatch/current-projects/c3kit-jig
 git add -A templates/
 git commit -m "chore(t1): copy proprietary starter tree into templates/full-stack-reagent
 
@@ -366,7 +366,7 @@ Keep `bin/clean` (developer convenience, not rename-related).
 - [ ] **Step 8: Commit**
 
 ```bash
-cd /Users/alex-root-roatch/current-projects/c3kit-starter
+cd /Users/alex-root-roatch/current-projects/c3kit-jig
 git add -A templates/full-stack-reagent/
 git commit -m "chore(t1): strip proprietary refs (AWS SDKs, my.datomic.com, bin/setup, :ses)
 
@@ -486,7 +486,7 @@ Create `templates/full-stack-reagent/c3kit-template.edn`:
 - [ ] **Step 2: Verify it parses as valid EDN**
 
 ```bash
-cd /Users/alex-root-roatch/current-projects/c3kit-starter
+cd /Users/alex-root-roatch/current-projects/c3kit-jig
 bb -e "(clojure.edn/read-string (slurp \"templates/full-stack-reagent/c3kit-template.edn\"))"
 ```
 Expected: prints the parsed map, no exception.
@@ -688,7 +688,7 @@ If specs fail: most likely cause is the extraction changed behavior in a way the
 - [ ] **Step 7: Commit**
 
 ```bash
-cd /Users/alex-root-roatch/current-projects/c3kit-starter
+cd /Users/alex-root-roatch/current-projects/c3kit-jig
 git add -A templates/full-stack-reagent/src/clj/acme/config.clj
 git add -A templates/full-stack-reagent/src/clj/acme/http.clj
 git add -A templates/full-stack-reagent/src/clj/acme/routes.clj
@@ -785,7 +785,7 @@ Expected: green.
 - [ ] **Step 6: Commit**
 
 ```bash
-cd /Users/alex-root-roatch/current-projects/c3kit-starter
+cd /Users/alex-root-roatch/current-projects/c3kit-jig
 git add docs/specs/2026-05-12-template-full-stack-reagent-design.md
 git commit -m "docs(t1): revise :markdownc to whole-file deletes only (no inline marker)
 
@@ -916,7 +916,7 @@ Expected: compiles + green.
 - [ ] **Step 8: Commit**
 
 ```bash
-cd /Users/alex-root-roatch/current-projects/c3kit-starter
+cd /Users/alex-root-roatch/current-projects/c3kit-jig
 git add -A templates/full-stack-reagent/src/
 git commit -m "feat(t1): add :content feature markers
 
@@ -983,7 +983,7 @@ Expected: green.
 - [ ] **Step 5: Commit**
 
 ```bash
-cd /Users/alex-root-roatch/current-projects/c3kit-starter
+cd /Users/alex-root-roatch/current-projects/c3kit-jig
 git add -A templates/full-stack-reagent/src/
 git commit -m "feat(t1): add :ssr feature markers
 
@@ -1232,7 +1232,7 @@ Report counts per file. Total for `:auth` should be ≤14 blocks (spec §13). If
 - [ ] **Step 13: Commit**
 
 ```bash
-cd /Users/alex-root-roatch/current-projects/c3kit-starter
+cd /Users/alex-root-roatch/current-projects/c3kit-jig
 git add -A templates/full-stack-reagent/
 git commit -m "feat(t1): add :auth feature markers
 
@@ -1432,7 +1432,7 @@ If any spec currently asserts on `datomic:dev://...` URIs or similar, update the
 - [ ] **Step 5: Commit**
 
 ```bash
-cd /Users/alex-root-roatch/current-projects/c3kit-starter
+cd /Users/alex-root-roatch/current-projects/c3kit-jig
 git add -A templates/full-stack-reagent/deps.edn templates/full-stack-reagent/src/clj/acme/config.clj
 git commit -m "feat(t1): add @c3kit/db markers + memory-default at HEAD
 
@@ -1703,7 +1703,7 @@ If it fails: read the assertion that fired, fix the hook, re-run.
 - [ ] **Step 4: Commit**
 
 ```bash
-cd /Users/alex-root-roatch/current-projects/c3kit-starter
+cd /Users/alex-root-roatch/current-projects/c3kit-jig
 git add templates/full-stack-reagent/bin/db.template.*
 git add templates/full-stack-reagent/c3kit-template.bb
 git add templates/full-stack-reagent/spec/hook_test.bb
@@ -1737,7 +1737,7 @@ Create `templates/full-stack-reagent/README.scaffold.md`:
 # Acme
 
 Full-stack Clojure + ClojureScript project scaffolded from the
-[`c3kit-starter`](https://github.com/cleancoders/c3kit-starter)
+[`c3kit-jig`](https://github.com/cleancoders/c3kit-jig)
 `full-stack-reagent` template.
 
 ## System Requirements
@@ -1823,7 +1823,7 @@ This template doesn't prescribe a deployment target. Common options:
   deploy to EC2 or ECS.
 - **Container** — write a `Dockerfile` based on `eclipse-temurin:17-jre`.
 
-See the c3kit-starter wiki for deployment recipes contributed by the community.
+See the c3kit-jig wiki for deployment recipes contributed by the community.
 
 ## Adding a New `:kind`
 
@@ -1887,7 +1887,7 @@ A Clojure + ClojureScript app scaffold with:
 
 ## Scaffold the template locally
 
-From the c3kit-starter repo root with a built CLI uberscript:
+From the c3kit-jig repo root with a built CLI uberscript:
 
 ```sh
 ./cli/dist/c3kit-create.bb test-app \
@@ -1946,7 +1946,7 @@ Unit test: `bb spec/hook_test.bb`.
 
 ## CI coverage
 
-`.github/workflows/template-full-stack-reagent.yml` in the c3kit-starter
+`.github/workflows/template-full-stack-reagent.yml` in the c3kit-jig
 repo scaffolds this template across a `{db × feature-combo}` matrix and
 runs `clj -M:test:spec` + `clj -M:test:cljs once` against each output.
 ```
@@ -1989,7 +1989,7 @@ Expected: green.
 - [ ] **Step 5: Commit**
 
 ```bash
-cd /Users/alex-root-roatch/current-projects/c3kit-starter
+cd /Users/alex-root-roatch/current-projects/c3kit-jig
 git add templates/full-stack-reagent/README.md templates/full-stack-reagent/README.scaffold.md templates/full-stack-reagent/LICENSE
 git commit -m "docs(t1): scaffold + template-dev READMEs and MIT LICENSE
 
@@ -2032,7 +2032,7 @@ Stop the plan here; Tasks 13+ will resume when the CLI agent finishes.
 - [ ] **Step 3: If all are present, build the CLI uberscript and confirm it can scaffold**
 
 ```bash
-cd /Users/alex-root-roatch/current-projects/c3kit-starter/cli
+cd /Users/alex-root-roatch/current-projects/c3kit-jig/cli
 bb uberscript dist/c3kit-create.bb -m c3kit-create.main
 test -f dist/c3kit-create.bb && echo "uberscript ok"
 ./dist/c3kit-create.bb --version
@@ -2044,9 +2044,9 @@ Expected: uberscript built, `--version` prints, `--list` shows `full-stack-reage
 Quick scaffold smoke:
 ```bash
 cd /tmp
-/Users/alex-root-roatch/current-projects/c3kit-starter/cli/dist/c3kit-create.bb \
+/Users/alex-root-roatch/current-projects/c3kit-jig/cli/dist/c3kit-create.bb \
   smoke-test \
-  --template-dir /Users/alex-root-roatch/current-projects/c3kit-starter/templates \
+  --template-dir /Users/alex-root-roatch/current-projects/c3kit-jig/templates \
   --template full-stack-reagent \
   --db memory --yes
 ls smoke-test/
@@ -2257,7 +2257,7 @@ Iterate on combo edn + markers until green.
 - [ ] **Step 4: Commit**
 
 ```bash
-cd /Users/alex-root-roatch/current-projects/c3kit-starter
+cd /Users/alex-root-roatch/current-projects/c3kit-jig
 git add templates/full-stack-reagent/dev/verify-scaffold.bb
 git add templates/full-stack-reagent/spec/combos/memory-defaults.expected.edn
 git commit -m "test(t1): verify-scaffold.bb + memory-defaults combo expected
@@ -2500,7 +2500,7 @@ jobs:
 - [ ] **Step 2: Validate the YAML locally**
 
 ```bash
-cd /Users/alex-root-roatch/current-projects/c3kit-starter
+cd /Users/alex-root-roatch/current-projects/c3kit-jig
 python3 -c "import yaml; yaml.safe_load(open('.github/workflows/template-full-stack-reagent.yml'))" && echo "yaml ok"
 ```
 Expected: `yaml ok`. (If python3 isn't available, use `bb -e "(require '[clj-yaml.core :as y]) (y/parse-string (slurp \".github/workflows/template-full-stack-reagent.yml\"))"`, or skip — GitHub will catch syntax on push.)
@@ -2529,7 +2529,7 @@ Per spec §8:
 - [ ] **Step 1: Confirm everything is green**
 
 ```bash
-cd /Users/alex-root-roatch/current-projects/c3kit-starter
+cd /Users/alex-root-roatch/current-projects/c3kit-jig
 git status
 cd templates/full-stack-reagent && clj -M:test:spec && cd ../..
 for c in memory-defaults sqlite-defaults memory-minimal memory-csp-on memory-no-auth memory-no-ssr-no-content; do

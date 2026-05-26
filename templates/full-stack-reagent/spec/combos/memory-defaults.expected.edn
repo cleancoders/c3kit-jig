@@ -31,7 +31,7 @@
                   "c3kit-template.edn"
                   "c3kit-template.bb"
                   "README.scaffold.md"
-                  ".c3kit-create-context.edn"]
+                  ".c3kit-jig-context.edn"]
 
  :file-contains  {"src/clj/my_app/config.clj" ["memory-local"
                                                 ":bucket memory-local"

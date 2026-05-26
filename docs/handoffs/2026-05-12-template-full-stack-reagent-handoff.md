@@ -9,7 +9,7 @@
 
 ## What you are picking up
 
-You're delivering **T1 — the full-stack Reagent template** for the open-source `c3kit-starter` project. T1 is one of three Phase 1 deliverables alongside the CLI and the FE-only vanilla CLJS template (T5). The CLI sub-spec + implementation plan are already written; T1 is the next unblocked sub-project.
+You're delivering **T1 — the full-stack Reagent template** for the open-source `c3kit-jig` project. T1 is one of three Phase 1 deliverables alongside the CLI and the FE-only vanilla CLJS template (T5). The CLI sub-spec + implementation plan are already written; T1 is the next unblocked sub-project.
 
 Your full sequence:
 
@@ -27,7 +27,7 @@ The brainstorm + spec write phase alone will fill a session. Don't try to do it 
 ## Repo state (read first)
 
 ```
-/Users/alex-root-roatch/current-projects/c3kit-starter   ← work here
+/Users/alex-root-roatch/current-projects/c3kit-jig   ← work here
 ├── README.md
 ├── CONTRIBUTING.md
 ├── LICENSE                          (MIT)
@@ -35,13 +35,13 @@ The brainstorm + spec write phase alone will fill a session. Don't try to do it 
 ├── templates/.gitkeep               (where T1 will land: templates/full-stack-reagent/)
 ├── docs/
 │   ├── specs/
-│   │   ├── 2026-05-12-c3kit-starter-roadmap-design.md      ← READ THIS
+│   │   ├── 2026-05-12-c3kit-jig-roadmap-design.md      ← READ THIS
 │   │   └── 2026-05-12-c3kit-create-cli-design.md           ← READ THIS
 │   └── plans/
 │       └── 2026-05-12-c3kit-create-cli-plan.md             ← skim
 └── .github/workflows/ci.yml         (placeholder)
 
-Remote: github.com/cleancoders/c3kit-starter   (private until release)
+Remote: github.com/cleancoders/c3kit-jig   (private until release)
 Branch state: `main` has roadmap spec + CLI sub-spec + CLI impl plan.
 ```
 
@@ -50,7 +50,7 @@ Branch state: `main` has roadmap spec + CLI sub-spec + CLI impl plan.
 **Branch you should create for T1 work:**
 
 ```sh
-cd /Users/alex-root-roatch/current-projects/c3kit-starter
+cd /Users/alex-root-roatch/current-projects/c3kit-jig
 git switch main && git pull
 git switch -c template/full-stack-reagent
 ```
@@ -219,6 +219,6 @@ Get user approval section by section. Save to `docs/specs/<date>-template-full-s
 - TDD is mandatory globally — every plan task that writes production code must be RED → GREEN.
 - This OSS project is part of the c3kit OSS collection. Branding ties to c3kit are intentional.
 - Use `superpowers:brainstorming` then `superpowers:writing-plans` then `superpowers:subagent-driven-development`. Do not skip skills.
-- Working dir for all T1 work: `/Users/alex-root-roatch/current-projects/c3kit-starter`. Source-of-truth proprietary starter (read-only): `/Users/alex-root-roatch/current-projects/starter`.
+- Working dir for all T1 work: `/Users/alex-root-roatch/current-projects/c3kit-jig`. Source-of-truth proprietary starter (read-only): `/Users/alex-root-roatch/current-projects/starter`.
 
 Good luck.

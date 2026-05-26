@@ -1,6 +1,6 @@
 # Template: full-stack-reagent
 
-Source for the `c3kit-create` `full-stack-reagent` template. End users
+Source for the `c3kit-jig` `full-stack-reagent` template. End users
 don't read this file — it's for contributors who maintain the template.
 
 The README that ships with scaffolded projects is `README.scaffold.md`
@@ -28,10 +28,10 @@ A Clojure + ClojureScript app scaffold with:
 
 ## Scaffold the template locally
 
-From the c3kit-starter repo root with a built CLI uberscript:
+From the c3kit-jig repo root with a built CLI uberscript:
 
 ```sh
-./cli/dist/c3kit-create.bb test-app \
+./cli/dist/c3kit-jig.bb create test-app \
   --template-dir templates \
   --template full-stack-reagent \
   --db sqlite \
@@ -54,7 +54,7 @@ clj -M:test:cljs once  # cljs compile + tests
 
 Markers gate optional features and DB selection. The CLI strips them at
 scaffold time per the rules in
-[`docs/specs/2026-05-12-c3kit-create-cli-design.md`](../../docs/specs/2026-05-12-c3kit-create-cli-design.md) §6.1.
+[`docs/specs/2026-05-12-c3kit-jig-cli-design.md`](../../docs/specs/2026-05-12-c3kit-jig-cli-design.md) §6.1.
 
 ```clojure
 ;; @c3kit/feature :auth {          ;; block on/off
@@ -76,7 +76,7 @@ scaffold time per the rules in
 
 `c3kit-template.bb` runs after marker stripping and rename. It:
 
-1. Reads `.c3kit-create-context.edn` (CLI sub-spec §7.2).
+1. Reads `.c3kit-jig-context.edn` (CLI sub-spec §7.2).
 2. Generates `bin/db` from the selected `:db`.
 3. Reconciles the HEAD-default `:bucket` line in `config.clj`.
 4. Drops the `:seed` alias when `:auth` is off (defense-in-depth).
@@ -86,6 +86,6 @@ Unit test: `bb spec/hook_test.bb`.
 
 ## CI coverage
 
-`.github/workflows/template-full-stack-reagent.yml` in the c3kit-starter
+`.github/workflows/template-full-stack-reagent.yml` in the c3kit-jig
 repo scaffolds this template across a `{db × feature-combo}` matrix and
 runs `clj -M:test:spec` + `clj -M:test:cljs once` against each output.
