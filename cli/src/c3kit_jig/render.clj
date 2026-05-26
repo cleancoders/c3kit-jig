@@ -63,7 +63,8 @@
 (defn- feature-file-match? [segs ns-token feature-name]
   (and (>= (count segs) 2)
        (= (nth segs (- (count segs) 2)) ns-token)
-       (some #(= (last segs) (str feature-name "." %))
+       (some #(#{(str feature-name "." %)
+                 (str feature-name "_spec." %)} (last segs))
              ["clj" "cljc" "cljs"])))
 
 (defn- apply-feature-dir-deletes! [stage-dir manifest features]
