@@ -160,4 +160,5 @@
     (fs/delete-if-exists (fs/path stage-dir ".c3kit-jig-context.edn"))
     (fs/delete-if-exists (fs/path stage-dir "c3kit-template.edn"))
     (fs/delete-if-exists (fs/path stage-dir "c3kit-template.bb"))
+    (fs/delete-if-exists (fs/path stage-dir "spec" "hook_test.bb"))
     stage-dir))
