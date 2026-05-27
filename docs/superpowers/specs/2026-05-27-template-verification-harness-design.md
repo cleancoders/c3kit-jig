@@ -133,9 +133,14 @@ Declarative, per template. Example for full-stack-reagent:
             :cljs-once  ["clojure" "-M:test:cljs" "once"]
             :migrate    ["clojure" "-M:test:migrate"]
             :run        ["clojure" "-M:test:run"]
-            :port       8123}
+            :port       8123
+            :lint       ["clj-kondo" "--lint" "src" "spec" "dev"]
+            :fmt        ["cljfmt" "check" "src" "spec" "dev"]}
+ :lint-paths {:config ".clj-kondo/config.edn" :targets ["src" "spec" "dev"]}
+ :fmt-config "cljfmt.edn"
 
  :checks  {:no-cruft true :combo true :residue true :ns-hyphen true
+           :lint true :fmt true
            :clj-clean true :cljs-run true :server-boot true}}
 ```
 
@@ -151,13 +156,18 @@ an open plugin registry.
 | `:combo` | both | From the combo edn: `must-exist`, `must-not-exist`, `file-contains`, `file-not-contains` (ported verbatim from today's `verify-scaffold.bb`). |
 | `:residue` | both | No `@c3kit/feature` or `@c3kit/db` markers remain in the scaffold (grep). The harness/combo files live outside the scaffold, so no self-exclusion is needed. |
 | `:ns-hyphen` | both | Every `(ns <prefix>…)` form in `*.clj`/`*.cljc`/`*.cljs` uses the hyphenated project name (e.g. `probe-app.*`), never the underscore form (`probe_app.*`). Files in `:ns-prefix-exempt` are skipped. |
+| `:lint` | both | The scaffold ships a `.clj-kondo/config.edn`; run `:lint` against it. Pass iff clj-kondo reports 0 warnings and 0 errors. A missing config is a **fail** with detail `no .clj-kondo/config.edn shipped`. |
+| `:fmt` | both | The scaffold ships a `cljfmt.edn`; run `:fmt` against it. Pass iff cljfmt reports no formatting diffs. A missing config is a **fail** with detail `no cljfmt.edn shipped`. |
 | `:clj-clean` | both | Run `:clj-spec` command. Pass iff exit 0 **and** no log-level lines — lines containing a timestamp or an `INFO`/`DEBUG`/`WARN`/`ERROR` marker — appear outside speclj's own progress/summary output. (speclj dots/`documentation` output + final summary are allowed.) |
 | `:cljs-run` | full | Run `:cljs-once` command (Playwright headless). Pass iff exit 0, specs ran (count > 0), and 0 failures. |
 | `:server-boot` | full | Run `:migrate`; start `:run` in the background with `PORT=<:port>`; poll `http://localhost:<:port>/` until any HTTP response or a timeout; then kill the process. Pass iff a response arrives before timeout. |
 
 Tier default check sets:
-- **full**: all seven.
-- **light**: `:no-cruft :combo :residue :ns-hyphen :clj-clean`.
+- **full**: all checks.
+- **light**: `:no-cruft :combo :residue :ns-hyphen :lint :fmt :clj-clean`.
+
+`:lint` and `:fmt` are static (no DB, no deps download beyond the analyzers) so they run in
+both tiers. CI must install the `clj-kondo` and `cljfmt` binaries.
 
 The effective set for a run = tier default set ∩ descriptor `:checks` that are `true`.
 
@@ -173,8 +183,9 @@ The effective set for a run = tier default set ∩ descriptor `:checks` that are
 - Local: `cd verification && bb verify --combo memory-defaults --tier full`.
   `bb verify-all` runs every combo at its declared tier.
 - CI (`.github/workflows/template-full-stack-reagent.yml`): rewrite the `scaffold-matrix`
-  job to call `verification/engine.bb` per combo at its declared tier. The memory-defaults
-  (full) matrix entry adds a Playwright browser install step (for `:cljs-run`). Other
+  job to call `verification/engine.bb` per combo at its declared tier. Every matrix entry
+  installs the `clj-kondo` and `cljfmt` binaries (for `:lint`/`:fmt`); the memory-defaults
+  (full) entry additionally adds a Playwright browser install step (for `:cljs-run`). Other
   combos run light. Remove references to the in-template `dev/verify-scaffold.bb`.
   - The existing `template-at-head` job (runs `clojure -M:test:spec` inside the template
     tree) and `hook-iso-test` job (runs `spec/hook_test.bb` inside the template) are
@@ -186,6 +197,8 @@ The effective set for a run = tier default set ∩ descriptor `:checks` that are
 On first run the harness is expected to be **red** for full-stack-reagent:
 - `:no-cruft` — fails on `full-stack-reagent.iml` and `.cpcache/`.
 - `:ns-hyphen` — fails on underscore ns prefixes.
+- `:lint` — fails: template ships no `.clj-kondo/config.edn`.
+- `:fmt` — fails: template ships no `cljfmt.edn`.
 - `:clj-clean` — fails on log noise.
 - `:cljs-run` — fails (auto-watch / Playwright not wired for one-shot).
 
@@ -199,3 +212,5 @@ later pass and is **not** part of this work.
 - Quieting clj spec log output.
 - A clean one-shot cljs spec command in the template.
 - Gating `compile_cljs.clj`'s SSR-specific code behind the `:ssr` feature.
+- Shipping a `.clj-kondo/config.edn` and a `cljfmt.edn` in the template (so `:lint`/`:fmt`
+  go green), and bringing the template's code into compliance with them.
