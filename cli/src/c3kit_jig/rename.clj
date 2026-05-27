@@ -59,13 +59,20 @@
   [s source-token flags user]
   (replace-token s source-token (dissoc flags :hyphen) user))
 
-(defn- ns-arg-string?
-  "True if literal `lit` (quotes included) contains the source token immediately
-   followed by a dot + symbol char — i.e. a namespace ref like \"acme.main\",
-   not a bare path prefix like \"acme\"."
-  [lit source-token]
-  (boolean (re-find (re-pattern (str (java.util.regex.Pattern/quote source-token) "\\.[A-Za-z]"))
-                    lit)))
+(defn- edn-ns-arg-str?
+  "True if an EDN string segment must hyphenate its project token because the
+   string denotes a namespace ARGUMENT, not arbitrary data. Two cases:
+   - the string embeds a `(require …)` / `(in-ns …)` call (e.g. a `-e` form), or
+   - the string is the value passed right after a `\"-m\"` main flag — detected
+     via `prev-str` (the previous string segment) being `\"-m\"` with only
+     whitespace/commas in the `between` code segment.
+   Plain data strings like an env-key `\"acme.env\"` or `:ns-prefix \"acme\"`
+   are NOT namespace args and stay underscore."
+  [text prev-str between]
+  (boolean
+   (or (re-find #"\(\s*(?:require|in-ns)\b" text)
+       (and (= prev-str "\"-m\"")
+            (re-matches #"[\s,]*" (or between ""))))))
 
 (defn- ns-qualified-symbol?
   "True if `text` (EDN code segment, no surrounding quotes) contains the source token
@@ -89,25 +96,35 @@
         (conj acc [:code (subs content last)])))))
 
 (defn- replace-content-one
-  "Apply one token to `content` with the segment rule appropriate to `ext`."
+  "Apply one token to `content` with the segment rule appropriate to `ext`.
+   clj/cljc/cljs: code → hyphen, string literals → underscore.
+   edn: code with a namespace-qualified symbol → hyphen; a string that is a
+   namespace ARGUMENT (require/in-ns form, or a `-m` value) → hyphen; all other
+   strings/code → underscore. EDN string classification needs look-behind, so
+   we index over the segment vector."
   [content [source-token flags] user ext]
-  (->> (split-on-strings content)
-       (map (fn [[kind text]]
+  (let [segs (split-on-strings content)
+        hyph #(hyphenate-token % source-token flags user)
+        und  #(underscore-token % source-token flags user)]
+    (->> segs
+         (map-indexed
+          (fn [i [kind text]]
+            (cond
+              (#{"clj" "cljc" "cljs"} ext)
+              (if (= kind :code) (hyph text) (und text))
+
+              (= ext "edn")
               (cond
-                (#{"clj" "cljc" "cljs"} ext)
-                (if (= kind :code)
-                  (hyphenate-token text source-token flags user)
-                  (underscore-token text source-token flags user))
+                (= kind :code) (if (ns-qualified-symbol? text source-token) (hyph text) (und text))
+                (edn-ns-arg-str? text
+                                 (second (nth segs (- i 2) [:str ""]))   ; previous string segment
+                                 (second (nth segs (dec i) [:code ""]))) ; code between them
+                (hyph text)
+                :else (und text))
 
-                (= ext "edn")
-                (if (or (and (= kind :str) (ns-arg-string? text source-token))
-                        (and (= kind :code) (ns-qualified-symbol? text source-token)))
-                  (hyphenate-token text source-token flags user)
-                  (underscore-token text source-token flags user))
-
-                :else
-                (underscore-token text source-token flags user))))
-       (apply str)))
+              :else
+              (und text))))
+         (apply str))))
 
 (defn replace-content
   "Context-aware token replacement for file CONTENT. `ext` is the lowercased

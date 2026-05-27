@@ -86,6 +86,22 @@
                             "{:config-var acme.config/bucket}"
                             toks user "edn"))))
 
+            (it "edn: env-key string stays underscore (not a namespace arg)"
+                (let [user (r/variants "my-app")
+                      toks {"acme" {:hyphen true :underscore true :pascal true}}]
+                  (should= "{:env-keys [\"my_app.env\" \"ACME_ENV\"]}"
+                           (r/replace-content
+                            "{:env-keys [\"acme.env\" \"ACME_ENV\"]}"
+                            toks user "edn"))))
+
+            (it "edn: require/in-ns form inside a string hyphenates the ns"
+                (let [user (r/variants "my-app")
+                      toks {"acme" {:hyphen true :underscore true :pascal true}}]
+                  (should= "[\"-e\" \"(require,'my-app.repl)\"]"
+                           (r/replace-content
+                            "[\"-e\" \"(require,'acme.repl)\"]"
+                            toks user "edn"))))
+
             (it "other ext: single-variant underscore as before"
                 (let [user (r/variants "my-app")
                       toks {"acme" {:hyphen true :underscore true :pascal true}}]
