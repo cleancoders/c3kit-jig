@@ -48,3 +48,67 @@
     {:ok? (and (zero? exit) (some? examples) (pos? examples) (= 0 failures))
      :examples examples
      :failures failures}))
+
+;; --- Effectful check shells ---
+
+(defn- rel [root ^java.io.File f]
+  (str (.relativize (.toPath (fs/file root)) (.toPath f))))
+
+(defn- clj-files [root]
+  (->> (file-seq (fs/file root))
+       (filter #(.isFile %))
+       (filter #(re-find #"\.(clj|cljc|cljs)$" (.getName %)))))
+
+(defn cruft-check
+  "Fail if any glob in `globs` matches a path inside the scaffold."
+  [root globs]
+  (let [hits (mapcat (fn [g] (map str (fs/glob root g))) globs)
+        hits (sort (distinct (map #(rel root (fs/file %)) hits)))]
+    {:check :no-cruft
+     :ok?   (empty? hits)
+     :detail (if (empty? hits) "no cruft" (str "cruft present: " (str/join ", " hits)))}))
+
+(defn ns-hyphen-check
+  "Fail if any clj/cljc/cljs file's ns form uses the underscore project prefix.
+   Files whose relative path is in `exempt` are skipped."
+  [root underscore exempt]
+  (let [exempt (set exempt)
+        viols  (for [^java.io.File f (clj-files root)
+                     :let [r (rel root f)]
+                     :when (not (exempt r))
+                     :let [sym (ns-prefix-violation (slurp f) underscore)]
+                     :when sym]
+                 (str r " -> " sym))]
+    {:check :ns-hyphen
+     :ok?   (empty? viols)
+     :detail (if (empty? viols) "ns forms hyphenated" (str "underscore ns forms: " (str/join ", " viols)))}))
+
+(defn residue-check
+  "Fail if any @c3kit/feature or @c3kit/db marker survived in the scaffold."
+  [root]
+  (let [{:keys [out]} (p/sh {:continue true} "grep" "-rEl" "@c3kit/(feature|db)" (str root))
+        hits (->> (str/split-lines (or out "")) (remove str/blank?) (map #(rel root (fs/file %))) sort)]
+    {:check :residue
+     :ok?   (empty? hits)
+     :detail (if (empty? hits) "no residue" (str "residual markers in: " (str/join ", " hits)))}))
+
+(defn combo-check
+  "Port of verify-scaffold's structural assertions for one combo edn."
+  [root {:keys [must-exist must-not-exist file-contains file-not-contains]}]
+  (let [errs (atom [])
+        full (fn [p] (str (fs/path root p)))]
+    (doseq [p must-exist]
+      (when-not (fs/exists? (full p)) (swap! errs conj (str "must-exist missing: " p))))
+    (doseq [p must-not-exist]
+      (when (fs/exists? (full p)) (swap! errs conj (str "must-not-exist present: " p))))
+    (doseq [[p strs] file-contains s strs]
+      (if-not (fs/exists? (full p))
+        (swap! errs conj (str "file-contains: missing file " p))
+        (when-not (str/includes? (slurp (full p)) s)
+          (swap! errs conj (str "file-contains miss: " p " <- " (pr-str s))))))
+    (doseq [[p strs] file-not-contains s strs]
+      (when (and (fs/exists? (full p)) (str/includes? (slurp (full p)) s))
+        (swap! errs conj (str "file-not-contains hit: " p " -> " (pr-str s)))))
+    {:check :combo
+     :ok?   (empty? @errs)
+     :detail (if (empty? @errs) "combo ok" (str/join "; " @errs))}))

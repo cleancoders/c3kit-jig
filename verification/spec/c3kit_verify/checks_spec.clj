@@ -47,3 +47,66 @@
               (should-not (:ok? (sut/parse-cljs-result "0 examples, 0 failures" 0))))
           (it "fails on nonzero exit"
               (should-not (:ok? (sut/parse-cljs-result "5 examples, 0 failures" 1)))))
+
+(require '[babashka.fs :as fs])
+
+(defn- spit-file! [root rel content]
+  (let [f (fs/file (fs/path root rel))]
+    (fs/create-dirs (fs/parent f))
+    (spit f content)))
+
+(defn- temp-scaffold! []
+  (let [root (str (fs/create-temp-dir {:prefix "harness-test-"}))]
+    (spit-file! root "src/clj/my_app/main.clj" "(ns my_app.main)\n")
+    (spit-file! root "src/clj/my_app/config.clj" "(ns my-app.config)\n(def e \"my_app.env\")\n")
+    (spit-file! root "deps.edn" "{:paths [\"src\"]}\n")
+    root))
+
+(describe "cruft-check"
+          (it "flags an .iml and a .cpcache dir"
+              (let [root (temp-scaffold!)]
+                (spit-file! root "full-stack-reagent.iml" "x")
+                (spit-file! root ".cpcache/foo.edn" "x")
+                (let [r (sut/cruft-check root ["*.iml" ".cpcache"])]
+                  (should-not (:ok? r))
+                  (should (re-find #"full-stack-reagent.iml" (:detail r)))
+                  (fs/delete-tree root))))
+          (it "passes a clean scaffold"
+              (let [root (temp-scaffold!)
+                    r    (sut/cruft-check root ["*.iml" ".cpcache" "target"])]
+                (should (:ok? r))
+                (fs/delete-tree root))))
+
+(describe "ns-hyphen-check"
+          (it "flags the underscore ns form, ignores body strings and hyphenated ns"
+              (let [root (temp-scaffold!)
+                    r    (sut/ns-hyphen-check root "my_app" [])]
+                (should-not (:ok? r))
+                (should (re-find #"my_app.main" (:detail r)))
+                (should-not (re-find #"config.clj" (:detail r)))
+                (fs/delete-tree root))))
+
+(describe "residue-check"
+          (it "flags a surviving @c3kit/feature marker"
+              (let [root (temp-scaffold!)]
+                (spit-file! root "src/clj/my_app/x.clj" ";; @c3kit/feature :auth = foo")
+                (let [r (sut/residue-check root)]
+                  (should-not (:ok? r))
+                  (fs/delete-tree root))))
+          (it "passes with no markers"
+              (let [root (temp-scaffold!)
+                    r    (sut/residue-check root)]
+                (should (:ok? r))
+                (fs/delete-tree root))))
+
+(describe "combo-check"
+          (it "checks must-exist / must-not-exist / file-contains / file-not-contains"
+              (let [root (temp-scaffold!)
+                    ok   (sut/combo-check root {:must-exist ["deps.edn"]
+                                                :must-not-exist ["nope.txt"]
+                                                :file-contains {"deps.edn" [":paths"]}
+                                                :file-not-contains {"deps.edn" ["banana"]}})
+                    bad  (sut/combo-check root {:must-exist ["missing.clj"]})]
+                (should (:ok? ok))
+                (should-not (:ok? bad))
+                (fs/delete-tree root))))
