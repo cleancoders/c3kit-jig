@@ -20,8 +20,8 @@
  :file-contains  {"src/clj/my_app/config.clj"        ["memory-local"
                                                        ":bucket memory-local"
                                                        "MyApp"]
-                  "src/clj/my_app/main.clj"          ["my_app.content.core"
-                                                      "my_app.auth.user.web"]
+                  "src/clj/my_app/main.clj"          ["my-app.content.core"
+                                                      "my-app.auth.user.web"]
                   "src/cljs/my_app/auth/user.cljs"   ["install-and-connect!"
                                                       "data-fetched?"]
                   "src/cljs/my_app/forms.cljs"       ["attempt-submit"

@@ -44,7 +44,7 @@
  :file-contains  {"src/clj/my_app/config.clj" ["memory-local"
                                                 ":bucket memory-local"
                                                 "MyApp"]
-                  "src/clj/my_app/main.clj"   ["my_app.auth.user.web"]
+                  "src/clj/my_app/main.clj"   ["my-app.auth.user.web"]
                   "deps.edn"                  ["com.cleancoders.c3kit/apron"
                                                "org.mindrot/jbcrypt"
                                                "markdown-to-hiccup"]

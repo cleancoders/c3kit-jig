@@ -38,9 +38,9 @@
                                                 "MyApp"
                                                 "my_app.env"
                                                 "MY_APP_ENV"]
-                  "src/clj/my_app/main.clj"   ["my_app.content.core"
-                                               "my_app.ssr.prerender"
-                                               "my_app.auth.user.web"
+                  "src/clj/my_app/main.clj"   ["my-app.content.core"
+                                               "my-app.ssr.prerender"
+                                               "my-app.auth.user.web"
                                                "my_app.env"
                                                "MY_APP_ENV"]
                   "src/clj/my_app/errors.clj" ["example.com"]

@@ -36,9 +36,9 @@
  :file-contains  {"src/clj/my_app/config.clj" ["sqlite-local"
                                                 ":bucket sqlite-local"
                                                 "MyApp"]
-                  "src/clj/my_app/main.clj"   ["my_app.content.core"
-                                               "my_app.ssr.prerender"
-                                               "my_app.auth.user.web"]
+                  "src/clj/my_app/main.clj"   ["my-app.content.core"
+                                               "my-app.ssr.prerender"
+                                               "my-app.auth.user.web"]
                   "deps.edn"                  ["com.cleancoders.c3kit/apron"
                                                "org.mindrot/jbcrypt"
                                                "markdown-to-hiccup"

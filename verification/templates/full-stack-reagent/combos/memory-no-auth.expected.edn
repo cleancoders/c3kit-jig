@@ -36,8 +36,8 @@
  :file-contains  {"src/clj/my_app/config.clj" ["memory-local"
                                                 ":bucket memory-local"
                                                 "MyApp"]
-                  "src/clj/my_app/main.clj"   ["my_app.content.core"
-                                               "my_app.ssr.prerender"]
+                  "src/clj/my_app/main.clj"   ["my-app.content.core"
+                                               "my-app.ssr.prerender"]
                   "deps.edn"                  ["com.cleancoders.c3kit/apron"
                                                "markdown-to-hiccup"]
                   "bin/db"                    ["In-memory backend"]}
