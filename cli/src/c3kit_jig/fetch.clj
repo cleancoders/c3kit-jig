@@ -1,7 +1,8 @@
 (ns c3kit-jig.fetch
   (:require [babashka.fs :as fs]
             [babashka.process :as p]
-            [clojure.edn :as edn]))
+            [clojure.edn :as edn]
+            [clojure.string :as str]))
 
 (defn list-local-templates
   "Return [{:id \"tiny-fixture\" :label \"Tiny Fixture\" :description \"...\"} ...]
@@ -22,6 +23,28 @@
          (sort-by :id)
          vec)))
 
+(def ^:private cruft-names
+  #{".cpcache" "target" "node_modules" ".idea" ".DS_Store"
+    ".nrepl-port" ".specljs-timestamp" "prerender" "prerendered"})
+
+(def ^:private cruft-exts #{"iml" "class" "jar"})
+
+(defn prune-cruft!
+  "Delete known dev/VCS artifacts from a freshly copied template tree.
+   Matches directory/file basenames exactly (cruft-names) plus build-artifact
+   extensions (cruft-exts) — never substring/suffix, to avoid deleting
+   legitimately-named template files."
+  [dest]
+  (doseq [^java.io.File f (reverse (file-seq (fs/file dest)))
+          :when (.exists f)
+          :let  [n (.getName f)
+                 ext (last (str/split n #"\."))]
+          :when (or (contains? cruft-names n)
+                    (and (.isFile f) (contains? cruft-exts ext)))]
+    (if (.isDirectory f)
+      (fs/delete-tree (str f))
+      (fs/delete-if-exists (str f)))))
+
 (defn from-local-dir
   "Copy `<templates-root>/<id>/` into `dest`. Throws if missing."
   [templates-root id dest]
@@ -29,7 +52,9 @@
     (when-not (fs/exists? src)
       (throw (ex-info (str "template not found: " src) {:fetch? true})))
     (fs/create-dirs (fs/parent dest))
-    (fs/copy-tree src dest)))
+    (fs/copy-tree src dest)
+    (prune-cruft! dest)
+    dest))
 
 (defn- git-available? []
   (try
