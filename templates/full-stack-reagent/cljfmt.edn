@@ -4,9 +4,9 @@
 ;; file to be formatted (exit 0).
 ;;
 ;; Only trailing-whitespace cleanup is enabled. The template source carries
-;; `;; @c3kit/feature …` block markers that the scaffolder strips line-by-line,
-;; and uses a closing-delimiter-on-own-line style inside require/feature blocks
-;; so those blocks stay easy to add/remove. cljfmt's indentation reflow,
+;; scaffolder feature/db block markers that are stripped line-by-line, and uses
+;; a closing-delimiter-on-own-line style inside require/feature blocks so those
+;; blocks stay easy to add/remove. cljfmt's indentation reflow,
 ;; surrounding-whitespace removal, and blank-line collapsing would move
 ;; delimiters across marker boundaries and unbalance a form once a feature is
 ;; stripped. Restricting cljfmt to trailing-whitespace keeps the check
