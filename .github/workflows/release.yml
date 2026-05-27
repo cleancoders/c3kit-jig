@@ -25,11 +25,11 @@ jobs:
       - name: compute sha256
         working-directory: cli
         run: |
-          sha256sum dist/c3kit-create.bb | cut -d' ' -f1 > dist/c3kit-create.bb.sha256
+          sha256sum dist/c3kit-jig.bb | cut -d' ' -f1 > dist/c3kit-jig.bb.sha256
           ls -lah dist
 
       - uses: softprops/action-gh-release@v2
         with:
           files: |
-            cli/dist/c3kit-create.bb
-            cli/dist/c3kit-create.bb.sha256
+            cli/dist/c3kit-jig.bb
+            cli/dist/c3kit-jig.bb.sha256
