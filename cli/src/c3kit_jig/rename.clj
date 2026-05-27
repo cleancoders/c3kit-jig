@@ -47,6 +47,70 @@
     (reduce (fn [acc [src flags]] (replace-token acc src flags user))
             s sorted)))
 
+(def ^:private STRING-LIT-RE #"\"(?:\\.|[^\"\\])*\"")
+
+(defn- hyphenate-token
+  "Replace pascal/upper-prefix as usual, but use the HYPHEN user variant for the base token."
+  [s source-token flags user]
+  (replace-token s source-token (dissoc flags :underscore) user))
+
+(defn- underscore-token
+  "Replace pascal/upper-prefix as usual, but use the UNDERSCORE user variant for the base token."
+  [s source-token flags user]
+  (replace-token s source-token (dissoc flags :hyphen) user))
+
+(defn- ns-arg-string?
+  "True if literal `lit` (quotes included) contains the source token immediately
+   followed by a dot + symbol char — i.e. a namespace ref like \"acme.main\",
+   not a bare path prefix like \"acme\"."
+  [lit source-token]
+  (boolean (re-find (re-pattern (str (java.util.regex.Pattern/quote source-token) "\\.[A-Za-z]"))
+                    lit)))
+
+(defn- split-on-strings
+  "Return a vector of [kind text] segments where kind is :code or :str,
+   preserving order so (apply str (map second …)) reconstructs the input."
+  [content]
+  (let [m (re-matcher STRING-LIT-RE content)]
+    (loop [acc [] last 0]
+      (if (.find m)
+        (recur (-> acc
+                   (conj [:code (subs content last (.start m))])
+                   (conj [:str (.group m)]))
+               (.end m))
+        (conj acc [:code (subs content last)])))))
+
+(defn- replace-content-one
+  "Apply one token to `content` with the segment rule appropriate to `ext`."
+  [content [source-token flags] user ext]
+  (->> (split-on-strings content)
+       (map (fn [[kind text]]
+              (cond
+                (#{"clj" "cljc" "cljs"} ext)
+                (if (= kind :code)
+                  (hyphenate-token text source-token flags user)
+                  (underscore-token text source-token flags user))
+
+                (= ext "edn")
+                (if (and (= kind :str) (ns-arg-string? text source-token))
+                  (hyphenate-token text source-token flags user)
+                  (underscore-token text source-token flags user))
+
+                :else
+                (underscore-token text source-token flags user))))
+       (apply str)))
+
+(defn replace-content
+  "Context-aware token replacement for file CONTENT. `ext` is the lowercased
+   file extension (no dot). For clj/cljc/cljs and edn, distinguishes code/symbol
+   context (hyphen) from string/path context (underscore). For any other ext,
+   single-variant underscore replacement."
+  [content tokens user ext]
+  (let [sorted (sort-by #(- (count (first %))) tokens)]
+    (if (#{"clj" "cljc" "cljs" "edn"} ext)
+      (reduce (fn [acc tok] (replace-content-one acc tok user ext)) content sorted)
+      (reduce (fn [acc [src flags]] (underscore-token acc src flags user)) content sorted))))
+
 (defn reserved? [name] (boolean (RESERVED name)))
 
 (defn validate-name
