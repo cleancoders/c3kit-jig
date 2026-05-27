@@ -24,23 +24,28 @@
   (mapcat (fn [[k v]] ["--feature" (str (name k) "=" (boolean v))]) features))
 
 (defn- scaffold!
-  "Invoke the CLI to scaffold one combo into a temp dir; return the scaffold path."
+  "Invoke the CLI to scaffold one combo into a temp dir; return the scaffold path.
+   Cleans up the temp dir if scaffolding fails."
   [{:keys [cli-cp template descriptor combo-edn]}]
-  (let [tmp        (str (fs/create-temp-dir {:prefix "verify-"}))
-        templates  (str (fs/absolutize (fs/path here (:cli-templates-dir descriptor))))
-        cli-cp     (when cli-cp (str (fs/absolutize (fs/path here cli-cp))))
-        args       (concat ["create" (:name combo-edn)
-                            "--template-dir" templates
-                            "--template" template
-                            "--db" (name (:db combo-edn))
-                            "--yes" "--no-git"]
-                           (feature-flags (:features combo-edn)))
-        cli-prefix (if cli-cp ["bb" "-cp" cli-cp "-m" "c3kit-jig.main"] ["bb" "-m" "c3kit-jig.main"])
-        {:keys [exit out err]} (apply p/sh {:dir tmp} (concat cli-prefix args))]
-    (println out)
-    (when (seq err) (println "stderr:" err))
-    (when-not (zero? exit) (throw (ex-info (str "CLI scaffold failed, exit " exit) {:exit exit})))
-    {:tmp tmp :scaffold (str (fs/path tmp (:name combo-edn)))}))
+  (let [tmp (str (fs/create-temp-dir {:prefix "verify-"}))]
+    (try
+      (let [templates  (str (fs/absolutize (fs/path here (:cli-templates-dir descriptor))))
+            cli-cp     (when cli-cp (str (fs/absolutize (fs/path here cli-cp))))
+            args       (concat ["create" (:name combo-edn)
+                                "--template-dir" templates
+                                "--template" template
+                                "--db" (name (:db combo-edn))
+                                "--yes" "--no-git"]
+                               (feature-flags (:features combo-edn)))
+            cli-prefix (if cli-cp ["bb" "-cp" cli-cp "-m" "c3kit-jig.main"] ["bb" "-m" "c3kit-jig.main"])
+            {:keys [exit out err]} (apply p/sh {:dir tmp} (concat cli-prefix args))]
+        (println out)
+        (when (seq err) (println "stderr:" err))
+        (when-not (zero? exit) (throw (ex-info (str "CLI scaffold failed, exit " exit) {:exit exit})))
+        {:tmp tmp :scaffold (str (fs/path tmp (:name combo-edn)))})
+      (catch Throwable e
+        (fs/delete-tree tmp)
+        (throw e)))))
 
 (defn- run-checks [root descriptor combo-edn enabled]
   (let [{:keys [denylist ns-prefix-exempt commands]} descriptor
@@ -95,6 +100,7 @@
   (let [{:keys [options]} (cli/parse-opts argv opts-spec)
         template (:template options)
         descriptor (read-edn (descriptor-path template))
-        results (for [[combo {:keys [tier]}] (:combos descriptor)]
-                  (verify-combo (assoc options :combo (name combo) :tier (name tier))))]
+        results (mapv (fn [[combo {:keys [tier]}]]
+                        (verify-combo (assoc options :combo (name combo) :tier (name tier))))
+                      (:combos descriptor))]
     (System/exit (if (every? true? results) 0 1))))
