@@ -97,7 +97,10 @@
               (let [root (temp-scaffold!)
                     r    (sut/residue-check root)]
                 (should (:ok? r))
-                (fs/delete-tree root))))
+                (fs/delete-tree root)))
+          (it "fails on a grep error (nonexistent root)"
+              (let [r (sut/residue-check "/nonexistent-path-xyz-12345")]
+                (should-not (:ok? r)))))
 
 (describe "combo-check"
           (it "checks must-exist / must-not-exist / file-contains / file-not-contains"

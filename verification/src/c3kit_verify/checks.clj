@@ -86,11 +86,12 @@
 (defn residue-check
   "Fail if any @c3kit/feature or @c3kit/db marker survived in the scaffold."
   [root]
-  (let [{:keys [out]} (p/sh {:continue true} "grep" "-rEl" "@c3kit/(feature|db)" (str root))
+  (let [{:keys [out exit]} (p/sh {:continue true} "grep" "-rEl" "@c3kit/(feature|db)" (str root))
         hits (->> (str/split-lines (or out "")) (remove str/blank?) (map #(rel root (fs/file %))) sort)]
-    {:check :residue
-     :ok?   (empty? hits)
-     :detail (if (empty? hits) "no residue" (str "residual markers in: " (str/join ", " hits)))}))
+    (cond
+      (>= exit 2) {:check :residue :ok? false :detail (str "grep error (exit " exit ")")}
+      (seq hits)  {:check :residue :ok? false :detail (str "residual markers in: " (str/join ", " hits))}
+      :else       {:check :residue :ok? true :detail "no residue"})))
 
 (defn combo-check
   "Port of verify-scaffold's structural assertions for one combo edn."
