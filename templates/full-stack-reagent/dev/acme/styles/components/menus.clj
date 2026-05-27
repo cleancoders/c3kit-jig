@@ -112,7 +112,7 @@
   [:li.disabled:hover {
     :background-color white
   }]
-  
+
   [:li.disabled:hover [:a {
     :color dark-grey
   }]]

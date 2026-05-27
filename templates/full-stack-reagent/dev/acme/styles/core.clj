@@ -44,7 +44,7 @@
   (str "'" face "-" weight "', Helvetica, sans-serif"))
 
 (defn font-load [face weight]
-  (list 
+  (list
     ["@font-face" {
       :font-family (str "'" face "-" weight "'")}
       {:src        (str "url('/fonts/" face "-" weight ".woff2') format('woff2'), "
@@ -63,5 +63,5 @@
   )
 )
 
-(def fonts 
+(def fonts
   (map #(font-load "open-sans" %) ["bold" "extrabold" "light" "regular" "semibold"]))
