@@ -1,0 +1,106 @@
+(ns c3kit-verify.engine
+  (:require [babashka.fs :as fs]
+            [babashka.process :as p]
+            [clojure.edn :as edn]
+            [clojure.string :as str]
+            [clojure.tools.cli :as cli]
+            [c3kit-verify.checks :as checks]))
+
+(def ^:private here (System/getProperty "user.dir")) ; verification/ when run via bb task
+
+(defn- descriptor-path [template]
+  (str (fs/path here "templates" template "verify.edn")))
+
+(defn- combo-path [template combo]
+  (str (fs/path here "templates" template "combos" (str combo ".expected.edn"))))
+
+(defn- read-edn [path] (edn/read-string (slurp path)))
+
+(def ^:private tier-checks
+  {:full  #{:no-cruft :combo :residue :ns-hyphen :lint :fmt :clj-clean :cljs-run :server-boot}
+   :light #{:no-cruft :combo :residue :ns-hyphen :lint :fmt :clj-clean}})
+
+(defn- feature-flags [features]
+  (mapcat (fn [[k v]] ["--feature" (str (name k) "=" (boolean v))]) features))
+
+(defn- scaffold!
+  "Invoke the CLI to scaffold one combo into a temp dir; return the scaffold path.
+   Cleans up the temp dir if scaffolding fails."
+  [{:keys [cli-cp template descriptor combo-edn]}]
+  (let [tmp (str (fs/create-temp-dir {:prefix "verify-"}))]
+    (try
+      (let [templates  (str (fs/absolutize (fs/path here (:cli-templates-dir descriptor))))
+            cli-cp     (when cli-cp (str (fs/absolutize (fs/path here cli-cp))))
+            args       (concat ["create" (:name combo-edn)
+                                "--template-dir" templates
+                                "--template" template
+                                "--db" (name (:db combo-edn))
+                                "--yes" "--no-git"]
+                               (feature-flags (:features combo-edn)))
+            cli-prefix (if cli-cp ["bb" "-cp" cli-cp "-m" "c3kit-jig.main"] ["bb" "-m" "c3kit-jig.main"])
+            {:keys [exit out err]} (apply p/sh {:dir tmp} (concat cli-prefix args))]
+        (println out)
+        (when (seq err) (println "stderr:" err))
+        (when-not (zero? exit) (throw (ex-info (str "CLI scaffold failed, exit " exit) {:exit exit})))
+        {:tmp tmp :scaffold (str (fs/path tmp (:name combo-edn)))})
+      (catch Throwable e
+        (fs/delete-tree tmp)
+        (throw e)))))
+
+(defn- run-checks [root descriptor combo-edn enabled]
+  (let [{:keys [denylist ns-prefix-exempt commands]} descriptor
+        underscore (str/replace (:name combo-edn) "-" "_")
+        run? (fn [k] (and (enabled k) (get-in descriptor [:checks k])))]
+    (cond-> []
+      (run? :no-cruft)    (conj (checks/cruft-check root denylist))
+      (run? :combo)       (conj (checks/combo-check root combo-edn))
+      (run? :residue)     (conj (checks/residue-check root))
+      (run? :ns-hyphen)   (conj (checks/ns-hyphen-check root underscore ns-prefix-exempt))
+      (run? :lint)        (conj (checks/tool-check :lint root (:lint commands) (:lint-config commands) "clj-kondo"))
+      (run? :fmt)         (conj (checks/tool-check :fmt root (:fmt commands) (:fmt-config commands) "cljfmt"))
+      (run? :clj-clean)   (conj (checks/clj-clean-check root (:clj-spec commands)))
+      (run? :cljs-run)    (conj (checks/cljs-check root (:cljs-once commands)))
+      (run? :server-boot) (conj (checks/server-boot-check root commands)))))
+
+(defn- report! [combo results]
+  (println (str "\n=== " combo " ==="))
+  (doseq [{:keys [check ok? detail]} results]
+    (println (format "  [%s] %-12s %s" (if ok? "PASS" "FAIL") (name check) detail)))
+  (every? :ok? results))
+
+(defn verify-combo
+  [{:keys [template combo tier cli-cp keep-tmp]}]
+  (let [descriptor (read-edn (descriptor-path template))
+        combo-edn  (read-edn (combo-path template combo))
+        tier-kw    (or (some-> tier keyword) (get-in descriptor [:combos (keyword combo) :tier]) :light)
+        enabled    (tier-checks tier-kw)
+        {:keys [tmp scaffold]} (scaffold! {:cli-cp cli-cp :template template
+                                           :descriptor descriptor :combo-edn combo-edn})]
+    (try
+      (let [results (run-checks scaffold descriptor combo-edn enabled)]
+        (report! combo results))
+      (finally
+        (when-not keep-tmp (fs/delete-tree tmp))))))
+
+(def ^:private opts-spec
+  [[nil "--template ID"  "Template id" :default "full-stack-reagent"]
+   [nil "--combo NAME"   "Combo name"]
+   [nil "--tier TIER"    "full or light (default: combo's declared tier)"]
+   [nil "--cli-cp PATH"  "CLI source classpath dir" :default "../cli/src"]
+   [nil "--keep-tmp"     "Keep scaffold temp dir"]])
+
+(defn -main [& argv]
+  (let [{:keys [options errors]} (cli/parse-opts argv opts-spec)]
+    (when errors (println "args error:" errors) (System/exit 2))
+    (when-not (:combo options) (println "missing --combo") (System/exit 2))
+    (let [ok? (verify-combo options)]
+      (System/exit (if ok? 0 1)))))
+
+(defn run-all [argv]
+  (let [{:keys [options]} (cli/parse-opts argv opts-spec)
+        template (:template options)
+        descriptor (read-edn (descriptor-path template))
+        results (mapv (fn [[combo {:keys [tier]}]]
+                        (verify-combo (assoc options :combo (name combo) :tier (name tier))))
+                      (:combos descriptor))]
+    (System/exit (if (every? true? results) 0 1))))

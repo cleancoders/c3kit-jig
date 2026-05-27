@@ -1,0 +1,13 @@
+{:paths ["src" "spec"]
+ :deps  {org.clojure/tools.cli {:mvn/version "1.1.230"}
+         speclj/speclj         {:mvn/version "3.12.0"}}
+ :tasks
+ {test       {:doc      "Run harness unit tests"
+              :requires ([speclj.cli])
+              :task     (speclj.cli/run "-c" "spec")}
+  verify     {:doc      "Verify one combo. e.g. bb verify --combo memory-defaults --tier full"
+              :requires ([c3kit-verify.engine])
+              :task     (apply c3kit-verify.engine/-main *command-line-args*)}
+  verify-all {:doc      "Verify every combo at its declared tier"
+              :requires ([c3kit-verify.engine])
+              :task     (c3kit-verify.engine/run-all *command-line-args*)}}}
