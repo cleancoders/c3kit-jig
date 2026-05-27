@@ -113,3 +113,28 @@
                 (should (:ok? ok))
                 (should-not (:ok? bad))
                 (fs/delete-tree root))))
+
+(describe "clj-clean-check (via injected runner)"
+          (it "passes clean output"
+              (let [r (sut/clj-clean-check* {:exit 0 :out "....\n4 examples, 0 failures"})]
+                (should (:ok? r))))
+          (it "fails on log noise even with exit 0"
+              (let [r (sut/clj-clean-check* {:exit 0 :out "WARN boom\n4 examples, 0 failures"})]
+                (should-not (:ok? r))))
+          (it "fails on nonzero exit"
+              (let [r (sut/clj-clean-check* {:exit 1 :out "4 examples, 1 failures"})]
+                (should-not (:ok? r)))))
+
+(describe "tool-check (via injected result)"
+          (it "fails when config missing"
+              (should-not (:ok? (sut/tool-check* :lint {:config-exists? false :exit 0
+                                                        :tool "clj-kondo" :config ".clj-kondo/config.edn"}))))
+          (it "tags the check keyword"
+              (should= :fmt (:check (sut/tool-check* :fmt {:config-exists? true :exit 0
+                                                           :tool "cljfmt" :config "cljfmt.edn"})))))
+
+(describe "cljs-check (via injected runner)"
+          (it "passes on a green one-shot run"
+              (should (:ok? (sut/cljs-check* {:exit 0 :out "12 examples, 0 failures"}))))
+          (it "fails when it never ran"
+              (should-not (:ok? (sut/cljs-check* {:exit 0 :out "0 examples, 0 failures"})))))

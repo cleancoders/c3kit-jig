@@ -113,3 +113,60 @@
     {:check :combo
      :ok?   (empty? @errs)
      :detail (if (empty? @errs) "combo ok" (str/join "; " @errs))}))
+
+;; --- Spec / lint / fmt / server checks ---
+;; Each has a pure `*`-core (takes a result map) and an effectful wrapper
+;; (runs the process). Tests target the pure cores.
+
+(defn clj-clean-check* [{:keys [exit out]}]
+  (let [clean (clean-spec-output? out)]
+    {:check :clj-clean
+     :ok?   (and (zero? exit) (:ok? clean))
+     :detail (cond
+               (not (zero? exit)) (str "clj specs exit " exit)
+               (:ok? clean)       "clj specs clean"
+               :else              (str "log noise: " (str/join " | " (take 3 (:offending clean)))))}))
+
+(defn clj-clean-check [root cmd]
+  (let [{:keys [exit out err]} (apply p/sh {:dir root :continue true} cmd)]
+    (clj-clean-check* {:exit exit :out (str out "\n" err)})))
+
+(defn tool-check* [check result]
+  (assoc (tool-result result) :check check))
+
+(defn tool-check
+  "check  — :lint or :fmt
+   cmd    — command vector run inside the scaffold
+   config — relative path that must exist (e.g. \".clj-kondo/config.edn\")
+   tool   — display name"
+  [check root cmd config tool]
+  (let [config-exists? (fs/exists? (fs/path root config))
+        {:keys [exit]} (if config-exists?
+                         (apply p/sh {:dir root :continue true} cmd)
+                         {:exit 0})]
+    (tool-check* check {:config-exists? config-exists? :exit exit :tool tool :config config})))
+
+(defn cljs-check* [{:keys [exit out]}]
+  (assoc (parse-cljs-result out exit) :check :cljs-run))
+
+(defn cljs-check [root cmd]
+  (let [{:keys [exit out err]} (apply p/sh {:dir root :continue true} cmd)]
+    (cljs-check* {:exit exit :out (str out "\n" err)})))
+
+(defn server-boot-check
+  "Run migrate, start the server in the background, poll its port for any HTTP
+   response, then kill it. Pass iff a response arrives before timeout."
+  [root {:keys [migrate run port]}]
+  (apply p/sh {:dir root :continue true} migrate)
+  (let [proc (apply p/process {:dir root :extra-env {"PORT" (str port)}} run)
+        url  (str "http://localhost:" port "/")
+        deadline (+ (System/currentTimeMillis) 60000)]
+    (try
+      (loop []
+        (let [resp (try (-> (p/sh {:continue true} "curl" "-s" "-o" "/dev/null" "-w" "%{http_code}" url) :out)
+                        (catch Exception _ nil))]
+          (cond
+            (and resp (re-matches #"[1-5]\d\d" (str/trim (or resp "")))) {:check :server-boot :ok? true :detail (str "HTTP " (str/trim resp))}
+            (> (System/currentTimeMillis) deadline) {:check :server-boot :ok? false :detail "server did not respond within 60s"}
+            :else (do (Thread/sleep 1000) (recur)))))
+      (finally (p/destroy-tree proc)))))
