@@ -1,4 +1,5 @@
-(ns c3kit-jig.ui)
+(ns c3kit-jig.ui
+  (:require [clojure.string :as str]))
 
 (def ^:dynamic *color?* true)
 
@@ -30,6 +31,19 @@
 (defn warn [msg] (emit *err* :yellow "⚠" msg))
 (defn fail [msg] (emit *err* :red    "✗" msg))
 (defn info [msg] (binding [*out* *out*] (println msg)))
+
+(defn next-steps
+  "Print a 'Next steps' block from manifest :next-steps entries.
+  Each entry is {:cmd \"...\" :doc \"...\"}; `{{name}}` in :cmd is replaced
+  with project-name. Prints nothing when steps is empty."
+  [steps project-name]
+  (when (seq steps)
+    (println)
+    (println (colorize :bold "Next steps:" *color?*))
+    (doseq [{:keys [cmd doc]} steps]
+      (let [cmd (str/replace cmd "{{name}}" project-name)]
+        (println (str "  " (colorize :green cmd *color?*)
+                      (when doc (str "  " (colorize :gray (str "# " doc) *color?*)))))))))
 
 (defn friendly-error
   "Wrap an Exception with a user-friendly one-liner. Original retained as cause."

@@ -150,7 +150,8 @@
               db       (compute-db manifest (:db opts) yes)
               scaffold (render-into-stage! tdir stage manifest nm features db)]
           (finalize! scaffold target opts)
-          (ui/ok (str "Created " nm))))
+          (ui/ok (str "Created " nm))
+          (ui/next-steps (:next-steps manifest) nm)))
       (catch Exception e
         (handle-scaffold-failure! e opts))
       (finally
