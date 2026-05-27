@@ -157,16 +157,19 @@
   "Run migrate, start the server in the background, poll its port for any HTTP
    response, then kill it. Pass iff a response arrives before timeout."
   [root {:keys [migrate run port]}]
-  (apply p/sh {:dir root :continue true} migrate)
-  (let [proc (apply p/process {:dir root :extra-env {"PORT" (str port)}} run)
-        url  (str "http://localhost:" port "/")
-        deadline (+ (System/currentTimeMillis) 60000)]
-    (try
-      (loop []
-        (let [resp (try (-> (p/sh {:continue true} "curl" "-s" "-o" "/dev/null" "-w" "%{http_code}" url) :out)
-                        (catch Exception _ nil))]
-          (cond
-            (and resp (re-matches #"[1-5]\d\d" (str/trim (or resp "")))) {:check :server-boot :ok? true :detail (str "HTTP " (str/trim resp))}
-            (> (System/currentTimeMillis) deadline) {:check :server-boot :ok? false :detail "server did not respond within 60s"}
-            :else (do (Thread/sleep 1000) (recur)))))
-      (finally (p/destroy-tree proc)))))
+  (let [migrate-exit (:exit (apply p/sh {:dir root :continue true} migrate))]
+    (if-not (zero? migrate-exit)
+      {:check :server-boot :ok? false :detail (str "migrate failed (exit " migrate-exit ")")}
+      (let [proc (apply p/process {:dir root :extra-env {"PORT" (str port)}} run)
+            url  (str "http://localhost:" port "/")
+            deadline (+ (System/currentTimeMillis) 60000)]
+        (try
+          (loop []
+            (let [resp (try (-> (p/sh {:continue true} "curl" "-s" "-o" "/dev/null" "-w" "%{http_code}" url) :out)
+                            (catch Exception _ nil))
+                  code (some-> resp str/trim)]
+              (cond
+                (and code (re-matches #"[1-5]\d\d" code)) {:check :server-boot :ok? true :detail (str "HTTP " code)}
+                (> (System/currentTimeMillis) deadline)   {:check :server-boot :ok? false :detail "server did not respond within 60s"}
+                :else (do (Thread/sleep 1000) (recur)))))
+          (finally (p/destroy-tree proc)))))))
