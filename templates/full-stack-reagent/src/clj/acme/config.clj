@@ -51,72 +51,79 @@
 ;; @c3kit/db :postgres }
 
 ;; memory backend defined unconditionally — HEAD default + valid wizard choice
-(def memory-local      {:impl :memory :full-schema 'acme.schema/full})
-(def memory-staging    {:impl :memory :full-schema 'acme.schema/full})
-(def memory-production {:impl :memory :full-schema 'acme.schema/full})
+(def memory-base
+  {:impl                :memory
+   :migration-dir       "acme.migrations"
+   :migration-ns-prefix "m"
+   :migration-ns        'acme.migrations
+   :full-schema         'acme.schema/full})
+
+(def memory-local      memory-base)
+(def memory-staging    memory-base)
+(def memory-production memory-base)
 
 (def email-to-log {:client :to-log})
 (def admin-email "Acme <admin@example.com>")
 
 (def development
   (assoc base
-    :email email-to-log
+         :email email-to-log
     ;; @c3kit/db :datomic-pro {
-    :bucket datomic-local
+         :bucket datomic-local
     ;; @c3kit/db :datomic-pro }
     ;; @c3kit/db :sqlite {
-    :bucket sqlite-local
+         :bucket sqlite-local
     ;; @c3kit/db :sqlite }
     ;; @c3kit/db :postgres {
-    :bucket postgres-local
+         :bucket postgres-local
     ;; @c3kit/db :postgres }
     ;; @c3kit/db :memory {
-    :bucket memory-local
+         :bucket memory-local
     ;; @c3kit/db :memory }
-    :host "http://localhost:8123"
-    :log-level :trace
+         :host "http://localhost:8123"
+         :log-level :trace
     ;; @c3kit/feature :auth = :jwt-secret "ACME_DEV_SECRET"
-    ))
+         ))
 
 (def staging
   (assoc base
-    :email email-to-log
+         :email email-to-log
     ;; @c3kit/db :datomic-pro {
-    :bucket datomic-staging
+         :bucket datomic-staging
     ;; @c3kit/db :datomic-pro }
     ;; @c3kit/db :sqlite {
-    :bucket sqlite-staging
+         :bucket sqlite-staging
     ;; @c3kit/db :sqlite }
     ;; @c3kit/db :postgres {
-    :bucket postgres-staging
+         :bucket postgres-staging
     ;; @c3kit/db :postgres }
     ;; @c3kit/db :memory {
-    :bucket memory-staging
+         :bucket memory-staging
     ;; @c3kit/db :memory }
-    :host "https://acme-staging.example.com"
-    :log-level :trace
+         :host "https://acme-staging.example.com"
+         :log-level :trace
     ;; @c3kit/feature :auth = :jwt-secret "ACME_STAGING_SECRET"
-    ))
+         ))
 
 (def production
   (assoc base
-    :email email-to-log
+         :email email-to-log
     ;; @c3kit/db :datomic-pro {
-    :bucket datomic-production
+         :bucket datomic-production
     ;; @c3kit/db :datomic-pro }
     ;; @c3kit/db :sqlite {
-    :bucket sqlite-production
+         :bucket sqlite-production
     ;; @c3kit/db :sqlite }
     ;; @c3kit/db :postgres {
-    :bucket postgres-production
+         :bucket postgres-production
     ;; @c3kit/db :postgres }
     ;; @c3kit/db :memory {
-    :bucket memory-production
+         :bucket memory-production
     ;; @c3kit/db :memory }
-    :host "https://acme.example.com"
-    :analytics-code "console.log('Replace me with Real Google Analytics Code.');"
+         :host "https://acme.example.com"
+         :analytics-code "console.log('Replace me with Real Google Analytics Code.');"
     ;; @c3kit/feature :auth = :jwt-secret "ACME_PRODUCTION_SECRET"
-    ))
+         ))
 
 (def environment (app/find-env "acme.env" "ACME_ENV"))
 (def development? (= "development" environment))

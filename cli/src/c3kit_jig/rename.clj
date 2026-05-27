@@ -67,6 +67,14 @@
   (boolean (re-find (re-pattern (str (java.util.regex.Pattern/quote source-token) "\\.[A-Za-z]"))
                     lit)))
 
+(defn- ns-qualified-symbol?
+  "True if `text` (EDN code segment, no surrounding quotes) contains the source token
+   immediately followed by a dot + symbol char — i.e. a bare qualified symbol like
+   acme.config/bucket, not a bare prefix like acme."
+  [text source-token]
+  (boolean (re-find (re-pattern (str (java.util.regex.Pattern/quote source-token) "\\.[A-Za-z]"))
+                    text)))
+
 (defn- split-on-strings
   "Return a vector of [kind text] segments where kind is :code or :str,
    preserving order so (apply str (map second …)) reconstructs the input."
@@ -92,7 +100,8 @@
                   (underscore-token text source-token flags user))
 
                 (= ext "edn")
-                (if (and (= kind :str) (ns-arg-string? text source-token))
+                (if (or (and (= kind :str) (ns-arg-string? text source-token))
+                        (and (= kind :code) (ns-qualified-symbol? text source-token)))
                   (hyphenate-token text source-token flags user)
                   (underscore-token text source-token flags user))
 

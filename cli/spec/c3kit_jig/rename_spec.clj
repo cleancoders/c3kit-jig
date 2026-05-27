@@ -71,6 +71,20 @@
                             "{:main-opts [\"-m\" \"acme.main\"] :ns-prefix \"acme\"}"
                             toks user "edn")))
 
+              (it "edn: bare namespace-qualified symbol in code context hyphenates"
+                  (should= "{:config-var my-app.config/bucket}"
+                           (r/replace-content
+                            "{:config-var acme.config/bucket}"
+                            toks user "edn")))
+
               (it "other ext: single-variant underscore as before"
                   (should= ".my_app { color: red }"
-                           (r/replace-content ".acme { color: red }" toks user "css"))))))
+                           (r/replace-content ".acme { color: red }" toks user "css")))))
+
+          (it "replace-content edn: code-context ns-qualified symbol hyphenates (bucket.edn case)"
+              (let [user (r/variants "my-app")
+                    toks {"acme" {:hyphen true :underscore true :pascal true}}]
+                (should= "{:config-var my-app.config/bucket}"
+                         (r/replace-content
+                          "{:config-var acme.config/bucket}"
+                          toks user "edn")))))
