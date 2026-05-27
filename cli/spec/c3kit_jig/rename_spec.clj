@@ -51,40 +51,43 @@
             (it "returns the name on success"
                 (should= "my-app" (r/validate-name "my-app" {"acme" {:hyphen true}}))))
 
+          ;; NOTE: each `it` carries its own `let` bindings on purpose. In
+          ;; babashka's speclj, wrapping multiple sibling `it`s in a single
+          ;; `(let …)` inside a context registers ONLY the last one — the
+          ;; others silently never run. Keep bindings inside each `it`.
           (context "replace-content (context-aware)"
-            (let [user (r/variants "my-app")
-                  toks {"acme" {:hyphen true :underscore true :pascal true}}]
-
-              (it "clj: code symbols hyphenate, string literals stay underscore"
+            (it "clj: code symbols hyphenate, string literals stay underscore"
+                (let [user (r/variants "my-app")
+                      toks {"acme" {:hyphen true :underscore true :pascal true}}]
                   (should= "(ns my-app.core (:require [my-app.foo]))\n\"public/cljs/my_app_dev.js\""
                            (r/replace-content
                             "(ns acme.core (:require [acme.foo]))\n\"public/cljs/acme_dev.js\""
-                            toks user "clj")))
+                            toks user "clj"))))
 
-              (it "clj: munged JS inside a string stays underscore"
+            (it "clj: munged JS inside a string stays underscore"
+                (let [user (r/variants "my-app")
+                      toks {"acme" {:hyphen true :underscore true :pascal true}}]
                   (should= "\"goog.require('my_app.main')\""
-                           (r/replace-content "\"goog.require('acme.main')\"" toks user "clj")))
+                           (r/replace-content "\"goog.require('acme.main')\"" toks user "clj"))))
 
-              (it "edn: namespace args hyphenate, bare prefix stays underscore"
+            (it "edn: namespace args hyphenate, bare prefix stays underscore"
+                (let [user (r/variants "my-app")
+                      toks {"acme" {:hyphen true :underscore true :pascal true}}]
                   (should= "{:main-opts [\"-m\" \"my-app.main\"] :ns-prefix \"my_app\"}"
                            (r/replace-content
                             "{:main-opts [\"-m\" \"acme.main\"] :ns-prefix \"acme\"}"
-                            toks user "edn")))
+                            toks user "edn"))))
 
-              (it "edn: bare namespace-qualified symbol in code context hyphenates"
+            (it "edn: bare namespace-qualified symbol in code context hyphenates (bucket.edn case)"
+                (let [user (r/variants "my-app")
+                      toks {"acme" {:hyphen true :underscore true :pascal true}}]
                   (should= "{:config-var my-app.config/bucket}"
                            (r/replace-content
                             "{:config-var acme.config/bucket}"
-                            toks user "edn")))
+                            toks user "edn"))))
 
-              (it "other ext: single-variant underscore as before"
+            (it "other ext: single-variant underscore as before"
+                (let [user (r/variants "my-app")
+                      toks {"acme" {:hyphen true :underscore true :pascal true}}]
                   (should= ".my_app { color: red }"
-                           (r/replace-content ".acme { color: red }" toks user "css")))))
-
-          (it "replace-content edn: code-context ns-qualified symbol hyphenates (bucket.edn case)"
-              (let [user (r/variants "my-app")
-                    toks {"acme" {:hyphen true :underscore true :pascal true}}]
-                (should= "{:config-var my-app.config/bucket}"
-                         (r/replace-content
-                          "{:config-var acme.config/bucket}"
-                          toks user "edn")))))
+                           (r/replace-content ".acme { color: red }" toks user "css"))))))
