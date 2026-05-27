@@ -24,3 +24,4 @@ dev/acme/ssr/prerender_pages.cljs
 pom.xml
 pom.xml.asc
 profiles.clj
+.clj-kondo/.cache
