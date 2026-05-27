@@ -1,0 +1,44 @@
+{:cli-templates-dir "../templates"          ; relative to verification/, passed as --template-dir
+ :template-id       "full-stack-reagent"
+
+ :combos {:memory-defaults          {:tier :full}
+          :memory-minimal           {:tier :light}
+          :memory-no-auth           {:tier :light}
+          :memory-no-ssr-no-content {:tier :light}
+          :memory-no-websocket      {:tier :light}
+          :sqlite-defaults          {:tier :light}
+          :postgres-defaults        {:tier :light}
+          :datomic-pro-defaults     {:tier :light}}
+
+ ;; fs/glob patterns relative to the scaffold root that must NOT be present.
+ ;; Template .gitignore patterns + standard template-dev files.
+ :denylist ["**.iml"
+            ".cpcache"
+            "target"
+            "node_modules"
+            "resources/prerender"
+            "resources/prerendered"
+            "**/ssr/prerender_pages.cljs"
+            "c3kit-template.edn"
+            "c3kit-template.bb"
+            "spec/hook_test.bb"
+            "spec/combos"
+            "dev/verify-scaffold.bb"
+            ".c3kit-jig-context.edn"]
+
+ ;; Relative paths skipped by :ns-hyphen (none today; .edn files are not scanned).
+ :ns-prefix-exempt []
+
+ :commands {:clj-spec ["clojure" "-M:test:spec"]
+            :cljs-once ["clojure" "-M:test:cljs" "once"]
+            :lint     ["clj-kondo" "--lint" "src" "spec" "dev"]
+            :lint-config ".clj-kondo/config.edn"
+            :fmt      ["cljfmt" "check" "src" "spec" "dev"]
+            :fmt-config "cljfmt.edn"
+            :migrate  ["clojure" "-M:test:migrate"]
+            :run      ["clojure" "-M:test:run"]
+            :port     8123}
+
+ :checks {:no-cruft true :combo true :residue true :ns-hyphen true
+          :lint true :fmt true
+          :clj-clean true :cljs-run true :server-boot true}}
