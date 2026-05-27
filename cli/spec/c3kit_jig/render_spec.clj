@@ -36,7 +36,7 @@
                 (should (fs/exists? (fs/path stage "MyCoolApp.css")))
       ;; content rewrites
                 (let [core (slurp (fs/file (fs/path stage "src" "my_cool_app" "core.clj")))]
-                  (should= "(ns my_cool_app.core)" core))
+                  (should= "(ns my-cool-app.core)" core))
                 (let [css (slurp (fs/file (fs/path stage "MyCoolApp.css")))]
                   (should (re-find #"\.my_cool_app" css)))
       ;; secrets

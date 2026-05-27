@@ -20,10 +20,13 @@
   (->> (file-seq (fs/file dir))
        (filter #(.isFile %))))
 
+(defn- ext-of [^java.io.File f]
+  (let [n (.getName f)] (str/lower-case (or (last (str/split n #"\.")) ""))))
+
 (defn- rewrite-content! [tokens user features db file]
   (when (text-file? file)
     (let [orig (slurp file)
-          after-tokens   (rn/replace-many orig tokens user)
+          after-tokens   (rn/replace-content orig tokens user (ext-of file))
           after-features (f/strip after-tokens features db)]
       (when-not (= orig after-features)
         (spit file after-features)))))
