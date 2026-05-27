@@ -60,10 +60,17 @@
        (filter #(re-find #"\.(clj|cljc|cljs)$" (.getName %)))))
 
 (defn cruft-check
-  "Fail if any glob in `globs` matches a path inside the scaffold."
-  [root globs]
-  (let [hits (mapcat (fn [g] (map str (fs/glob root g))) globs)
-        hits (sort (distinct (map #(rel root (fs/file %)) hits)))]
+  "Fail if any denylist entry is present in the scaffold. Entries containing
+   `*` are treated as globs (hidden files included); all others as literal
+   relative paths checked with fs/exists? (fs/glob does not match bare hidden
+   directory names like .cpcache)."
+  [root denylist]
+  (let [hits (->> denylist
+                  (mapcat (fn [pat]
+                            (if (str/includes? pat "*")
+                              (map #(rel root (fs/file %)) (fs/glob root pat {:hidden true}))
+                              (when (fs/exists? (fs/path root pat)) [pat]))))
+                  distinct sort)]
     {:check :no-cruft
      :ok?   (empty? hits)
      :detail (if (empty? hits) "no cruft" (str "cruft present: " (str/join ", " hits)))}))

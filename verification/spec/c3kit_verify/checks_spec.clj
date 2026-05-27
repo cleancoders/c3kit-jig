@@ -75,7 +75,20 @@
               (let [root (temp-scaffold!)
                     r    (sut/cruft-check root ["*.iml" ".cpcache" "target"])]
                 (should (:ok? r))
-                (fs/delete-tree root))))
+                (fs/delete-tree root)))
+          (it "detects a hidden .cpcache dir via literal denylist entry"
+              (let [root (temp-scaffold!)]
+                (spit-file! root ".cpcache/foo.edn" "x")
+                (let [r (sut/cruft-check root [".cpcache"])]
+                  (should-not (:ok? r))
+                  (should (re-find #"\.cpcache" (:detail r)))
+                  (fs/delete-tree root))))
+          (it "detects a literal nested dir (spec/combos)"
+              (let [root (temp-scaffold!)]
+                (spit-file! root "spec/combos/x.edn" "x")
+                (let [r (sut/cruft-check root ["spec/combos"])]
+                  (should-not (:ok? r))
+                  (fs/delete-tree root)))))
 
 (describe "ns-hyphen-check"
           (it "flags the underscore ns form, ignores body strings and hyphenated ns"
