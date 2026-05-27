@@ -3,6 +3,7 @@
             [acme.spec-helper]
             [acme.test-data :as test-data]
             [clojure.java.io :as io]
+            [clojure.string :as string]
             [speclj.core :refer :all]))
 
 (describe "acme.content.core discovery"

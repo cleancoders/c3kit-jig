@@ -14,36 +14,32 @@
             [acme.styles.layout.reset :as reset]
             [acme.styles.layout.structure :as structure]
             [acme.styles.media.responsive :as responsive]
-            [acme.styles.pages.authentication :as authentication]
-            [acme.styles.pages.authentication :as authentication]
-            ))
+            [acme.styles.pages.authentication :as authentication]))
 
 (garden/defstyles screen
 
 ; Layout
-reset/screen
-document/screen
-page/screen
-structure/screen
-mini-classes/screen
+  reset/screen
+  document/screen
+  page/screen
+  structure/screen
+  mini-classes/screen
 
 ; Elements
-typography/screen
-forms/screen
-lists/screen
-media/screen
-tables/screen
+  typography/screen
+  forms/screen
+  lists/screen
+  media/screen
+  tables/screen
 
 ; Componenents
-menus/screen
+  menus/screen
 
 ; Pages
-authentication/screen
+  authentication/screen
 
 ; Media
-responsive/screen
+  responsive/screen
 
 ; Fonts
-core/fonts
-
-)
+  core/fonts)

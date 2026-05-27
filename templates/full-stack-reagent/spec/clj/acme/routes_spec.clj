@@ -10,6 +10,7 @@
             [acme.auth.user.api]
             [acme.auth.user.web]
             ;; @c3kit/feature :auth }
+            [c3kit.wire.api]
             [c3kit.wire.spec-helper :as wire-helper]
             [c3kit.wire.websocket :as ws]
             [speclj.core :refer :all]
@@ -136,5 +137,4 @@
       (should (pos? catchall-pos))
       (should (< sandbox-pos catchall-pos))))
   ;; @c3kit/feature :content }
-
   )
