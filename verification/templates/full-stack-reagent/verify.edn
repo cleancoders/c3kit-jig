@@ -30,7 +30,7 @@
  :ns-prefix-exempt []
 
  :commands {:clj-spec ["clojure" "-M:test:spec"]
-            :cljs-once ["clojure" "-M:test:cljs" "once"]
+            :cljs-once ["clojure" "-M:test:cljs-spec"]
             :lint     ["clj-kondo" "--lint" "src" "spec" "dev"]
             :lint-config ".clj-kondo/config.edn"
             :fmt      ["cljfmt" "check" "src" "spec" "dev"]
