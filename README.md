@@ -41,10 +41,39 @@ See [Roadmap](#roadmap) for templates in progress or planned.
 ## Repo layout
 
 ```
-cli/         # bb CLI source + installer
-templates/   # template trees, one dir per template
-docs/        # design specs and implementation plans
+cli/           # bb CLI source + installer
+templates/     # template trees, one dir per template
+verification/  # post-scaffold verification harness
+docs/          # design specs and implementation plans
 ```
+
+## Verification harness
+
+The verification harness scaffolds each template across a `{db × feature-combo}` matrix and runs structural checks (file presence, content substrings), lint (`clj-kondo`), format (`cljfmt`), Clojure specs, and — at the `full` tier — ClojureScript specs and a server-boot smoke test on the rendered project. CI runs the same harness on every push.
+
+Run it locally from the `verification/` directory:
+
+```sh
+cd verification
+
+bb verify-all                                   # every combo at its declared tier
+bb verify --combo memory-defaults --tier full   # one combo, full tier
+bb verify --combo memory-minimal --tier light   # one combo, light tier
+bb test                                         # harness unit tests
+```
+
+Combos are defined in `verification/templates/<template-id>/combos/*.expected.edn`. Each file pins `:must-exist`, `:must-not-exist`, `:file-contains`, and `:file-not-contains` assertions on the rendered scaffold for one `db × features` permutation.
+
+Tiers:
+
+| Tier  | Checks                                                                          |
+|-------|---------------------------------------------------------------------------------|
+| light | `no-cruft`, `combo`, `residue`, `ns-hyphen`, `lint`, `fmt`, `clj-clean`          |
+| full  | light + `cljs-run` + `server-boot`                                              |
+
+`--tier` overrides the per-combo default in `verification/templates/<template-id>/verify.edn`.
+
+Prerequisites: [Babashka](https://babashka.org), `clojure`/`clj`, `clj-kondo`, `cljfmt`, `curl`. The `server-boot` check additionally needs whichever database backend the combo targets (`sqlite`, `postgres`, or `datomic-pro`).
 
 ## Contributing
 
