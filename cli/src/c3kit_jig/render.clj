@@ -2,6 +2,7 @@
   (:require [babashka.fs :as fs]
             [clojure.string :as str]
             [c3kit-jig.features :as f]
+            [c3kit-jig.format :as fmt]
             [c3kit-jig.hook :as hook]
             [c3kit-jig.rename :as rn]
             [c3kit-jig.secrets :as sec]))
@@ -165,4 +166,9 @@
     (fs/delete-if-exists (fs/path stage-dir "c3kit-template.edn"))
     (fs/delete-if-exists (fs/path stage-dir "c3kit-template.bb"))
     (fs/delete-if-exists (fs/path stage-dir "spec" "hook_test.bb"))
+    ;; Final formatting pass on the rendered scaffold. Runs AFTER feature
+    ;; stripping so cljfmt operates on clean Clojure (no `;; @c3kit` markers),
+    ;; eliminating the indentation-vs-marker tension that prevents formatting
+    ;; the template in place.
+    (fmt/format! stage-dir)
     stage-dir))

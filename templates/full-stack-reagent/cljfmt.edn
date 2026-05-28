@@ -1,18 +1,25 @@
 ;; cljfmt configuration shipped with the scaffolded project.
 ;;
-;; The verification harness runs `cljfmt check src spec dev` and requires every
-;; file to be formatted (exit 0).
+;; The scaffolder runs cljfmt with this config as the final step of
+;; rendering — i.e. against the stripped output, not the marker-laden
+;; template — so cljfmt's full ruleset is safe and the scaffold is born
+;; formatted. The verification harness then runs `cljfmt check src spec dev`
+;; against the same files with the same config, which is a no-op verification.
 ;;
-;; Only trailing-whitespace cleanup is enabled. The template source carries
-;; scaffolder feature/db block markers that are stripped line-by-line, and uses
-;; a closing-delimiter-on-own-line style inside require/feature blocks so those
-;; blocks stay easy to add/remove. cljfmt's indentation reflow,
-;; surrounding-whitespace removal, and blank-line collapsing would move
-;; delimiters across marker boundaries and unbalance a form once a feature is
-;; stripped. Restricting cljfmt to trailing-whitespace keeps the check
-;; deterministic and strip-safe across every feature combination.
-{:indentation?                    false
- :remove-surrounding-whitespace?  false
- :remove-trailing-whitespace?     true
- :insert-missing-whitespace?      false
- :remove-consecutive-blank-lines? false}
+;; :extra-indents register block-style indentation for the speclj test macros
+;; so cljfmt does not align spec bodies under the first argument (which would
+;; fight speclj's conventional 2-space body indentation used throughout).
+{:extra-indents
+ {describe      [[:block 1]]
+  context       [[:block 1]]
+  it            [[:block 1]]
+  xit           [[:block 1]]
+  before        [[:block 0]]
+  before-all    [[:block 0]]
+  after         [[:block 0]]
+  after-all     [[:block 0]]
+  around        [[:block 1]]
+  with          [[:block 1]]
+  with-all      [[:block 1]]
+  redefs-around [[:block 1]]
+  it-routes     [[:block 2]]}}

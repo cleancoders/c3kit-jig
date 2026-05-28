@@ -1,6 +1,7 @@
 {:paths ["src" "spec"]
- :deps  {org.clojure/tools.cli {:mvn/version "1.1.230"}
-         speclj/speclj         {:mvn/version "3.12.0"}}
+ :deps  {dev.weavejester/cljfmt {:mvn/version "0.16.4"}
+         org.clojure/tools.cli  {:mvn/version "1.1.230"}
+         speclj/speclj          {:mvn/version "3.12.0"}}
  :tasks
  {c3kit-jig {:doc      "Run the CLI from source. e.g. bb c3kit-jig create my-app"
              :requires ([c3kit-jig.main]
