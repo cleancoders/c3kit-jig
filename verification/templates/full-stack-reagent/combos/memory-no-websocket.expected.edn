@@ -28,12 +28,13 @@
                                                       "ajax/post!"]
                   "deps.edn"                         ["my-app.compile-cljs"]}
 
- :file-not-contains {"src/clj/my_app/main.clj"          ["c3kit.wire.websocket"
-                                                         "websocket/service"]
+ :file-not-contains {"src/clj/my_app/main.clj"            ["c3kit.wire.websocket"
+                                                           "websocket/service"]
                      "src/cljs/my_app/auth/user.cljs"   ["c3kit.wire.websocket"
                                                          "ws/start!"
                                                          "ws/call!"]
                      "src/cljs/my_app/forms.cljs"       ["c3kit.wire.websocket"
                                                          "ws/call!"]
+                     "src/cljs/my_app/config.cljs"      ["ws-csrf-token"]
                      "dev/my_app/seed.clj"              ["(prn \"other-fields: "
                                                          "(prn \"e: "]}}

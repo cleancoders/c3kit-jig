@@ -33,24 +33,25 @@
                   "README.scaffold.md"
                   ".c3kit-jig-context.edn"]
 
- :file-contains  {"src/clj/my_app/config.clj" ["memory-local"
-                                               ":bucket memory-local"
-                                               "MyApp"
-                                               "my_app.env"
-                                               "MY_APP_ENV"]
-                  "src/clj/my_app/main.clj"   ["my-app.content.core"
-                                               "my-app.ssr.prerender"
-                                               "my-app.auth.user.web"
-                                               "my_app.env"
-                                               "MY_APP_ENV"]
-                  "src/clj/my_app/errors.clj" ["example.com"]
-                  "resources/config/cljs.edn" ["my_app.env"
-                                               "MY_APP_ENV"]
-                  "deps.edn"                  ["com.cleancoders.c3kit/apron"
-                                               "org.mindrot/jbcrypt"
-                                               "markdown-to-hiccup"
-                                               "my-app.compile-cljs"]
-                  "bin/db"                    ["In-memory backend"]}
+ :file-contains  {"src/clj/my_app/config.clj"  ["memory-local"
+                                                ":bucket memory-local"
+                                                "MyApp"
+                                                "my_app.env"
+                                                "MY_APP_ENV"]
+                  "src/clj/my_app/main.clj"    ["my-app.content.core"
+                                                "my-app.ssr.prerender"
+                                                "my-app.auth.user.web"
+                                                "my_app.env"
+                                                "MY_APP_ENV"]
+                  "src/clj/my_app/errors.clj"  ["example.com"]
+                  "resources/config/cljs.edn"  ["my_app.env"
+                                                "MY_APP_ENV"]
+                  "deps.edn"                   ["com.cleancoders.c3kit/apron"
+                                                "org.mindrot/jbcrypt"
+                                                "markdown-to-hiccup"
+                                                "my-app.compile-cljs"]
+                  "bin/db"                     ["In-memory backend"]
+                  "src/cljs/my_app/config.cljs" ["ws-csrf-token"]}
 
  :file-not-contains {"src/clj/my_app/config.clj" ["sqlite-local"
                                                   "datomic-local"

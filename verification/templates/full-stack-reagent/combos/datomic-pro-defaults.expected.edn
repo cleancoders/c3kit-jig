@@ -33,18 +33,19 @@
                   "README.scaffold.md"
                   ".c3kit-jig-context.edn"]
 
- :file-contains  {"src/clj/my_app/config.clj" ["datomic-local"
-                                               ":bucket datomic-local"
-                                               "MyApp"]
-                  "src/clj/my_app/main.clj"   ["my-app.content.core"
-                                               "my-app.ssr.prerender"
-                                               "my-app.auth.user.web"]
-                  "deps.edn"                  ["com.cleancoders.c3kit/apron"
-                                               "org.mindrot/jbcrypt"
-                                               "markdown-to-hiccup"
-                                               "com.datomic/peer"
-                                               "my-app.compile-cljs"]
-                  "bin/db"                    ["Datomic Pro"]}
+ :file-contains  {"src/clj/my_app/config.clj"  ["datomic-local"
+                                                ":bucket datomic-local"
+                                                "MyApp"]
+                  "src/clj/my_app/main.clj"    ["my-app.content.core"
+                                                "my-app.ssr.prerender"
+                                                "my-app.auth.user.web"]
+                  "deps.edn"                   ["com.cleancoders.c3kit/apron"
+                                                "org.mindrot/jbcrypt"
+                                                "markdown-to-hiccup"
+                                                "com.datomic/peer"
+                                                "my-app.compile-cljs"]
+                  "bin/db"                     ["Datomic Pro"]
+                  "src/cljs/my_app/config.cljs" ["ws-csrf-token"]}
 
  :file-not-contains {"src/clj/my_app/config.clj" ["sqlite-local"
                                                   "postgres-local"
