@@ -48,6 +48,7 @@
                                                 "org.mindrot/jbcrypt"
                                                 "markdown-to-hiccup"
                                                 "org.xerial/sqlite-jdbc"
+                                                "             org.xerial/sqlite-jdbc"
                                                 "my-app.compile-cljs"]
                   "bin/db"                     ["SQLite ready"]
                   "src/cljs/my_app/config.cljs" ["ws-csrf-token"]
