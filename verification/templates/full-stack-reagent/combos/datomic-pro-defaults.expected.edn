@@ -60,7 +60,8 @@
                                                   "acme.auth.user.schema"]
                      "src/clj/my_app/main.clj"   ["acme.schema/full"
                                                   "acme.bg-task"
-                                                  "acme.auth.user.schema"]
+                                                  "acme.auth.user.schema"
+                                                  "#_bg-tasks"]
                      "deps.edn"                   ["aws-java-sdk"
                                                    "@c3kit/"
                                                    "acme.schema/full"

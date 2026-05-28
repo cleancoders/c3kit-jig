@@ -70,7 +70,8 @@
                                                    "content/load!"
                                                    "acme.schema/full"
                                                    "acme.bg-task"
-                                                   "acme.auth.user.schema"]
+                                                   "acme.auth.user.schema"
+                                                   "#_bg-tasks"]
                      "deps.edn"                   ["my.datomic.com"
                                                    "aws-java-sdk"
                                                    "@c3kit/"

@@ -71,7 +71,8 @@
                                                   "CC_ENV"
                                                   "acme.schema/full"
                                                   "acme.bg-task"
-                                                  "acme.auth.user.schema"]
+                                                  "acme.auth.user.schema"
+                                                  "#_bg-tasks"]
                      "src/clj/my_app/errors.clj" ["cleancoders.com"]
                      "resources/config/cljs.edn" ["cc.env"
                                                   "CC_ENV"]
