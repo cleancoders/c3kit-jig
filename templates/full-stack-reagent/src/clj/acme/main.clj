@@ -23,10 +23,10 @@
 (def bg-tasks (app/service 'acme.main/schedule-bg-tasks 'acme.main/cancel-bg-tasks))
 
 ;; @c3kit/feature :websocket {
-(def all-services [env db/service http @(util/resolve-var 'c3kit.wire.websocket/service) bg/service #_bg-tasks])
+(def all-services [env db/service http @(util/resolve-var 'c3kit.wire.websocket/service) bg/service bg-tasks])
 ;; @c3kit/feature :websocket }
 ;; @c3kit/feature !:websocket {
-(def all-services [env db/service http bg/service #_bg-tasks])
+(def all-services [env db/service http bg/service bg-tasks])
 ;; @c3kit/feature !:websocket }
 (def refresh-services [db/service bg/service bg-tasks])
 

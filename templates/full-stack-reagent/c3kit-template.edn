@@ -26,13 +26,16 @@
                 :default true
                 :extras  ["package.json"
                           "resources/prerender/"
-                          "resources/prerendered/"]}
+                          "resources/prerendered/"
+                          "dev/acme/compile_cljs.clj"
+                          "spec/clj/acme/compile_cljs_spec.clj"]}
 
                {:id :markdownc :prompt "Client-side markdown (CLJC)?" :default true}
 
                {:id      :auth
                 :prompt  "JWT auth?"
-                :default true}
+                :default true
+                :extras  ["src/cljc/acme/schema/user.cljc"]}
 
                {:id      :websocket
                 :prompt  "WebSocket support (c3kit.wire.websocket)?"

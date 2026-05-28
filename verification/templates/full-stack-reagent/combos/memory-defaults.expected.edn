@@ -8,9 +8,10 @@
                   "src/clj/my_app/ssr/prerender.clj"
                   "src/clj/my_app/auth/user.clj"
                   "src/clj/my_app/auth/user/web.clj"
-                  "src/cljc/my_app/schema.cljc"
+                  "src/cljc/my_app/schema/full.cljc"
+                  "src/cljc/my_app/schema/bg_task.cljc"
+                  "src/cljc/my_app/schema/user.cljc"
                   "src/cljc/my_app/markdownc.cljc"
-                  "src/cljc/my_app/auth/user/schema.cljc"
                   "src/cljs/my_app/main.cljs"
                   "src/cljs/my_app/auth/user.cljs"
                   "src/cljs/my_app/auth/forgot_password.cljs"
@@ -31,37 +32,60 @@
                   "c3kit-template.edn"
                   "c3kit-template.bb"
                   "README.scaffold.md"
-                  ".c3kit-jig-context.edn"]
+                  ".c3kit-jig-context.edn"
+                  ;; legacy schema paths removed
+                  "src/cljc/my_app/schema.cljc"
+                  "src/cljc/my_app/bg_task.cljc"
+                  "src/cljc/my_app/auth/user/schema.cljc"]
 
- :file-contains  {"src/clj/my_app/config.clj" ["memory-local"
+ :file-contains  {"src/clj/my_app/config.clj"  ["memory-local"
                                                 ":bucket memory-local"
                                                 "MyApp"
                                                 "my_app.env"
                                                 "MY_APP_ENV"]
-                  "src/clj/my_app/main.clj"   ["my-app.content.core"
-                                               "my-app.ssr.prerender"
-                                               "my-app.auth.user.web"
-                                               "my_app.env"
-                                               "MY_APP_ENV"]
-                  "src/clj/my_app/errors.clj" ["example.com"]
-                  "resources/config/cljs.edn" ["my_app.env"
-                                               "MY_APP_ENV"]
-                  "deps.edn"                  ["com.cleancoders.c3kit/apron"
-                                               "org.mindrot/jbcrypt"
-                                               "markdown-to-hiccup"]
-                  "bin/db"                    ["In-memory backend"]}
+                  "src/clj/my_app/main.clj"    ["my-app.content.core"
+                                                "my-app.ssr.prerender"
+                                                "my-app.auth.user.web"
+                                                "my_app.env"
+                                                "MY_APP_ENV"]
+                  "src/clj/my_app/errors.clj"  ["example.com"]
+                  "resources/config/cljs.edn"  ["my_app.env"
+                                                "MY_APP_ENV"]
+                  "deps.edn"                   ["com.cleancoders.c3kit/apron"
+                                                "org.mindrot/jbcrypt"
+                                                "google-api-client"
+                                                "ring-anti-forgery"
+                                                "commonmark"
+                                                "markdown-to-hiccup"
+                                                "my-app.compile-cljs"]
+                  "bin/db"                     ["In-memory backend"]
+                  "src/cljs/my_app/config.cljs" ["ws-csrf-token"]
+                  "dev/my_app/repl.clj"         ["config-from-service"
+                                                 "-ensure-migration-schema!"]}
 
  :file-not-contains {"src/clj/my_app/config.clj" ["sqlite-local"
-                                                   "datomic-local"
-                                                   "postgres-local"
-                                                   "replaced by line below at scaffold"
-                                                   "cc.env"
-                                                   "CC_ENV"]
+                                                  "datomic-local"
+                                                  "postgres-local"
+                                                  "replaced by line below at scaffold"
+                                                  "cc.env"
+                                                  "CC_ENV"
+                                                  "acme.schema/full"
+                                                  "acme.bg-task"
+                                                  "acme.auth.user.schema"]
                      "src/clj/my_app/main.clj"   ["cc.env"
-                                                   "CC_ENV"]
+                                                  "CC_ENV"
+                                                  "acme.schema/full"
+                                                  "acme.bg-task"
+                                                  "acme.auth.user.schema"
+                                                  "#_bg-tasks"]
                      "src/clj/my_app/errors.clj" ["cleancoders.com"]
                      "resources/config/cljs.edn" ["cc.env"
-                                                   "CC_ENV"]
+                                                  "CC_ENV"]
                      "deps.edn"                   ["my.datomic.com"
                                                    "aws-java-sdk"
-                                                   "@c3kit/"]}}
+                                                   "@c3kit/"
+                                                   "acme.schema/full"
+                                                   "acme.bg-task"
+                                                   "acme.auth.user.schema"]
+                     "dev/my_app/seed.clj"        ["(prn \"other-fields: "
+                                                   "(prn \"e: "]}}

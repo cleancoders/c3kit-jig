@@ -2,10 +2,10 @@
   (:require [clojure.string :as str]))
 
 (def ^:private LINE-EQ-RE
-  #"@c3kit/feature\s+(!)?:([A-Za-z][A-Za-z0-9-]*)\s*=\s*(.*)$")
+  #"^(\s*);;\s*@c3kit/feature\s+(!)?:([A-Za-z][A-Za-z0-9-]*)\s*=\s*(.*)$")
 
 (def ^:private DB-LINE-EQ-RE
-  #"@c3kit/db\s+:([A-Za-z][A-Za-z0-9-]*)\s*=\s*(.*)$")
+  #"^(\s*);;\s*@c3kit/db\s+:([A-Za-z][A-Za-z0-9-]*)\s*=\s*(.*)$")
 
 (def ^:private BLOCK-OPEN-RE
   #"@c3kit/feature\s+(!)?:([A-Za-z][A-Za-z0-9-]*)\s*\{")
@@ -26,12 +26,12 @@
     (if inverse? (not raw) (boolean raw))))
 
 (defn- resolve-line-eq [line features]
-  (let [[_ inv id-str code] (re-find LINE-EQ-RE line)]
-    (if (feature-on? features (keyword id-str) (some? inv)) code ::drop)))
+  (let [[_ indent inv id-str code] (re-find LINE-EQ-RE line)]
+    (if (feature-on? features (keyword id-str) (some? inv)) (str indent code) ::drop)))
 
 (defn- resolve-db-line-eq [line db-choice]
-  (let [[_ id-str code] (re-find DB-LINE-EQ-RE line)]
-    (if (= (keyword id-str) (:db db-choice)) code ::drop)))
+  (let [[_ indent id-str code] (re-find DB-LINE-EQ-RE line)]
+    (if (= (keyword id-str) (:db db-choice)) (str indent code) ::drop)))
 
 (defn- block-open [line]
   (when-let [[_ inv id-str] (re-find BLOCK-OPEN-RE line)]

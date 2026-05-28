@@ -4,7 +4,8 @@
 
  :must-exist     ["src/clj/my_app/main.clj"
                   "src/clj/my_app/config.clj"
-                  "src/cljc/my_app/schema.cljc"
+                  "src/cljc/my_app/schema/full.cljc"
+                  "src/cljc/my_app/schema/bg_task.cljc"
                   "src/cljs/my_app/main.cljs"
                   "dev/my_app/seed.clj"
                   "bin/db"
@@ -33,6 +34,8 @@
                   "src/clj/my_app/ssr/"
                   "spec/clj/my_app/ssr/"
                   "dev/my_app/ssr/"
+                  "dev/my_app/compile_cljs.clj"
+                  "spec/clj/my_app/compile_cljs_spec.clj"
                   ;; markdownc feature off
                   "src/cljc/my_app/markdownc.cljc"
                   "spec/cljc/my_app/markdownc_spec.cljc"
@@ -41,19 +44,49 @@
                   "src/cljc/my_app/auth/"
                   "src/cljs/my_app/auth/"
                   "spec/clj/my_app/auth/"
-                  "spec/cljs/my_app/auth/"]
+                  "spec/cljs/my_app/auth/"
+                  "src/cljc/my_app/schema/user.cljc"
+                  ;; legacy schema paths removed
+                  "src/cljc/my_app/schema.cljc"
+                  "src/cljc/my_app/bg_task.cljc"
+                  "src/cljc/my_app/auth/user/schema.cljc"]
 
- :file-contains  {"src/clj/my_app/config.clj" ["memory-local"
+ :file-contains  {"src/clj/my_app/config.clj"  ["memory-local"
                                                 ":bucket memory-local"
                                                 "MyApp"]
-                  "deps.edn"                  ["com.cleancoders.c3kit/apron"]}
+                  "deps.edn"                   ["com.cleancoders.c3kit/apron"
+                                                "c3kit.scaffold.cljs"]
+                  "src/cljs/my_app/config.cljs" ["ws-csrf-token"]
+                  "dev/my_app/repl.clj"        ["config-from-service"
+                                                "-ensure-migration-schema!"]}
 
- :file-not-contains {"src/clj/my_app/config.clj" ["sqlite-local"
+ :file-not-contains {"src/clj/my_app/config.clj"  ["sqlite-local"
                                                    "datomic-local"
                                                    "postgres-local"
-                                                   "replaced by line below at scaffold"]
+                                                   "replaced by line below at scaffold"
+                                                   "acme.schema/full"
+                                                   "acme.bg-task"
+                                                   "acme.auth.user.schema"]
                      "src/clj/my_app/main.clj"    ["prerender!"
-                                                   "content/load!"]
+                                                   "content/load!"
+                                                   "acme.schema/full"
+                                                   "acme.bg-task"
+                                                   "acme.auth.user.schema"
+                                                   "#_bg-tasks"]
                      "deps.edn"                   ["my.datomic.com"
                                                    "aws-java-sdk"
-                                                   "@c3kit/"]}}
+                                                   "@c3kit/"
+                                                   "my-app.compile-cljs"
+                                                   "acme.schema/full"
+                                                   "acme.bg-task"
+                                                   "acme.auth.user.schema"
+                                                   "jbcrypt"
+                                                   "google-api-client"
+                                                   "ring-anti-forgery"
+                                                   "commonmark"
+                                                   "markdown-to-hiccup"]
+                     "dev/my_app/seed.clj"        ["(prn \"other-fields: "
+                                                   "(prn \"e: "]
+                     "src/cljc/my_app/schema/full.cljc" ["user/all"]
+                     "resources/config/cljs.edn"  [":prerender"
+                                                   "my_app.ssr.prerender"]}}

@@ -8,9 +8,10 @@
                   "src/clj/my_app/ssr/prerender.clj"
                   "src/clj/my_app/auth/user.clj"
                   "src/clj/my_app/auth/user/web.clj"
-                  "src/cljc/my_app/schema.cljc"
+                  "src/cljc/my_app/schema/full.cljc"
+                  "src/cljc/my_app/schema/bg_task.cljc"
+                  "src/cljc/my_app/schema/user.cljc"
                   "src/cljc/my_app/markdownc.cljc"
-                  "src/cljc/my_app/auth/user/schema.cljc"
                   "src/cljs/my_app/main.cljs"
                   "src/cljs/my_app/auth/user.cljs"
                   "src/cljs/my_app/auth/forgot_password.cljs"
@@ -31,22 +32,45 @@
                   "c3kit-template.edn"
                   "c3kit-template.bb"
                   "README.scaffold.md"
-                  ".c3kit-jig-context.edn"]
+                  ".c3kit-jig-context.edn"
+                  ;; legacy schema paths removed
+                  "src/cljc/my_app/schema.cljc"
+                  "src/cljc/my_app/bg_task.cljc"
+                  "src/cljc/my_app/auth/user/schema.cljc"]
 
- :file-contains  {"src/clj/my_app/config.clj" ["datomic-local"
+ :file-contains  {"src/clj/my_app/config.clj"  ["datomic-local"
                                                 ":bucket datomic-local"
                                                 "MyApp"]
-                  "src/clj/my_app/main.clj"   ["my-app.content.core"
-                                               "my-app.ssr.prerender"
-                                               "my-app.auth.user.web"]
-                  "deps.edn"                  ["com.cleancoders.c3kit/apron"
-                                               "org.mindrot/jbcrypt"
-                                               "markdown-to-hiccup"
-                                               "com.datomic/peer"]
-                  "bin/db"                    ["Datomic Pro"]}
+                  "src/clj/my_app/main.clj"    ["my-app.content.core"
+                                                "my-app.ssr.prerender"
+                                                "my-app.auth.user.web"]
+                  "deps.edn"                   ["com.cleancoders.c3kit/apron"
+                                                "org.mindrot/jbcrypt"
+                                                "google-api-client"
+                                                "ring-anti-forgery"
+                                                "commonmark"
+                                                "markdown-to-hiccup"
+                                                "com.datomic/peer"
+                                                "my-app.compile-cljs"]
+                  "bin/db"                     ["Datomic Pro"]
+                  "src/cljs/my_app/config.cljs" ["ws-csrf-token"]
+                  "dev/my_app/repl.clj"         ["config-from-service"
+                                                 "-ensure-migration-schema!"]}
 
  :file-not-contains {"src/clj/my_app/config.clj" ["sqlite-local"
-                                                   "postgres-local"
-                                                   "replaced by line below at scaffold"]
+                                                  "postgres-local"
+                                                  "replaced by line below at scaffold"
+                                                  "acme.schema/full"
+                                                  "acme.bg-task"
+                                                  "acme.auth.user.schema"]
+                     "src/clj/my_app/main.clj"   ["acme.schema/full"
+                                                  "acme.bg-task"
+                                                  "acme.auth.user.schema"
+                                                  "#_bg-tasks"]
                      "deps.edn"                   ["aws-java-sdk"
-                                                   "@c3kit/"]}}
+                                                   "@c3kit/"
+                                                   "acme.schema/full"
+                                                   "acme.bg-task"
+                                                   "acme.auth.user.schema"]
+                     "dev/my_app/seed.clj"        ["(prn \"other-fields: "
+                                                   "(prn \"e: "]}}

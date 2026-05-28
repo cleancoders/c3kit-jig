@@ -1,4 +1,4 @@
-(ns acme.auth.user.schema
+(ns acme.schema.user
   (:require [c3kit.apron.schema :as s]))
 
 (def user
@@ -14,7 +14,6 @@
    :id        s/id
    :provider  {:type :keyword}
    :social-id {:type :string}
-   :user-id   {:type :ref}
-   })
+   :user-id   {:type :ref}})
 
 (def all [user social-login])

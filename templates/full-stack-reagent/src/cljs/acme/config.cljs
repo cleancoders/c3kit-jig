@@ -10,6 +10,8 @@
     (swap! state merge new-config)))
 
 (def environment (reagent/track #(:environment @state)))
+;; @c3kit/feature :websocket {
 (def ws-csrf-token (reagent/track #(:ws-csrf-token @state)))
+;; @c3kit/feature :websocket }
 (def development? (reagent/track #(= "development" @environment)))
 (def production? (reagent/track #(= "production" @environment)))

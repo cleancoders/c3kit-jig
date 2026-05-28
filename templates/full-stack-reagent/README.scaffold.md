@@ -24,6 +24,32 @@ If you chose `:datomic-pro`, the first run of `bin/db` will prompt you
 to download the Datomic Pro transactor (~300 MB) to `~/.c3kit/datomic-pro/`.
 Datomic Pro is free as of 2023; no `my.datomic.com` credentials needed.
 
+## Seeding dev data
+
+The scaffold ships a starter seed namespace at `dev/<app>/seed.clj`.
+Add entities with the `entity` helper — each call returns an `IDeref`
+that the `-main` body derefs to upsert idempotently:
+
+```clojure
+(def admin (entity :user
+                   {:email "admin@example.com"}
+                   {:name "Admin User" :role :admin}))
+
+(defn -main []
+  (init!)
+  @admin
+  (System/exit 0))
+```
+
+Run it with:
+
+```sh
+clj -M:test:seed
+```
+
+Repeated runs leave existing rows untouched unless `other-fields`
+diverge, in which case the row is updated in place.
+
 ## Compile Assets
 
 ```sh

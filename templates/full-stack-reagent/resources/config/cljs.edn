@@ -13,10 +13,8 @@
                :specs          true
                :verbose        false
                :watch-fn       c3kit.scaffold.cljs/on-dev-compiled
-               :parallel-build true
-               }
- :production  {
-               :cache-analysis false
+               :parallel-build true}
+ :production  {:cache-analysis false
                :externs        ["dev/acme/externs/gapi.js"]
                :infer-externs  true
                :language-in    :es-next
@@ -27,10 +25,8 @@
                :pretty-print   false
                :sources        ["src/cljc" "src/cljs"]
                :specs          false
-               :verbose        false
-               }
- :staging     {
-               :cache-analysis false
+               :verbose        false}
+ :staging     {:cache-analysis false
                :infer-externs  true
                :language-in    :es-next
                :language-out   :no-transpile
@@ -41,8 +37,8 @@
                :pseudo-names   true
                :sources        ["src/cljc" "src/cljs"]
                :specs          false
-               :verbose        false
-               }
+               :verbose        false}
+ ;; @c3kit/feature :ssr {
  :prerender   {:cache-analysis false
                :npm-deps       false
                :infer-externs  true
@@ -58,4 +54,5 @@
                :language-in    :es-next
                :language-out   :no-transpile
                :verbose        false}
+ ;; @c3kit/feature :ssr }
  }
