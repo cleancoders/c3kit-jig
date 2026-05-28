@@ -64,4 +64,6 @@
                                                    "@c3kit/"
                                                    "my-app.compile-cljs"]
                      "dev/my_app/seed.clj"        ["(prn \"other-fields: "
-                                                   "(prn \"e: "]}}
+                                                   "(prn \"e: "]
+                     "resources/config/cljs.edn"  [":prerender"
+                                                   "my_app.ssr.prerender"]}}
