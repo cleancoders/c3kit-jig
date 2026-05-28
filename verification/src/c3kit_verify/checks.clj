@@ -44,10 +44,16 @@
   [out exit]
   (let [m (re-find #"(\d+)\s+examples?,\s+(\d+)\s+failures?" (or out ""))
         examples (some-> m (nth 1) parse-long)
-        failures (some-> m (nth 2) parse-long)]
-    {:ok? (and (zero? exit) (some? examples) (pos? examples) (= 0 failures))
-     :examples examples
-     :failures failures}))
+        failures (some-> m (nth 2) parse-long)
+        ok?      (and (zero? exit) (some? examples) (pos? examples) (= 0 failures))
+        detail   (cond
+                   (and (some? examples) (some? failures))
+                   (str examples " examples, " failures " failures")
+                   (not (zero? exit))
+                   (str "exit " exit "; no speclj summary line")
+                   :else
+                   "no speclj summary line in output")]
+    {:ok? ok? :examples examples :failures failures :detail detail}))
 
 ;; --- Effectful check shells ---
 

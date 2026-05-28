@@ -70,6 +70,8 @@ jobs:
           bb: 1.12.218
           clj-kondo: latest
           cljfmt: latest
+      - name: Install Playwright browser
+        run: npx --yes playwright install --with-deps chromium
       - name: Verify (light)
         run: |
           cd verification

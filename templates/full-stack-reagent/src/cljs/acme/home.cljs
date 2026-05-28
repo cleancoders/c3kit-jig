@@ -1,15 +1,20 @@
 (ns acme.home
   (:require [acme.core :as cc]
+            ;; @c3kit/feature :auth {
             [acme.forms :as forms]
+            ;; @c3kit/feature :auth }
             [acme.layoutc :as layoutc]
             [acme.page :as page]
+            ;; @c3kit/feature :auth {
             [acme.auth.user :as user]
             [acme.auth.user.corec :as userc]
+            ;; @c3kit/feature :auth }
             [c3kit.apron.corec :as ccc]
             [c3kit.wire.ajax :as ajax]
             [clojure.string :as str]
             [reagent.core :as reagent]))
 
+;; @c3kit/feature :auth {
 (def handle-login-success (juxt (comp user/install-and-connect! :user)
                                 (comp cc/goto! :destination)))
 
@@ -84,5 +89,21 @@
      (if @user/current
        (welcome)
        [auth-forms])]]])
+;; @c3kit/feature :auth }
+
+;; @c3kit/feature !:auth {
+(defn welcome []
+  [:ul.interactive.small-margin-bottom
+   [:h1 "Welcome to Acme"]
+   [:button#-spinner-button.primary
+    {:on-click #(ajax/get! "/ajax/spinner" {} ccc/noop)}
+    "Test Spinner"]])
+
+(defmethod page/render :home [_]
+  [:main
+   [:section.home
+    [:div.container.width-300.margin-top-plus-5.margin-bottom-plus-5
+     [welcome]]]])
+;; @c3kit/feature !:auth }
 
 (defmethod page/prerender? :home [_] true)

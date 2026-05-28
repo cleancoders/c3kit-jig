@@ -18,7 +18,7 @@
 
 (def ^:private tier-checks
   {:full  #{:no-cruft :combo :residue :ns-hyphen :lint :fmt :clj-clean :cljs-run :server-boot}
-   :light #{:no-cruft :combo :residue :ns-hyphen :lint :fmt :clj-clean}})
+   :light #{:no-cruft :combo :residue :ns-hyphen :lint :fmt :clj-clean :cljs-run}})
 
 (defn- feature-flags [features]
   (mapcat (fn [[k v]] ["--feature" (str (name k) "=" (boolean v))]) features))

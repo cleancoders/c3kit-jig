@@ -67,14 +67,14 @@ Combos are defined in `verification/templates/<template-id>/combos/*.expected.ed
 
 Tiers:
 
-| Tier  | Checks                                                                          |
-|-------|---------------------------------------------------------------------------------|
-| light | `no-cruft`, `combo`, `residue`, `ns-hyphen`, `lint`, `fmt`, `clj-clean`          |
-| full  | light + `cljs-run` + `server-boot`                                              |
+| Tier  | Checks                                                                                       |
+|-------|----------------------------------------------------------------------------------------------|
+| light | `no-cruft`, `combo`, `residue`, `ns-hyphen`, `lint`, `fmt`, `clj-clean`, `cljs-run`            |
+| full  | light + `server-boot`                                                                         |
 
 `--tier` overrides the per-combo default in `verification/templates/<template-id>/verify.edn`.
 
-Prerequisites: [Babashka](https://babashka.org), `clojure`/`clj`, `clj-kondo`, `cljfmt`, `curl`. The `server-boot` check additionally needs whichever database backend the combo targets (`sqlite`, `postgres`, or `datomic-pro`).
+Prerequisites: [Babashka](https://babashka.org), `clojure`/`clj`, `clj-kondo`, `cljfmt`, `curl`, Node.js + a Playwright-installed Chromium (`npx playwright install --with-deps chromium`) for the `cljs-run` check. The `server-boot` check additionally needs whichever database backend the combo targets (`sqlite`, `postgres`, or `datomic-pro`).
 
 ## Contributing
 
