@@ -6,9 +6,10 @@
                   "src/clj/my_app/config.clj"
                   "src/clj/my_app/auth/user.clj"
                   "src/clj/my_app/auth/user/web.clj"
-                  "src/cljc/my_app/schema.cljc"
+                  "src/cljc/my_app/schema/full.cljc"
+                  "src/cljc/my_app/schema/bg_task.cljc"
+                  "src/cljc/my_app/schema/user.cljc"
                   "src/cljc/my_app/markdownc.cljc"
-                  "src/cljc/my_app/auth/user/schema.cljc"
                   "src/cljs/my_app/main.cljs"
                   "src/cljs/my_app/auth/user.cljs"
                   "src/cljs/my_app/auth/forgot_password.cljs"
@@ -41,7 +42,11 @@
                   "spec/clj/my_app/ssr/"
                   "dev/my_app/ssr/"
                   "dev/my_app/compile_cljs.clj"
-                  "spec/clj/my_app/compile_cljs_spec.clj"]
+                  "spec/clj/my_app/compile_cljs_spec.clj"
+                  ;; legacy schema paths removed
+                  "src/cljc/my_app/schema.cljc"
+                  "src/cljc/my_app/bg_task.cljc"
+                  "src/cljc/my_app/auth/user/schema.cljc"]
 
  :file-contains  {"src/clj/my_app/config.clj"  ["memory-local"
                                                 ":bucket memory-local"
@@ -57,13 +62,22 @@
  :file-not-contains {"src/clj/my_app/config.clj" ["sqlite-local"
                                                   "datomic-local"
                                                   "postgres-local"
-                                                  "replaced by line below at scaffold"]
+                                                  "replaced by line below at scaffold"
+                                                  "acme.schema/full"
+                                                  "acme.bg-task"
+                                                  "acme.auth.user.schema"]
                      "src/clj/my_app/main.clj"    ["prerender!"
-                                                   "content/load!"]
+                                                   "content/load!"
+                                                   "acme.schema/full"
+                                                   "acme.bg-task"
+                                                   "acme.auth.user.schema"]
                      "deps.edn"                   ["my.datomic.com"
                                                    "aws-java-sdk"
                                                    "@c3kit/"
-                                                   "my-app.compile-cljs"]
+                                                   "my-app.compile-cljs"
+                                                   "acme.schema/full"
+                                                   "acme.bg-task"
+                                                   "acme.auth.user.schema"]
                      "dev/my_app/seed.clj"        ["(prn \"other-fields: "
                                                    "(prn \"e: "]
                      "resources/config/cljs.edn"  [":prerender"

@@ -15,7 +15,7 @@
    :migration-dir       "acme.migrations"
    :migration-ns-prefix "m"
    :migration-ns        'acme.migrations
-   :full-schema         'acme.schema/full})
+   :full-schema         'acme.schema.full/full})
 
 (def datomic-local      (merge datomic-base {:uri "datomic:dev://localhost:4334/acme"}))
 (def datomic-staging    (merge datomic-base {:uri "datomic:dev://localhost:4334/acme-staging"}))
@@ -29,7 +29,7 @@
    :migration-dir       "acme.migrations"
    :migration-ns-prefix "m"
    :migration-ns        'acme.migrations
-   :full-schema         'acme.schema/full})
+   :full-schema         'acme.schema.full/full})
 
 (def sqlite-local      (merge sqlite-base {:connection-uri "jdbc:sqlite:db/dev.sqlite"}))
 (def sqlite-staging    (merge sqlite-base {:connection-uri "jdbc:sqlite:db/staging.sqlite"}))
@@ -43,7 +43,7 @@
    :migration-dir       "acme.migrations"
    :migration-ns-prefix "m"
    :migration-ns        'acme.migrations
-   :full-schema         'acme.schema/full})
+   :full-schema         'acme.schema.full/full})
 
 (def postgres-local      (merge postgres-base {:connection-uri "jdbc:postgresql://localhost/acme_dev"}))
 (def postgres-staging    (merge postgres-base {:connection-uri "jdbc:postgresql://localhost/acme_staging"}))
@@ -56,7 +56,7 @@
    :migration-dir       "acme.migrations"
    :migration-ns-prefix "m"
    :migration-ns        'acme.migrations
-   :full-schema         'acme.schema/full})
+   :full-schema         'acme.schema.full/full})
 
 (def memory-local      memory-base)
 (def memory-staging    memory-base)

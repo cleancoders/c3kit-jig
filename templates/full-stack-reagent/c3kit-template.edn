@@ -34,7 +34,8 @@
 
                {:id      :auth
                 :prompt  "JWT auth?"
-                :default true}
+                :default true
+                :extras  ["src/cljc/acme/schema/user.cljc"]}
 
                {:id      :websocket
                 :prompt  "WebSocket support (c3kit.wire.websocket)?"

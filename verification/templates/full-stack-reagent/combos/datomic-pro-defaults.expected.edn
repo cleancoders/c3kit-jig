@@ -8,9 +8,10 @@
                   "src/clj/my_app/ssr/prerender.clj"
                   "src/clj/my_app/auth/user.clj"
                   "src/clj/my_app/auth/user/web.clj"
-                  "src/cljc/my_app/schema.cljc"
+                  "src/cljc/my_app/schema/full.cljc"
+                  "src/cljc/my_app/schema/bg_task.cljc"
+                  "src/cljc/my_app/schema/user.cljc"
                   "src/cljc/my_app/markdownc.cljc"
-                  "src/cljc/my_app/auth/user/schema.cljc"
                   "src/cljs/my_app/main.cljs"
                   "src/cljs/my_app/auth/user.cljs"
                   "src/cljs/my_app/auth/forgot_password.cljs"
@@ -31,7 +32,11 @@
                   "c3kit-template.edn"
                   "c3kit-template.bb"
                   "README.scaffold.md"
-                  ".c3kit-jig-context.edn"]
+                  ".c3kit-jig-context.edn"
+                  ;; legacy schema paths removed
+                  "src/cljc/my_app/schema.cljc"
+                  "src/cljc/my_app/bg_task.cljc"
+                  "src/cljc/my_app/auth/user/schema.cljc"]
 
  :file-contains  {"src/clj/my_app/config.clj"  ["datomic-local"
                                                 ":bucket datomic-local"
@@ -49,8 +54,17 @@
 
  :file-not-contains {"src/clj/my_app/config.clj" ["sqlite-local"
                                                   "postgres-local"
-                                                  "replaced by line below at scaffold"]
+                                                  "replaced by line below at scaffold"
+                                                  "acme.schema/full"
+                                                  "acme.bg-task"
+                                                  "acme.auth.user.schema"]
+                     "src/clj/my_app/main.clj"   ["acme.schema/full"
+                                                  "acme.bg-task"
+                                                  "acme.auth.user.schema"]
                      "deps.edn"                   ["aws-java-sdk"
-                                                   "@c3kit/"]
+                                                   "@c3kit/"
+                                                   "acme.schema/full"
+                                                   "acme.bg-task"
+                                                   "acme.auth.user.schema"]
                      "dev/my_app/seed.clj"        ["(prn \"other-fields: "
                                                    "(prn \"e: "]}}

@@ -9,13 +9,13 @@
             [c3kit.bucket.memory]
             [c3kit.wire.api :as api]
             [acme.config :as config]
-            [acme.schema :as schema]))
+            [acme.schema.full :as schema]))
 
 (defn install-legend! []
   (let [schemas (reduce
-                  (fn [m {:keys [kind] :as s}]
-                    (assoc m (:value kind) s))
-                  {} schema/full)]
+                 (fn [m {:keys [kind] :as s}]
+                   (assoc m (:value kind) s))
+                 {} schema/full)]
     (legend/init! (merge schemas
                          {:db/retract legend/retract}))))
 

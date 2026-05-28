@@ -1,5 +1,5 @@
 (ns acme.test-data
-  (:require [acme.schema :as schema]
+  (:require [acme.schema.full :as schema]
             #?(:clj [acme.spec-helper :as helper])
             ;; @c3kit/feature :auth {
             #?(:clj [acme.auth.user.core :as user])
@@ -94,20 +94,20 @@
 ;; @c3kit/feature !:auth {
 (defn with-kinds [config & kinds]
   (list
-    (helperc/with-schemas config (map vector schema/full))
-    (before (reset! initialized-kinds #{})
-      (apply init! kinds))
-    (after (clear-entities!))))
+   (helperc/with-schemas config (map vector schema/full))
+   (before (reset! initialized-kinds #{})
+           (apply init! kinds))
+   (after (clear-entities!))))
 ;; @c3kit/feature !:auth }
 
 ;; @c3kit/feature :auth {
 (defn with-kinds [config & kinds]
   (list
-    (helperc/with-schemas config (map vector schema/full))
-    #?(:clj (helper/with-fast-password-hash))
-    (before (reset! initialized-kinds #{})
-      (apply init! kinds))
-    (after (clear-entities!))))
+   (helperc/with-schemas config (map vector schema/full))
+   #?(:clj (helper/with-fast-password-hash))
+   (before (reset! initialized-kinds #{})
+           (apply init! kinds))
+   (after (clear-entities!))))
 ;; @c3kit/feature :auth }
 
 (defn with-memory-kinds [& kinds]
@@ -115,7 +115,7 @@
 
 (defn with-memory-schema []
   (helperc/with-schemas {:impl :memory :store #?(:clj (atom nil) :cljs (reagent/atom nil))}
-                        (map vector schema/full)))
+    (map vector schema/full)))
 
 #?(:clj (defn with-db-kinds [& kinds]
           (apply with-memory-kinds datomic-config kinds)))
