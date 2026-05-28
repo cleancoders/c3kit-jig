@@ -53,6 +53,9 @@
                                                 "MY_APP_ENV"]
                   "deps.edn"                   ["com.cleancoders.c3kit/apron"
                                                 "org.mindrot/jbcrypt"
+                                                "google-api-client"
+                                                "ring-anti-forgery"
+                                                "commonmark"
                                                 "markdown-to-hiccup"
                                                 "my-app.compile-cljs"]
                   "bin/db"                     ["In-memory backend"]

@@ -45,6 +45,7 @@
                   "src/clj/my_app/main.clj"    ["my-app.content.core"
                                                 "my-app.ssr.prerender"]
                   "deps.edn"                   ["com.cleancoders.c3kit/apron"
+                                                "commonmark"
                                                 "markdown-to-hiccup"
                                                 "my-app.compile-cljs"]
                   "bin/db"                     ["In-memory backend"]
@@ -72,6 +73,9 @@
                                                    "@c3kit/"
                                                    "acme.schema/full"
                                                    "acme.bg-task"
-                                                   "acme.auth.user.schema"]
+                                                   "acme.auth.user.schema"
+                                                   "jbcrypt"
+                                                   "google-api-client"
+                                                   "ring-anti-forgery"]
                      "dev/my_app/seed.clj"        ["(prn \"other-fields: "
                                                    "(prn \"e: "]}}

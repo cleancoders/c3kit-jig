@@ -1,22 +1,28 @@
 {:paths     ["src/clj" "src/cljc" "src/cljs" "resources"]
  :mvn/repos {"maven_central" {:url "https://repo.maven.apache.org/maven2/"}}
- :deps      {com.atlassian.commonmark/commonmark                       {:mvn/version "0.17.0"} ;; Markdown
-             com.atlassian.commonmark/commonmark-ext-gfm-strikethrough {:mvn/version "0.17.0"} ;; Github flavor markdown (strikethrough)
-             com.atlassian.commonmark/commonmark-ext-gfm-tables        {:mvn/version "0.17.0"} ;; Github flavor markdown (tables)
-             com.cleancoders.c3kit/apron                               {:mvn/version "2.5.0"}
+ :deps      {com.cleancoders.c3kit/apron                               {:mvn/version "2.5.0"}
              com.cleancoders.c3kit/bucket                              {:mvn/version "2.9.0"}
              com.cleancoders.c3kit/wire                                {:mvn/version "2.8.5"}
+             ;; @c3kit/feature :content {
+             com.atlassian.commonmark/commonmark                       {:mvn/version "0.17.0"}
+             com.atlassian.commonmark/commonmark-ext-gfm-strikethrough {:mvn/version "0.17.0"}
+             com.atlassian.commonmark/commonmark-ext-gfm-tables        {:mvn/version "0.17.0"}
+             ;; @c3kit/feature :content }
              com.datomic/peer                                          {:mvn/version "1.0.7482"}  ; baseline; harmless if user picks another :db
              ;; @c3kit/db :sqlite   = org.xerial/sqlite-jdbc {:mvn/version "3.46.0.0"}
              ;; @c3kit/db :postgres = org.postgresql/postgresql {:mvn/version "42.7.4"}
-             com.google.api-client/google-api-client                   {:mvn/version "2.8.1"} ; consumed by user.web; harmless if :auth off
+             ;; @c3kit/feature :auth {
+             com.google.api-client/google-api-client                   {:mvn/version "2.8.1"}
+             org.mindrot/jbcrypt                                       {:mvn/version "0.4"}
+             ring/ring-anti-forgery                                    {:mvn/version "1.4.0" :exclusions [commons-codec/commons-codec]}
+             ;; @c3kit/feature :auth }
              compojure/compojure                                       {:mvn/version "1.7.2"}
              dev.weavejester/medley                                    {:mvn/version "1.9.0"}
              hiccup/hiccup                                             {:mvn/version "2.0.0"}
              org.clojure/clojure                                       {:mvn/version "1.12.4"}
-             org.mindrot/jbcrypt                                       {:mvn/version "0.4"} ; consumed by seed.clj; harmless if :auth off
-             markdown-to-hiccup/markdown-to-hiccup                       {:mvn/version "0.6.2"}
-             ;; @c3kit/feature :auth = ring/ring-anti-forgery {:mvn/version "1.4.0" :exclusions [commons-codec/commons-codec]}
+             ;; @c3kit/feature :markdownc {
+             markdown-to-hiccup/markdown-to-hiccup                    {:mvn/version "0.6.2"}
+             ;; @c3kit/feature :markdownc }
              }
  :aliases   {:test     {:extra-deps  {clj-commons/secretary          {:mvn/version "1.2.5-SNAPSHOT"}
                                       com.cleancoders.c3kit/scaffold {:mvn/version "2.3.2"}

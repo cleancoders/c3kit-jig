@@ -54,6 +54,8 @@
                   "src/clj/my_app/main.clj"    ["my-app.auth.user.web"]
                   "deps.edn"                   ["com.cleancoders.c3kit/apron"
                                                 "org.mindrot/jbcrypt"
+                                                "google-api-client"
+                                                "ring-anti-forgery"
                                                 "markdown-to-hiccup"
                                                 "c3kit.scaffold.cljs"]
                   "bin/db"                     ["In-memory backend"]
@@ -80,7 +82,8 @@
                                                    "my-app.compile-cljs"
                                                    "acme.schema/full"
                                                    "acme.bg-task"
-                                                   "acme.auth.user.schema"]
+                                                   "acme.auth.user.schema"
+                                                   "commonmark"]
                      "dev/my_app/seed.clj"        ["(prn \"other-fields: "
                                                    "(prn \"e: "]
                      "resources/config/cljs.edn"  [":prerender"

@@ -33,7 +33,12 @@
                                                       "data-fetched?"]
                   "src/cljs/my_app/forms.cljs"       ["attempt-submit"
                                                       "ajax/post!"]
-                  "deps.edn"                         ["my-app.compile-cljs"]
+                  "deps.edn"                         ["jbcrypt"
+                                                      "google-api-client"
+                                                      "ring-anti-forgery"
+                                                      "commonmark"
+                                                      "markdown-to-hiccup"
+                                                      "my-app.compile-cljs"]
                   "dev/my_app/repl.clj"              ["config-from-service"
                                                       "-ensure-migration-schema!"]}
 

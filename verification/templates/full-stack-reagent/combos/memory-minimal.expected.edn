@@ -79,7 +79,12 @@
                                                    "my-app.compile-cljs"
                                                    "acme.schema/full"
                                                    "acme.bg-task"
-                                                   "acme.auth.user.schema"]
+                                                   "acme.auth.user.schema"
+                                                   "jbcrypt"
+                                                   "google-api-client"
+                                                   "ring-anti-forgery"
+                                                   "commonmark"
+                                                   "markdown-to-hiccup"]
                      "dev/my_app/seed.clj"        ["(prn \"other-fields: "
                                                    "(prn \"e: "]
                      "src/cljc/my_app/schema/full.cljc" ["user/all"]

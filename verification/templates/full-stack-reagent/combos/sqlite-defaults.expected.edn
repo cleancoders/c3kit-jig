@@ -46,6 +46,9 @@
                                                 "my-app.auth.user.web"]
                   "deps.edn"                   ["com.cleancoders.c3kit/apron"
                                                 "org.mindrot/jbcrypt"
+                                                "google-api-client"
+                                                "ring-anti-forgery"
+                                                "commonmark"
                                                 "markdown-to-hiccup"
                                                 "org.xerial/sqlite-jdbc"
                                                 "             org.xerial/sqlite-jdbc"
