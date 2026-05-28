@@ -32,14 +32,25 @@
             (reset! atm e))
           (do
             (println "UPDATING: " (pr-str kind search-fields))
-            ;(prn "other-fields: " other-fields)
-            ;(prn "e: " e)
             (reset! atm (db/tx (merge e other-fields)))))
         (let [entity (merge {:kind kind} search-fields other-fields)]
           (println "CREATING: " (pr-str kind search-fields))
           (reset! atm (db/tx entity)))))))
 
-(defn entity [kind search-fields other-fields] (Entity. (atom nil) kind search-fields other-fields))
+(defn entity
+  "Declare a seed entity.
+
+   `kind`          — entity kind keyword (matches your schema)
+   `search-fields` — map of attributes used to look an existing row up;
+                     idempotent seeding compares by these
+   `other-fields`  — every other attribute on the entity
+
+   Returns an IDeref. Deref it inside `-main` to upsert: existing rows
+   whose `other-fields` already match are reported as EXISTS, mismatches
+   are UPDATEd, and missing rows are CREATEd. See `acme.seed/-main`
+   below for the canonical pattern."
+  [kind search-fields other-fields]
+  (Entity. (atom nil) kind search-fields other-fields))
 
 ;; @c3kit/feature :auth {
 ;; MDM - we add our own pw hash here because the normal generate different hashes causing confusing UPDATE messages.

@@ -53,4 +53,6 @@
                      "src/cljc/my_app/schema.cljc" ["user.schema/all"]
                      "deps.edn"                   ["my.datomic.com"
                                                    "aws-java-sdk"
-                                                   "@c3kit/"]}}
+                                                   "@c3kit/"]
+                     "dev/my_app/seed.clj"        ["(prn \"other-fields: "
+                                                   "(prn \"e: "]}}

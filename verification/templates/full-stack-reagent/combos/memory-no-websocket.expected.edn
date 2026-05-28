@@ -34,4 +34,6 @@
                                                          "ws/start!"
                                                          "ws/call!"]
                      "src/cljs/my_app/forms.cljs"       ["c3kit.wire.websocket"
-                                                         "ws/call!"]}}
+                                                         "ws/call!"]
+                     "dev/my_app/seed.clj"              ["(prn \"other-fields: "
+                                                         "(prn \"e: "]}}

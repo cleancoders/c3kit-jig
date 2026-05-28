@@ -50,4 +50,6 @@
                                                   "postgres-local"
                                                   "replaced by line below at scaffold"]
                      "deps.edn"                   ["aws-java-sdk"
-                                                   "@c3kit/"]}}
+                                                   "@c3kit/"]
+                     "dev/my_app/seed.clj"        ["(prn \"other-fields: "
+                                                   "(prn \"e: "]}}

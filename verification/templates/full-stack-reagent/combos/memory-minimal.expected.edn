@@ -60,4 +60,6 @@
                      "deps.edn"                   ["my.datomic.com"
                                                    "aws-java-sdk"
                                                    "@c3kit/"
-                                                   "my-app.compile-cljs"]}}
+                                                   "my-app.compile-cljs"]
+                     "dev/my_app/seed.clj"        ["(prn \"other-fields: "
+                                                   "(prn \"e: "]}}
