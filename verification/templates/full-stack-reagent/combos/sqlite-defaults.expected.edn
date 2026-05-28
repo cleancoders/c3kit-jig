@@ -50,7 +50,9 @@
                                                 "org.xerial/sqlite-jdbc"
                                                 "my-app.compile-cljs"]
                   "bin/db"                     ["SQLite ready"]
-                  "src/cljs/my_app/config.cljs" ["ws-csrf-token"]}
+                  "src/cljs/my_app/config.cljs" ["ws-csrf-token"]
+                  "dev/my_app/repl.clj"         ["config-from-service"
+                                                 "-ensure-migration-schema!"]}
 
  :file-not-contains {"src/clj/my_app/config.clj" ["datomic-local"
                                                   "postgres-local"
