@@ -59,6 +59,7 @@ cd verification
 bb verify-all                                   # every combo at its declared tier
 bb verify --combo memory-defaults --tier full   # one combo, full tier
 bb verify --combo memory-minimal --tier light   # one combo, light tier
+bb verify --combo memory-minimal --verbose      # also show CLI scaffold stdout
 bb test                                         # harness unit tests
 ```
 
