@@ -34,18 +34,19 @@
                   "spec/cljs/my_app/auth/"]
 
  :file-contains  {"src/clj/my_app/config.clj" ["memory-local"
-                                                ":bucket memory-local"
-                                                "MyApp"]
+                                               ":bucket memory-local"
+                                               "MyApp"]
                   "src/clj/my_app/main.clj"   ["my-app.content.core"
                                                "my-app.ssr.prerender"]
                   "deps.edn"                  ["com.cleancoders.c3kit/apron"
-                                               "markdown-to-hiccup"]
+                                               "markdown-to-hiccup"
+                                               "my-app.compile-cljs"]
                   "bin/db"                    ["In-memory backend"]}
 
  :file-not-contains {"src/clj/my_app/config.clj" ["sqlite-local"
-                                                   "datomic-local"
-                                                   "postgres-local"
-                                                   "replaced by line below at scaffold"]
+                                                  "datomic-local"
+                                                  "postgres-local"
+                                                  "replaced by line below at scaffold"]
                      "src/clj/my_app/http.clj"   ["wrap-jwt"
                                                   "wrap-anti-forgery"
                                                   "session/wrap"]

@@ -33,6 +33,8 @@
                   "src/clj/my_app/ssr/"
                   "spec/clj/my_app/ssr/"
                   "dev/my_app/ssr/"
+                  "dev/my_app/compile_cljs.clj"
+                  "spec/clj/my_app/compile_cljs_spec.clj"
                   ;; markdownc feature off
                   "src/cljc/my_app/markdownc.cljc"
                   "spec/cljc/my_app/markdownc_spec.cljc"
@@ -44,16 +46,18 @@
                   "spec/cljs/my_app/auth/"]
 
  :file-contains  {"src/clj/my_app/config.clj" ["memory-local"
-                                                ":bucket memory-local"
-                                                "MyApp"]
-                  "deps.edn"                  ["com.cleancoders.c3kit/apron"]}
+                                               ":bucket memory-local"
+                                               "MyApp"]
+                  "deps.edn"                  ["com.cleancoders.c3kit/apron"
+                                               "c3kit.scaffold.cljs"]}
 
  :file-not-contains {"src/clj/my_app/config.clj" ["sqlite-local"
-                                                   "datomic-local"
-                                                   "postgres-local"
-                                                   "replaced by line below at scaffold"]
+                                                  "datomic-local"
+                                                  "postgres-local"
+                                                  "replaced by line below at scaffold"]
                      "src/clj/my_app/main.clj"    ["prerender!"
                                                    "content/load!"]
                      "deps.edn"                   ["my.datomic.com"
                                                    "aws-java-sdk"
-                                                   "@c3kit/"]}}
+                                                   "@c3kit/"
+                                                   "my-app.compile-cljs"]}}

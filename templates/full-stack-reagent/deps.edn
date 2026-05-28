@@ -26,8 +26,11 @@
                         ;:override-deps {com.cleancoders.c3kit/wire {:local/root "../../cleancoders/c3kit/wire"}}
                         :extra-paths ["dev" "spec/clj" "spec/cljc" "spec/cljs"]}
              :clean-db {:main-opts ["-m" "acme.clean-dev-db"]}
-             :cljs     {:main-opts ["-m" "acme.compile-cljs"]
+             ;; @c3kit/feature !:ssr = :cljs     {:main-opts ["-m" "c3kit.scaffold.cljs"]}
+             ;; @c3kit/feature :ssr {
+             :cljs     {:main-opts   ["-m" "acme.compile-cljs"]
                         :extra-paths ["dev"]}
+             ;; @c3kit/feature :ssr }
              ;; One-shot headless cljs spec run (compile dev build + run specs via Playwright).
              ;; Combine with :test for deps/paths, e.g. `clj -M:test:cljs-spec`.
              :cljs-spec {:main-opts ["-m" "c3kit.scaffold.cljs" "once"]}

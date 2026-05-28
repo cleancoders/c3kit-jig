@@ -34,10 +34,10 @@
                   ".c3kit-jig-context.edn"]
 
  :file-contains  {"src/clj/my_app/config.clj" ["memory-local"
-                                                ":bucket memory-local"
-                                                "MyApp"
-                                                "my_app.env"
-                                                "MY_APP_ENV"]
+                                               ":bucket memory-local"
+                                               "MyApp"
+                                               "my_app.env"
+                                               "MY_APP_ENV"]
                   "src/clj/my_app/main.clj"   ["my-app.content.core"
                                                "my-app.ssr.prerender"
                                                "my-app.auth.user.web"
@@ -48,20 +48,21 @@
                                                "MY_APP_ENV"]
                   "deps.edn"                  ["com.cleancoders.c3kit/apron"
                                                "org.mindrot/jbcrypt"
-                                               "markdown-to-hiccup"]
+                                               "markdown-to-hiccup"
+                                               "my-app.compile-cljs"]
                   "bin/db"                    ["In-memory backend"]}
 
  :file-not-contains {"src/clj/my_app/config.clj" ["sqlite-local"
-                                                   "datomic-local"
-                                                   "postgres-local"
-                                                   "replaced by line below at scaffold"
-                                                   "cc.env"
-                                                   "CC_ENV"]
+                                                  "datomic-local"
+                                                  "postgres-local"
+                                                  "replaced by line below at scaffold"
+                                                  "cc.env"
+                                                  "CC_ENV"]
                      "src/clj/my_app/main.clj"   ["cc.env"
-                                                   "CC_ENV"]
+                                                  "CC_ENV"]
                      "src/clj/my_app/errors.clj" ["cleancoders.com"]
                      "resources/config/cljs.edn" ["cc.env"
-                                                   "CC_ENV"]
+                                                  "CC_ENV"]
                      "deps.edn"                   ["my.datomic.com"
                                                    "aws-java-sdk"
                                                    "@c3kit/"]}}

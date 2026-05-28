@@ -36,10 +36,10 @@
       (let [preamble (slurp (io/file "dev/acme/ssr/prerender_preamble.js"))
             content  (slurp f)
             patched  (-> content
-                       (str/replace "#!/usr/bin/env node\n" "")
-                       (str/replace "\"object\"===typeof exports&&\"undefined\"!==typeof module"
-                                    "false")
-                       (str/replace "})(this,function(" "})(globalThis,function("))]
+                         (str/replace "#!/usr/bin/env node\n" "")
+                         (str/replace "\"object\"===typeof exports&&\"undefined\"!==typeof module"
+                                      "false")
+                         (str/replace "})(this,function(" "})(globalThis,function("))]
         (spit f (str "#!/usr/bin/env node\n" preamble "\n" patched))))))
 
 (defn -main [& args]

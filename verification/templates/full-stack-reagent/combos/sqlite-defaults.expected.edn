@@ -34,20 +34,21 @@
                   ".c3kit-jig-context.edn"]
 
  :file-contains  {"src/clj/my_app/config.clj" ["sqlite-local"
-                                                ":bucket sqlite-local"
-                                                "MyApp"]
+                                               ":bucket sqlite-local"
+                                               "MyApp"]
                   "src/clj/my_app/main.clj"   ["my-app.content.core"
                                                "my-app.ssr.prerender"
                                                "my-app.auth.user.web"]
                   "deps.edn"                  ["com.cleancoders.c3kit/apron"
                                                "org.mindrot/jbcrypt"
                                                "markdown-to-hiccup"
-                                               "org.xerial/sqlite-jdbc"]
+                                               "org.xerial/sqlite-jdbc"
+                                               "my-app.compile-cljs"]
                   "bin/db"                    ["SQLite ready"]}
 
  :file-not-contains {"src/clj/my_app/config.clj" ["datomic-local"
-                                                   "postgres-local"
-                                                   "replaced by line below at scaffold"]
+                                                  "postgres-local"
+                                                  "replaced by line below at scaffold"]
                      "deps.edn"                   ["my.datomic.com"
                                                    "aws-java-sdk"
                                                    "@c3kit/"]}}
