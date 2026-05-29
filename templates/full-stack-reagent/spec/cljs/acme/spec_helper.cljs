@@ -10,7 +10,10 @@
             [speclj.core]
             [taoensso.timbre :as timbre]))
 
-(timbre/merge-config! {:appenders {:println {:enabled? false}}})
+;; Silence c3kit.apron.log / timbre output during specs. The cljs default
+;; appender is :console (not :println), so disabling :println does nothing —
+;; raising min-level filters at the source regardless of appender.
+(timbre/set-min-level! :report)
 (init/install-reagent-db-atom!)
 (init/install-legend!)
 (init/configure-api!)

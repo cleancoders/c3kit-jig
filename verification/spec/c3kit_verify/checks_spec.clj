@@ -150,4 +150,14 @@
           (it "passes on a green one-shot run"
               (should (:ok? (sut/cljs-check* {:exit 0 :out "12 examples, 0 failures"}))))
           (it "fails when it never ran"
-              (should-not (:ok? (sut/cljs-check* {:exit 0 :out "0 examples, 0 failures"})))))
+              (should-not (:ok? (sut/cljs-check* {:exit 0 :out "0 examples, 0 failures"}))))
+          (it "fails on log noise even with green summary"
+              (let [out "2026-05-29T15:32:27.738Z DEBUG [my-app.routes] - dispatching:  /\n12 examples, 0 failures"
+                    r   (sut/cljs-check* {:exit 0 :out out})]
+                (should-not (:ok? r))
+                (should (re-find #"log noise" (:detail r)))))
+          (it "fails on a WARN line even with green summary"
+              (let [r (sut/cljs-check* {:exit 0 :out "WARN [c3kit.apron.schema] - deprecated\n5 examples, 0 failures"})]
+                (should-not (:ok? r))))
+          (it "fails on nonzero exit"
+              (should-not (:ok? (sut/cljs-check* {:exit 1 :out "5 examples, 0 failures"})))))

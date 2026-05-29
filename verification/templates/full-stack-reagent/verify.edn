@@ -5,6 +5,8 @@
           :memory-minimal           {:tier :light}
           :memory-no-auth           {:tier :light}
           :memory-no-ssr-no-content {:tier :light}
+          :memory-ssr-no-content    {:tier :light}
+          :memory-content-no-ssr    {:tier :light}
           :memory-no-websocket      {:tier :light}
           :sqlite-defaults          {:tier :light}
           :postgres-defaults        {:tier :light}
