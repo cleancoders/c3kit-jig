@@ -1,6 +1,6 @@
 (ns acme.compile-cljs-spec
   (:require [acme.compile-cljs :as sut]
-            [speclj.core :refer :all]))
+            [speclj.core :refer [describe it should should-not should=]]))
 
 (describe "prerender-ns?"
 

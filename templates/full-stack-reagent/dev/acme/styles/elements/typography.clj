@@ -1,6 +1,6 @@
 (ns acme.styles.elements.typography
   (:refer-clojure :exclude [rem])
-  (:require [acme.styles.core :refer :all]))
+  (:require [acme.styles.core :refer [body-line-height em font-family overflow-ellipsis primary px rem size-0 size-minus-3 size-plus-1 size-plus-2 size-plus-3 size-plus-4]]))
 
 (def screen
 (list

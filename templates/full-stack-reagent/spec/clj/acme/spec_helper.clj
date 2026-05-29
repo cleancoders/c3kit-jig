@@ -8,7 +8,7 @@
             [acme.init :as init]
             [c3kit.wire.routes :as wire.routes]
             [c3kit.wire.spec-helper :as wire-helper]
-            [speclj.core :refer :all]
+            [speclj.core :refer [around it should= stub with]]
             [speclj.stub :as stub]
             [taoensso.timbre :as timbre]))
 

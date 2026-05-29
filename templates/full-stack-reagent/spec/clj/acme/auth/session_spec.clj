@@ -1,6 +1,6 @@
 (ns acme.auth.session-spec
   (:require [acme.auth.session :as sut]
-            [speclj.core :refer :all])
+            [speclj.core :refer [describe it should=]])
   (:import (ring.middleware.session.cookie CookieStore)))
 
 (describe "Session"

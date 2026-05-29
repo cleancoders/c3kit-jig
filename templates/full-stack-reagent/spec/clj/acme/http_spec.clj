@@ -1,6 +1,6 @@
 (ns acme.http-spec
   (:require [acme.http :as sut]
-            [speclj.core :refer :all]))
+            [speclj.core :refer [describe it should-be-nil should=]]))
 
 (describe "wrap-security-headers"
 

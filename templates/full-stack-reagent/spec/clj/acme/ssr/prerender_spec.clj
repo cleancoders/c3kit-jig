@@ -2,7 +2,7 @@
   (:require [acme.ssr.prerender :as sut]
             ;; @c3kit/feature :content = [acme.content.core :as content]
             [acme.spec-helper]
-            [speclj.core :refer :all]
+            [speclj.core :refer [before describe it should-contain should-have-invoked should-not-have-invoked stub with-stubs]]
             [speclj.stub :as stub]))
 
 (describe "prerender orchestrator guards"

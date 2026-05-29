@@ -1,7 +1,7 @@
 (ns acme.auth.destination-spec
   (:require [acme.auth.destination :as sut]
             [c3kit.wire.spec-helper :as wire]
-            [speclj.core :refer :all]))
+            [speclj.core :refer [before context describe it should-be-nil should-contain should-not-contain should= with]]))
 
 
 (declare request)

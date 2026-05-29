@@ -1,6 +1,6 @@
 (ns acme.styles.elements.tables
   (:refer-clojure :exclude [rem])
-  (:require [acme.styles.core :refer :all]))
+  (:require [acme.styles.core :refer [border-radius light-grey px rem size-0 size-minus-1]]))
 
 (def screen
 (list

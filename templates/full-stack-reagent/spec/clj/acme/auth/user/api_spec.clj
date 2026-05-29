@@ -5,7 +5,7 @@
             [acme.auth.user.core :as core]
             [c3kit.apron.legend :as legend]
             [c3kit.wire.spec-helper :as wire-helper :refer [should-be-ajax-fail should-be-ajax-ok]]
-            [speclj.core :refer :all]))
+            [speclj.core :refer [context describe it should-contain should= with-stubs]]))
 
 (describe "User REST API Handlers"
   (with-stubs)

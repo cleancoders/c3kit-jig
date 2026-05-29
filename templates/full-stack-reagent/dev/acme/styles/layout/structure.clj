@@ -1,6 +1,6 @@
 (ns acme.styles.layout.structure
   (:refer-clojure :exclude [rem])
-  (:require [acme.styles.core :refer :all]))
+  (:require [acme.styles.core :refer [px rem size-0 size-minus-1 size-minus-4 size-plus-1 size-plus-2]]))
 
 (def screen
 (list

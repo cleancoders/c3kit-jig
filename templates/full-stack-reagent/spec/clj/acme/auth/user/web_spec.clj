@@ -9,7 +9,7 @@
             [c3kit.wire.jwt :as jwt]
             [c3kit.wire.spec-helper :as wire-helper]
             [c3kit.wire.websocket :as websocket]
-            [speclj.core :refer :all]
+            [speclj.core :refer [around context describe it should-be-nil should-contain should-have-invoked should-not-have-invoked should= stub with with-stubs]]
             [speclj.stub :as stub]))
 
 (describe "User Web Handlers"

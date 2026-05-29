@@ -9,7 +9,7 @@
             [c3kit.bucket.api :as db]
             [c3kit.wire.ajax :as ajax]
             [c3kit.wire.spec-helper :as wire-helper :refer [should-be-ajax-fail should-be-ajax-ok]]
-            [speclj.core :refer :all]))
+            [speclj.core :refer [context describe it should should-be-nil should-contain should= with-stubs]]))
 
 (describe "User AJAX Handlers"
   (with-stubs)

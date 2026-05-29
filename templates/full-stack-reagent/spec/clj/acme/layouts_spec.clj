@@ -4,7 +4,7 @@
             [acme.test-data :as test-data]
             [c3kit.wire.api :as api]
             [c3kit.wire.flash :as flash]
-            [speclj.core :refer :all]
+            [speclj.core :refer [describe it should should-be-nil should-have-invoked should-not should= stub with with-stubs]]
             [speclj.stub :as stub]))
 
 (describe "layouts"

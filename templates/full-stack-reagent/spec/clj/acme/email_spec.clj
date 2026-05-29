@@ -1,7 +1,7 @@
 (ns acme.email-spec
   (:require [acme.email :as sut]
             [c3kit.apron.log]
-            [speclj.core :refer :all]))
+            [speclj.core :refer [context describe it should-contain should=]]))
 
 (describe "Email"
 

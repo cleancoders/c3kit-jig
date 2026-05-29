@@ -1,6 +1,6 @@
 (ns acme.styles.layout.page
   (:refer-clojure :exclude [rem])
-  (:require [acme.styles.core :refer :all]))
+  (:require [acme.styles.core :refer [light-grey px rem]]))
 
 (def screen
 (list

@@ -1,6 +1,6 @@
 (ns acme.styles.elements.forms
   (:refer-clojure :exclude [rem])
-  (:require [acme.styles.core :refer :all]))
+  (:require [acme.styles.core :refer [black body-line-height border-radius em error font-family light-grey primary px rem size-0 size-minus-1 size-minus-2 size-minus-3 size-plus-1 size-plus-2 success warn white]]))
 
 (def screen
 (list

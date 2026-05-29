@@ -1,6 +1,6 @@
 (ns acme.spec-helperc
   #?(:cljs (:require-macros [speclj.core :refer [-fail -to-s around]]))
-  (:require #?(:clj  [speclj.core :refer :all]
+  (:require #?(:clj  [speclj.core :refer [around it should-have-invoked stub with]]
                :cljs [speclj.core])))
 
 #?(:clj (defmacro it-routes

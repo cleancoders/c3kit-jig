@@ -1,6 +1,6 @@
 (ns acme.version-spec
   (:require [acme.version :as sut]
-            [speclj.core :refer :all]))
+            [speclj.core :refer [context it should=]]))
 
 (defn should-version [version action]
   (should= action (get-in (sut/api-get {}) [:body :client-policies version :action])))

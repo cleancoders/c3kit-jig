@@ -1,6 +1,6 @@
 (ns acme.content.markdown-spec
   (:require [acme.content.markdown :as sut]
-            [speclj.core :refer :all]))
+            [speclj.core :refer [describe it should-be-nil should=]]))
 
 (describe "Markdown"
 

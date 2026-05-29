@@ -1,6 +1,6 @@
 (ns acme.styles.pages.authentication
   (:refer-clojure :exclude [rem])
-  (:require [acme.styles.core :refer :all]))
+  (:require [acme.styles.core :refer [rem size-plus-2]]))
 
 (def screen
 (list

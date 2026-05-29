@@ -27,9 +27,10 @@
   garden.def/defstyles      clojure.core/def}
 
  :linters
- {;; c3kit specs and garden style namespaces use `(:require [x :refer :all])`
-  ;; deliberately.
-  :refer-all           {:level :off}
+ {;; Strict: no `:refer :all`. Every refer must be explicit. Speclj specs
+  ;; and garden style namespaces previously used `:refer :all` deliberately;
+  ;; they have been migrated to explicit `:refer [...]` lists.
+  :refer-all           {:level :error}
   ;; speclj's whole DSL is referred but used only inside describe/it bodies
   ;; clj-kondo can't resolve without jar analysis.
   :unused-referred-var {:level :off}
