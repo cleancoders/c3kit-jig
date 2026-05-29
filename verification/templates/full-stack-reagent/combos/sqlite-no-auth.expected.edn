@@ -1,21 +1,15 @@
-{:db       :postgres
- :features {:content true :ssr true :markdownc true :auth true}
+{:db       :sqlite
+ :features {:content true :ssr true :markdownc true :auth false :websocket true}
  :name     "my-app"
 
  :must-exist     ["src/clj/my_app/main.clj"
                   "src/clj/my_app/config.clj"
                   "src/clj/my_app/content/core.clj"
                   "src/clj/my_app/ssr/prerender.clj"
-                  "src/clj/my_app/auth/user.clj"
-                  "src/clj/my_app/auth/user/web.clj"
                   "src/cljc/my_app/schema/full.cljc"
                   "src/cljc/my_app/schema/bg_task.cljc"
-                  "src/cljc/my_app/schema/user.cljc"
                   "src/cljc/my_app/markdownc.cljc"
                   "src/cljs/my_app/main.cljs"
-                  "src/cljs/my_app/auth/user.cljs"
-                  "src/cljs/my_app/auth/forgot_password.cljs"
-                  "src/cljs/my_app/auth/recover_password.cljs"
                   "src/cljs/my_app/content/page.cljs"
                   "dev/my_app/seed.clj"
                   "content/blog"
@@ -33,32 +27,35 @@
                   "c3kit-template.bb"
                   "README.scaffold.md"
                   ".c3kit-jig-context.edn"
+                  ;; auth feature off
+                  "src/clj/my_app/auth/"
+                  "src/cljc/my_app/auth/"
+                  "src/cljs/my_app/auth/"
+                  "spec/clj/my_app/auth/"
+                  "spec/cljs/my_app/auth/"
+                  "src/cljc/my_app/schema/user.cljc"
                   ;; legacy schema paths removed
                   "src/cljc/my_app/schema.cljc"
                   "src/cljc/my_app/bg_task.cljc"
                   "src/cljc/my_app/auth/user/schema.cljc"]
 
- :file-contains  {"src/clj/my_app/config.clj"  ["postgres-local"
-                                                ":bucket postgres-local"
+ :file-contains  {"src/clj/my_app/config.clj"  ["sqlite-local"
+                                                ":bucket sqlite-local"
                                                 "MyApp"]
                   "src/clj/my_app/main.clj"    ["my-app.content.core"
-                                                "my-app.ssr.prerender"
-                                                "my-app.auth.user.web"]
+                                                "my-app.ssr.prerender"]
                   "deps.edn"                   ["com.cleancoders.c3kit/apron"
-                                                "org.mindrot/jbcrypt"
-                                                "google-api-client"
-                                                "ring-anti-forgery"
                                                 "commonmark"
                                                 "markdown-to-hiccup"
-                                                "org.postgresql/postgresql"
+                                                "org.xerial/sqlite-jdbc"
                                                 "my-app.compile-cljs"]
-                  "bin/db"                     ["createdb"]
+                  "bin/db"                     ["SQLite ready"]
                   "src/cljs/my_app/config.cljs" ["ws-csrf-token"]
                   "dev/my_app/repl.clj"         ["config-from-service"
                                                  "-ensure-migration-schema!"]}
 
  :file-not-contains {"src/clj/my_app/config.clj" ["datomic-local"
-                                                  "sqlite-local"
+                                                  "postgres-local"
                                                   "replaced by line below at scaffold"
                                                   "acme.schema/full"
                                                   "acme.bg-task"
@@ -67,11 +64,18 @@
                                                   "acme.bg-task"
                                                   "acme.auth.user.schema"
                                                   "#_bg-tasks"]
+                     "src/clj/my_app/http.clj"   ["wrap-jwt"
+                                                  "wrap-anti-forgery"
+                                                  "session/wrap"]
+                     "src/cljc/my_app/schema/full.cljc" ["user/all"]
                      "deps.edn"                   ["my.datomic.com"
                                                    "aws-java-sdk"
                                                    "@c3kit/"
                                                    "acme.schema/full"
                                                    "acme.bg-task"
-                                                   "acme.auth.user.schema"]
+                                                   "acme.auth.user.schema"
+                                                   "jbcrypt"
+                                                   "google-api-client"
+                                                   "ring-anti-forgery"]
                      "dev/my_app/seed.clj"        ["(prn \"other-fields: "
                                                    "(prn \"e: "]}}

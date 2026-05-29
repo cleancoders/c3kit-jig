@@ -4,7 +4,8 @@
             [clojure.edn :as edn]
             [clojure.string :as str]
             [clojure.tools.cli :as cli]
-            [c3kit-verify.checks :as checks]))
+            [c3kit-verify.checks :as checks]
+            [c3kit-verify.coupling :as coupling]))
 
 (def ^:private here (System/getProperty "user.dir")) ; verification/ when run via bb task
 
@@ -111,11 +112,26 @@
     (let [ok? (verify-combo options)]
       (System/exit (if ok? 0 1)))))
 
+(defn- template-root [descriptor template]
+  (str (fs/absolutize (fs/path here (:cli-templates-dir descriptor) template))))
+
+(defn scan-coupling
+  "Run the static feature-coupling scan on the template. Prints a
+   PASS/FAIL line and returns the result map."
+  [template]
+  (let [descriptor (read-edn (descriptor-path template))
+        root       (template-root descriptor template)
+        result     (coupling/coupling-check root)]
+    (println (str "\n=== template coupling (" template ") ==="))
+    (print-result! result)
+    result))
+
 (defn run-all [argv]
   (let [{:keys [options]} (cli/parse-opts argv opts-spec)
         template (:template options)
         descriptor (read-edn (descriptor-path template))
+        coupling-ok? (:ok? (scan-coupling template))
         results (mapv (fn [[combo {:keys [tier]}]]
                         (verify-combo (assoc options :combo (name combo) :tier (name tier))))
                       (:combos descriptor))]
-    (System/exit (if (every? true? results) 0 1))))
+    (System/exit (if (and coupling-ok? (every? true? results)) 0 1))))

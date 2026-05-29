@@ -1,10 +1,9 @@
-{:db       :datomic-pro
- :features {:content true :ssr true :markdownc true :auth true}
+{:db       :postgres
+ :features {:content false :ssr true :markdownc true :auth true :websocket true}
  :name     "my-app"
 
  :must-exist     ["src/clj/my_app/main.clj"
                   "src/clj/my_app/config.clj"
-                  "src/clj/my_app/content/core.clj"
                   "src/clj/my_app/ssr/prerender.clj"
                   "src/clj/my_app/auth/user.clj"
                   "src/clj/my_app/auth/user/web.clj"
@@ -16,9 +15,7 @@
                   "src/cljs/my_app/auth/user.cljs"
                   "src/cljs/my_app/auth/forgot_password.cljs"
                   "src/cljs/my_app/auth/recover_password.cljs"
-                  "src/cljs/my_app/content/page.cljs"
                   "dev/my_app/seed.clj"
-                  "content/blog"
                   "package.json"
                   "bin/db"
                   "deps.edn"
@@ -33,42 +30,51 @@
                   "c3kit-template.bb"
                   "README.scaffold.md"
                   ".c3kit-jig-context.edn"
+                  ;; content feature off
+                  "content/"
+                  "src/clj/my_app/content/"
+                  "src/cljs/my_app/content/"
+                  "spec/clj/my_app/content/"
+                  "spec/cljs/my_app/content/"
                   ;; legacy schema paths removed
                   "src/cljc/my_app/schema.cljc"
                   "src/cljc/my_app/bg_task.cljc"
                   "src/cljc/my_app/auth/user/schema.cljc"]
 
- :file-contains  {"src/clj/my_app/config.clj"  ["datomic-local"
-                                                ":bucket datomic-local"
+ :file-contains  {"src/clj/my_app/config.clj"  ["postgres-local"
+                                                ":bucket postgres-local"
                                                 "MyApp"]
-                  "src/clj/my_app/main.clj"    ["my-app.content.core"
-                                                "my-app.ssr.prerender"
+                  "src/clj/my_app/main.clj"    ["my-app.ssr.prerender"
                                                 "my-app.auth.user.web"]
                   "deps.edn"                   ["com.cleancoders.c3kit/apron"
                                                 "org.mindrot/jbcrypt"
                                                 "google-api-client"
                                                 "ring-anti-forgery"
-                                                "commonmark"
                                                 "markdown-to-hiccup"
-                                                "com.datomic/peer"
+                                                "postgresql"
                                                 "my-app.compile-cljs"]
-                  "bin/db"                     ["Datomic Pro"]
+                  "bin/db"                     ["createdb"]
                   "src/cljs/my_app/config.cljs" ["ws-csrf-token"]
                   "dev/my_app/repl.clj"         ["config-from-service"
                                                  "-ensure-migration-schema!"]}
 
- :file-not-contains {"src/clj/my_app/config.clj" ["sqlite-local"
-                                                  "postgres-local"
+ :file-not-contains {"src/clj/my_app/config.clj" ["datomic-local"
+                                                  "sqlite-local"
                                                   "replaced by line below at scaffold"
                                                   "acme.schema/full"
                                                   "acme.bg-task"
                                                   "acme.auth.user.schema"]
-                     "src/clj/my_app/main.clj"   ["acme.schema/full"
+                     "src/clj/my_app/main.clj"   ["my-app.content.core"
+                                                  "content/load!"
+                                                  "acme.schema/full"
                                                   "acme.bg-task"
                                                   "acme.auth.user.schema"
                                                   "#_bg-tasks"]
-                     "deps.edn"                   ["aws-java-sdk"
+                     "deps.edn"                   ["my.datomic.com"
+                                                   "aws-java-sdk"
                                                    "@c3kit/"
+                                                   "commonmark"
+                                                   "org.xerial/sqlite-jdbc"
                                                    "acme.schema/full"
                                                    "acme.bg-task"
                                                    "acme.auth.user.schema"]
