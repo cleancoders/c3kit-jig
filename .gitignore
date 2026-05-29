@@ -24,6 +24,8 @@ node_modules/
 resources/public/cljs/
 resources/public/js/compiled/
 resources/prerendered/
+my-app/
+my-cool-app/
 
 # Local-only env / secrets
 .env
