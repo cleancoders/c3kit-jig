@@ -22,7 +22,7 @@
 
 (deftype Entity [atm kind search-fields other-fields]
   IDeref
-  (deref [this]
+  (deref [_this]
     (if-let [e @atm]
       e
       (if-let [e (apply db/ffind-by kind (flatten (seq search-fields)))]

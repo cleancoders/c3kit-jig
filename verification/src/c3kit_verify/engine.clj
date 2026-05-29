@@ -82,7 +82,7 @@
     (into [] (keep (fn [[k thunk]] (run-check! enabled descriptor k thunk))) thunks)))
 
 (defn verify-combo
-  [{:keys [template combo tier cli-cp keep-tmp verbose] :as opts}]
+  [{:keys [template combo tier cli-cp keep-tmp verbose] :as _opts}]
   (let [descriptor (read-edn (descriptor-path template))
         combo-edn  (read-edn (combo-path template combo))
         tier-kw    (or (some-> tier keyword) (get-in descriptor [:combos (keyword combo) :tier]) :light)

@@ -34,8 +34,8 @@
 
 (defmethod entering! :default [_])
 (defmethod exiting! :default [_])
-(defmethod reentering! :default [page])
-(defmethod title :default [page] "Acme - Starter Site")
+(defmethod reentering! :default [_])
+(defmethod title :default [_] "Acme - Starter Site")
 
 (defmulti prerender? identity)
 (defmethod prerender? :default [_] false)

@@ -69,7 +69,7 @@
 
 (defn attempt-submit
   ([form-config] (partial attempt-submit form-config))
-  ([{:keys [schema ratom url success-handler options] :as form-config} e] (attempt-submit schema ratom url success-handler options e))
+  ([{:keys [schema ratom url success-handler options]} e] (attempt-submit schema ratom url success-handler options e))
   ([schema ratom url success-handler options] (partial attempt-submit schema ratom url success-handler options))
   ([schema ratom url success-handler options e]
    (wjs/nod e)
@@ -86,12 +86,12 @@
              ;; @c3kit/feature !:websocket {
              call-fn     ajax/post!]
              ;; @c3kit/feature !:websocket }
-         (swap! ratom (fn [v] (dissoc v :errors) (assoc v :_processing? true)))
+         (swap! ratom (fn [v] (-> v (dissoc :errors) (assoc :_processing? true))))
          (call-fn url presentable (capture-errors-handler ratom success-handler) options))))))
 
 (defn modal-attempt-submit
   ([form-config] (partial modal-attempt-submit form-config))
-  ([{:keys [schema ratom url success-handler options] :as form-config} e] (modal-attempt-submit schema ratom url success-handler options e))
+  ([{:keys [schema ratom url success-handler options]} e] (modal-attempt-submit schema ratom url success-handler options e))
   ([schema ratom url success-handler options] (partial modal-attempt-submit schema ratom url success-handler options))
   ([schema ratom url success-handler options e]
    (let [options (assoc options :after-all #(when-not (:errors @ratom) (modal/close!)))]
@@ -127,7 +127,7 @@
   (form-field :textarea "" options field ratom schema))
 
 (defn radio-button
-  ([options field value {:keys [ratom schema] :as form-config}] (radio-button options field value ratom schema))
+  ([options field value {:keys [ratom schema]}] (radio-button options field value ratom schema))
   ([options field value ratom schema]
    [:input (merge {:type      "radio"
                    :name      (str field)
@@ -140,7 +140,7 @@
   (when label [:label (if (sequential? label) (wire-util/with-react-keys label) label)]))
 
 (defn field-set
-  ([label field-fn options field {:keys [ratom schema] :as form-config}]
+  ([label field-fn options field {:keys [ratom schema]}]
    (field-set label field-fn options field ratom schema))
   ([label field-fn options field ratom schema]
    [:fieldset {:class "small-margin-bottom"}
@@ -149,7 +149,7 @@
     (field-error ratom field)]))
 
 (defn checkbox-field-set
-  ([options field {:keys [ratom schema] :as form-config} span]
+  ([options field {:keys [ratom schema]} span]
    (checkbox-field-set options field ratom schema span))
   ([options field ratom schema span]
    [:fieldset {:id (:id options)}

@@ -170,7 +170,7 @@
 
 (defn- build-ns-index
   "Map every ns symbol declared in the template to its owner feature."
-  [template-root manifest files]
+  [_template-root manifest files]
   (into {} (for [[relpath f] files
                  :let [content (slurp f)
                        ns-sym  (extract-ns content)]

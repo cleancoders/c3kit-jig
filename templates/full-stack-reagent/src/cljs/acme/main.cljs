@@ -17,16 +17,14 @@
             ;; @c3kit/feature :auth {
             [acme.auth.user :as user]
             ;; @c3kit/feature :auth }
-            [reagent.dom :as dom]
-            ))
+            [reagent.dom :as dom]))
 
 ;; MDM: Needed with advanced compilation so pages can load content
 (goog/exportSymbol "goog.require" goog/require)
 
 (defn load-config [{:keys [api-version anti-forgery-token] :as config}]
   (api/configure! {:version      api-version
-                   :ajax-prep-fn (ajax/prep-csrf "X-CSRF-Token" anti-forgery-token)
-                   })
+                   :ajax-prep-fn (ajax/prep-csrf "X-CSRF-Token" anti-forgery-token)})
   (config/install! config)
   (if @config/production?
     (log/warn!)
@@ -44,7 +42,9 @@
   (init/install-legend!)
   (init/install-reagent-db-atom!)
   (init/configure-api!)
-  (let [{:keys [config user flash]} (utilc/<-transit payload-src)]
+  (let [{:keys [config flash
+                ;; @c3kit/feature :auth = user
+                ]} (utilc/<-transit payload-src)]
     (load-config config)
     ;; @c3kit/feature :auth {
     (user/install-and-connect! user)

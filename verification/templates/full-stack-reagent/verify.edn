@@ -33,7 +33,8 @@
             "spec/hook_test.bb"
             "spec/combos"
             "dev/verify-scaffold.bb"
-            ".c3kit-jig-context.edn"]
+            ".c3kit-jig-context.edn"
+            ".scaffold-clj-kondo"]
 
  ;; Relative paths skipped by :ns-hyphen (none today; .edn files are not scanned).
  :ns-prefix-exempt []

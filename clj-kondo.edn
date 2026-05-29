@@ -1,34 +1,34 @@
 ;; Canonical clj-kondo configuration for the c3kit-jig monorepo.
 ;;
-;; This file is the single source of truth. It is symlinked into:
-;;   - templates/<id>/.clj-kondo/config.edn — each template; the CLI's
-;;       fs/copy-tree follows the symlink during fetch so the scaffolded
-;;       project ships a real file. Token rewriting then replaces the
-;;       `acme.*` excludes with the chosen ns-token at scaffold time.
-;;   - verification/.clj-kondo/config.edn   — harness uses these rules on
-;;       its own clj sources.
+;; Single source of truth, deliberately STRICT and security-friendly:
+;; this file holds only universally-true c3kit + speclj idiom support
+;; and the strict policies the project enforces everywhere. Linters that
+;; matter for catching bugs (unused-binding, unused-value, unresolved-var,
+;; unresolved-namespace, …) are left at their defaults and MUST NOT be
+;; disabled here.
 ;;
-;; Future templates: symlink their .clj-kondo/config.edn to this file.
-;; Don't fork. (cli/.clj-kondo/config.edn stays separate — different intent:
-;; it suppresses speclj noise on the CLI's own sources without project-wide
-;; rules.)
+;; Symlinked into:
+;;   - verification/.clj-kondo/config.edn — harness lints its own clj
+;;       sources under these strict rules.
+;;   - templates/<id>/.clj-kondo/c3kit-shared/config.edn — each template;
+;;       the template's own .clj-kondo/config.edn merges this in via
+;;       `:config-paths ["c3kit-shared"]` and then adds scaffold-specific
+;;       suppressions (placeholder bindings, lazy-route namespaces,
+;;       project-defined helper symbols). Scaffold-specific relaxations
+;;       belong in the per-template file, NOT here.
 ;;
-;; The verification harness runs `clj-kondo --lint src spec dev` WITHOUT
-;; classpath/dependency analysis and requires ZERO findings (clj-kondo exits
-;; non-zero on ANY warning/error). The settings below silence library-macro
-;; and c3kit-idiom false positives that clj-kondo cannot resolve without
-;; analysing the deps, plus a few linters that are noise on a generated
-;; skeleton (e.g. placeholder bindings in component signatures). They affect
-;; linting only — not compiled behaviour.
+;; Future templates: do the same — symlink c3kit-shared/config.edn back
+;; to this file, keep their scaffold relaxations local. Don't fork.
+;; (cli/.clj-kondo/config.edn stays separate: CLI dev only.)
 {:lint-as
  {;; c3kit's `for-all` is a comprehension macro shaped like `for`.
   c3kit.apron.corec/for-all clojure.core/for
   ;; garden's `defstyles` defines the stylesheet var; treat like `def`.
   garden.def/defstyles      clojure.core/def
   ;; speclj `with` / `with-all` rebind a value used via deref (`@name`).
-  ;; Treating them as `def` lets clj-kondo see the binding so it does not
-  ;; report `Expected: deref, received: keyword` against the `(def x :undefined)`
-  ;; placeholder pattern.
+  ;; Treating them as `def` lets clj-kondo see the rebind so it does not
+  ;; report `Expected: deref, received: keyword` against the
+  ;; `(def x :undefined)` placeholder pattern that speclj specs use.
   speclj.core/with          clojure.core/def
   speclj.core/with-all      clojure.core/def}
 
@@ -37,39 +37,15 @@
   ;; and garden style namespaces previously used `:refer :all` deliberately;
   ;; they have been migrated to explicit `:refer [...]` lists.
   :refer-all           {:level :error}
-  ;; speclj's whole DSL is referred but used only inside describe/it bodies
-  ;; clj-kondo can't resolve without jar analysis.
+
+  ;; speclj's whole DSL is referred but used only inside describe/it bodies;
+  ;; clj-kondo cannot resolve those macro bodies without jar analysis.
   :unused-referred-var {:level :off}
   :unused-namespace    {:level :off}
-  ;; speclj `:refer` lists occasionally repeat a symbol; harmless.
-  :duplicate-require   {:level :off}
-  ;; Generated skeleton has placeholder bindings (reagent component args,
-  ;; destructured config) and handler vars referenced via runtime symbols.
-  :unused-binding      {:level :off}
-  :unused-value        {:level :off}
-  :unused-import       {:level :off}
-  :unresolved-var      {:level :off}
 
-  ;; The router uses c3kit `lazy-routes`, which references handler namespaces
-  ;; as fully-qualified symbols that are intentionally NOT required (lazy load
-  ;; to avoid eager dependency cycles). They resolve at runtime.
-  :unresolved-namespace
-  {:exclude [acme.security.csp
-             acme.content.core
-             acme.auth.user.api
-             acme.auth.user.ajax
-             acme.auth.user.web
-             acme.auth.destination
-             acme.layouts
-             acme.errors
-             acme.version
-             acme.sandbox.core]}
-
-  ;; speclj + secretary + project test-helper macros referred via `:refer :all`
-  ;; / `:require-macros` can't be resolved without jar analysis, so their
-  ;; structure forms, assertion macros, stub helpers, secretary `defroute`
-  ;; route-param bindings, and the project's `it-routes` helper read as
-  ;; unresolved. Symbol-resolution only.
+  ;; speclj + c3kit.wire test helpers — universally-defined library macros
+  ;; whose call-site forms clj-kondo cannot resolve without jar analysis.
+  ;; Symbol resolution only; does not affect other linters.
   :unresolved-symbol
   {:exclude [;; speclj structure
              describe context it xit
@@ -90,11 +66,10 @@
              should< should<= should> should>=
              ;; speclj stubs / fixtures
              stub with-stubs redefs-around -fail -to-s
-             ;; project + c3kit.wire test helpers (spec-helper macros)
-             it-routes capture-logs
+             ;; c3kit.apron.log macro
+             capture-logs
+             ;; c3kit.wire test helpers
              should-be-ajax-ok should-be-ajax-fail
              should-have-invoked-ajax-get should-have-invoked-ajax-post
              should-have-invoked-ws
-             should-select should-not-select
-             ;; secretary defroute route-param bindings (bound by URL pattern)
-             recovery-token content-type permalink sandbox-page]}}}
+             should-select should-not-select]}}}

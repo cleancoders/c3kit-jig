@@ -32,11 +32,11 @@
     (if user "/" "/"))
   (post-redirect-response [_ destination]
     (layouts/static
-      [:main
-       [:div.floating-panel
-        [:h1.uppercase "Redirect"]
-        [:p.margin-top-default "You are being redirected.  One moment please..."]
-        (destination/post-redirect-form-hiccup destination)]])))
+     [:main
+      [:div.floating-panel
+       [:h1.uppercase "Redirect"]
+       [:p.margin-top-default "You are being redirected.  One moment please..."]
+       (destination/post-redirect-form-hiccup destination)]])))
 
 ;; endregion ^^^^^ destination ^^^^^
 
@@ -80,7 +80,7 @@
       (authorize-user user)
       (flash/success msg)))
 
-(defn- web-authorize-social [request provider user-data]
+(defn- web-authorize-social [request _provider user-data]
   (if-let [existing (userc/existing-user (:email user-data))]
     (web-success existing request "Welcome back!")
     (-> (user/new-social-user! user-data)

@@ -1,1 +1,83 @@
-../../../clj-kondo.edn
+;; LOOSE clj-kondo config for editing the template's raw source.
+;;
+;; The template's clj/cljc/cljs files contain `;; @c3kit/feature` markers,
+;; alternate-branch placeholders, and `acme.*` namespaces that scaffolds
+;; will rewrite or delete at render time. Linting the raw template under
+;; strict rules surfaces noise that doesn't apply to any real scaffold.
+;; This file silences that noise so devs editing the template don't get
+;; spammed.
+;;
+;; This is NOT what scaffolds ship. The CLI render step deletes this
+;; directory and renames `.scaffold-clj-kondo/` to `.clj-kondo/` on the
+;; way out — see cli/src/c3kit_jig/render.clj. Scaffolds receive the
+;; strict + project-specific config from `.scaffold-clj-kondo/`, which in
+;; turn merges the canonical `/clj-kondo.edn` via `:config-paths`.
+{:lint-as
+ {c3kit.apron.corec/for-all clojure.core/for
+  garden.def/defstyles      clojure.core/def
+  speclj.core/with          clojure.core/def
+  speclj.core/with-all      clojure.core/def}
+
+ :linters
+ {;; Generated skeleton has placeholder bindings (reagent component args,
+  ;; destructured config) and handler vars referenced via runtime symbols.
+  :unused-binding      {:level :off}
+  :unused-value        {:level :off}
+  :unused-import       {:level :off}
+  :unresolved-var      {:level :off}
+  :unused-referred-var {:level :off}
+  :unused-namespace    {:level :off}
+  ;; Template-only refer lists occasionally repeat a symbol across
+  ;; feature-gated branches; harmless until render strips one branch.
+  :duplicate-require   {:level :off}
+  ;; Refer-all is silenced on the raw template so feature-marker variations
+  ;; do not yell. The scaffold config promotes this to :error.
+  :refer-all           {:level :off}
+
+  ;; Router uses c3kit `lazy-routes`, which references handler namespaces
+  ;; as fully-qualified symbols that are intentionally NOT required (lazy
+  ;; load to avoid eager dependency cycles). They resolve at runtime.
+  :unresolved-namespace
+  {:exclude [acme.security.csp
+             acme.content.core
+             acme.auth.user.api
+             acme.auth.user.ajax
+             acme.auth.user.web
+             acme.auth.destination
+             acme.layouts
+             acme.errors
+             acme.version
+             acme.sandbox.core]}
+
+  ;; speclj + c3kit.wire macros + project test helpers + secretary defroute
+  ;; URL-pattern bindings. Symbol resolution only.
+  :unresolved-symbol
+  {:exclude [;; speclj structure
+             describe context it xit
+             before before-all after after-all around around-all with with-all
+             focus-describe focus-context focus-it
+             tags pending
+             ;; speclj assertions
+             should should-not should= should-not= should== should-not==
+             should-be should-not-be should-be-a should-not-be-a
+             should-be-nil should-not-be-nil should-fail
+             should-contain should-not-contain
+             should-start-with should-not-start-with
+             should-end-with should-not-end-with
+             should-throw should-not-throw
+             should-have-invoked should-not-have-invoked
+             should-invoke should-not-invoke
+             should-be-same should-not-be-same
+             should< should<= should> should>=
+             ;; speclj stubs / fixtures
+             stub with-stubs redefs-around -fail -to-s
+             ;; c3kit.apron.log + c3kit.wire helpers
+             capture-logs
+             should-be-ajax-ok should-be-ajax-fail
+             should-have-invoked-ajax-get should-have-invoked-ajax-post
+             should-have-invoked-ws
+             should-select should-not-select
+             ;; project test-helper macro
+             it-routes
+             ;; secretary defroute URL-pattern bindings
+             recovery-token content-type permalink sandbox-page]}}}
