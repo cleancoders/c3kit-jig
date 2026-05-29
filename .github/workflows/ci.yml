@@ -28,6 +28,12 @@ jobs:
           ./install-clj-kondo --dir "$HOME/.local/bin"
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
+      - name: Configure git for scaffold e2e tests
+        run: |
+          git config --global user.email "ci@example.com"
+          git config --global user.name  "CI"
+          git config --global init.defaultBranch main
+
       - name: bb test
         working-directory: cli
         run: bb test

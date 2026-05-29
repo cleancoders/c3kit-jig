@@ -1,7 +1,7 @@
 (ns c3kit-jig.format-spec
   (:require [babashka.fs :as fs]
             [c3kit-jig.format :as format]
-            [speclj.core :refer [describe it should= should-not]]))
+            [speclj.core :refer [describe it should=]]))
 
 (defn- mk-stage []
   (let [d (fs/create-temp-dir {:prefix "fmt-spec-"})]
