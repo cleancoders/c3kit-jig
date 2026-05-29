@@ -1,6 +1,6 @@
 (ns acme.layout-spec
   (:require-macros [c3kit.wire.spec-helperc :refer [should-not-select should-select]]
-                   [speclj.core :refer [before describe it should-contain with-stubs]])
+                   [speclj.core :refer [around before describe it should-contain with-stubs]])
   (:require [acme.layout :as sut]
             [acme.modal :as modal]
             [acme.page :as page]
@@ -8,6 +8,7 @@
             ;; @c3kit/feature :auth {
             [acme.auth.user :as user]
             ;; @c3kit/feature :auth }
+            [c3kit.apron.log :as log]
             [c3kit.wire.ajax :as ajax]
             [c3kit.wire.flash :as flash]
             [c3kit.wire.spec-helper :as wire-helper]))
@@ -18,6 +19,7 @@
 (describe "Layout"
           (with-stubs)
           (wire-helper/with-root-dom)
+          (around [it] (log/capture-logs (it)))
   ;; @c3kit/feature :auth {
           (test-data/with-memory-kinds :user)
   ;; @c3kit/feature :auth }

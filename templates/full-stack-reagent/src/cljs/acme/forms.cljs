@@ -24,7 +24,7 @@
 
 (defn update-field-value [field value schema ratom]
   (let [state  (assoc @ratom field value)
-        errors (schema/conform-errors schema state)]
+        errors (schema/conform-message-map schema state)]
     (if errors
       (reset! ratom (assoc state :errors errors))
       (reset! ratom (dissoc state :errors)))))
@@ -74,7 +74,7 @@
   ([schema ratom url success-handler options e]
    (wjs/nod e)
    (let [conformed (schema/conform schema @ratom)
-         errors    (schema/error-message-map conformed)]
+         errors    (schema/message-map conformed)]
      (if errors
        (swap! ratom assoc :errors errors :display-errors? true)
        (let [presentable (schema/present! schema conformed)

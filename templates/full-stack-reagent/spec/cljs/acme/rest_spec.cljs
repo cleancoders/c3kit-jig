@@ -22,51 +22,49 @@
 
 (describe "REST requests"
 
-  (with-stubs)
-  (helper/stub-goto!)
-  (redefs-around [rest/-request! (stub :request {:invoke (fn [_ callback] (callback @response))})
-                  client/get    (fn [& _] (async/chan))
-                  core/goto!    (stub :goto!)])
-  (before (reset! api/config {})
-          (reset! flash/state {})
-          (reset! response {:status 200 :body 1}))
+          (with-stubs)
+          (helper/stub-goto!)
+          (redefs-around [rest/-request! (stub :request {:invoke (fn [_ callback] (callback @response))})
+                          client/get    (fn [& _] (async/chan))
+                          core/goto!    (stub :goto!)])
+          (around [it] (log/capture-logs (it)))
+          (before (reset! api/config {})
+                  (reset! flash/state {})
+                  (reset! response {:status 200 :body 1}))
 
-  (context "configuration"
+          (context "configuration"
 
-    (before (sut/configure!))
+            (before (sut/configure!))
 
-    (it "invokes success handler with body of response"
-      (should= 2 (sut/get! uri request inc)))
+            (it "invokes success handler with body of response"
+                (should= 2 (sut/get! uri request inc)))
 
-    (context "401"
+            (context "401"
 
-      (before (swap! response assoc :status 401)
-              (sut/get! uri request inc))
+              (before (swap! response assoc :status 401)
+                      (sut/get! uri request inc))
 
-      (it "flashes with sign in message"
-        (let [msg (flashc/error "Please sign in to proceed")]
-          (should-contain-flash msg)))
+              (it "flashes with sign in message"
+                  (let [msg (flashc/error "Please sign in to proceed")]
+                    (should-contain-flash msg)))
 
-      (it "redirects to root page"
-        (should-have-invoked :goto! {:with ["/"]}))
-      )
+              (it "redirects to root page"
+                  (should-have-invoked :goto! {:with ["/"]})))
 
-    (it "403 produces flash"
-      (let [msg (flashc/error "You don't have access to this resource")]
-        (swap! response assoc :status 403)
-        (sut/get! uri request inc)
-        (should-contain-flash msg)))
+            (it "403 produces flash"
+                (let [msg (flashc/error "You don't have access to this resource")]
+                  (swap! response assoc :status 403)
+                  (sut/get! uri request inc)
+                  (should-contain-flash msg)))
 
-    (it "404 produces flash"
-      (let [msg (flashc/error "Resource not found!")]
-        (swap! response assoc :status 404)
-        (sut/get! uri request inc)
-        (should-contain-flash msg)))
+            (it "404 produces flash"
+                (let [msg (flashc/error "Resource not found!")]
+                  (swap! response assoc :status 404)
+                  (sut/get! uri request inc)
+                  (should-contain-flash msg)))
 
-    (it "500 produces flash"
-      (let [msg (flashc/error "Sorry, we weren't able to complete your request")]
-        (swap! response assoc :status 500)
-        (sut/get! uri request inc)
-        (should-contain-flash msg)))
-    )
-  )
+            (it "500 produces flash"
+                (let [msg (flashc/error "Sorry, we weren't able to complete your request")]
+                  (swap! response assoc :status 500)
+                  (sut/get! uri request inc)
+                  (should-contain-flash msg)))))

@@ -7,6 +7,7 @@
             [acme.auth.recover-password :as recover-password]
             ;; @c3kit/feature :auth }
             [acme.routes :as sut]
+            [c3kit.apron.log :as log]
             [c3kit.wire.js :as wjs]
             [reagent.core :as r]
             [secretary.core :as secretary]
@@ -14,6 +15,7 @@
 
 (describe "Routes"
           (with-stubs)
+          (around [it] (log/capture-logs (it)))
           (before (page/clear!)
                   (secretary/reset-routes!)
                   (sut/app-routes))
