@@ -24,7 +24,13 @@
  {;; c3kit's `for-all` is a comprehension macro shaped like `for`.
   c3kit.apron.corec/for-all clojure.core/for
   ;; garden's `defstyles` defines the stylesheet var; treat like `def`.
-  garden.def/defstyles      clojure.core/def}
+  garden.def/defstyles      clojure.core/def
+  ;; speclj `with` / `with-all` rebind a value used via deref (`@name`).
+  ;; Treating them as `def` lets clj-kondo see the binding so it does not
+  ;; report `Expected: deref, received: keyword` against the `(def x :undefined)`
+  ;; placeholder pattern.
+  speclj.core/with          clojure.core/def
+  speclj.core/with-all      clojure.core/def}
 
  :linters
  {;; Strict: no `:refer :all`. Every refer must be explicit. Speclj specs
