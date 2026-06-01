@@ -8,7 +8,7 @@
             [clojure.java.io :as io]
             [clojure.string :as str]
             [compojure.core]
-            [hiccup.core]))
+            [hiccup2.core]))
 
 (def ^:private index (atom {}))   ;; {type {permalink post}}
 
@@ -61,10 +61,10 @@
 
 (defn- render-post-preview [post]
   (let [hiccup (acme.content.markdown/->hiccup (:markdown post))]
-    (hiccup.core/html hiccup)))
+    (hiccup2.core/html hiccup)))
 
 (defn- render-list-preview [type posts]
-  (hiccup.core/html
+  (hiccup2.core/html
    [:section
     [:h1 (clojure.string/capitalize (name type))]
     [:ul

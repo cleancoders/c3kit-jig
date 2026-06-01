@@ -1,7 +1,7 @@
 (ns acme.content.markdown
   "Server-side markdown → hiccup. Thin wrapper around `nextjournal/markdown`
    so the content pipeline can ship hiccup over AJAX and render previews
-   server-side via `hiccup.core/html`.
+   server-side via `hiccup2.core/html`.
 
    The hiccup shape follows nj/markdown's default renderer map:
    - headings carry a slugified `:id` attribute,
