@@ -41,46 +41,44 @@
       (let [response (sut/web-rich-client {} {:seo/preview "<h1>HELLO PRERENDER</h1>"})
             body     (:body response)]
         (should (re-find #"<h1>HELLO PRERENDER</h1>" body))
-        (should-not (re-find #"Your page is loading" body)))))
-  )
+        (should-not (re-find #"Your page is loading" body))))))
 
 ;; @c3kit/feature :ssr {
-  (describe "prerendered-html + web-prerendered"
-    (test-data/with-memory-schema)
+(describe "prerendered-html + web-prerendered"
+  (test-data/with-memory-schema)
 
-    (it "prerendered-html returns nil when file missing"
-      (should-be-nil (sut/prerendered-html :no-such-page)))
+  (it "prerendered-html returns nil when file missing"
+    (should-be-nil (sut/prerendered-html :no-such-page)))
 
-    (it "web-prerendered returns rich-client with :seo/preview when prerender file exists"
-      (with-redefs [sut/prerendered-html (constantly "<h1>FROM PRERENDER</h1>")]
-        (let [handler  (sut/web-prerendered :home)
-              response (handler {})]
-          (should= 200 (:status response))
-          (should (re-find #"FROM PRERENDER" (:body response))))))
+  (it "web-prerendered returns rich-client with :seo/preview when prerender file exists"
+    (with-redefs [sut/prerendered-html (constantly "<h1>FROM PRERENDER</h1>")]
+      (let [handler  (sut/web-prerendered :home)
+            response (handler {})]
+        (should= 200 (:status response))
+        (should (re-find #"FROM PRERENDER" (:body response))))))
 
-    (it "web-prerendered falls back to rich-client placeholder when no file"
-      (with-redefs [sut/prerendered-html (constantly nil)]
-        (let [handler  (sut/web-prerendered :home)
-              response (handler {})]
-          (should= 200 (:status response))
-          (should (re-find #"Your page is loading" (:body response))))))
-  )
+  (it "web-prerendered falls back to rich-client placeholder when no file"
+    (with-redefs [sut/prerendered-html (constantly nil)]
+      (let [handler  (sut/web-prerendered :home)
+            response (handler {})]
+        (should= 200 (:status response))
+        (should (re-find #"Your page is loading" (:body response)))))))
 
-  (describe "web-prerendered honors Accept: text/markdown"
-    (test-data/with-memory-schema)
+(describe "web-prerendered honors Accept: text/markdown"
+  (test-data/with-memory-schema)
 
-    (it "returns markdown when file exists and Accept matches"
-      (with-redefs [sut/prerendered-html     (constantly "<h1>X</h1>")
-                    sut/prerendered-markdown (constantly "# X")]
-        (let [response ((sut/web-prerendered :home) {:headers {"accept" "text/markdown"}})]
-          (should= 200 (:status response))
-          (should= "text/markdown; charset=utf-8" (get-in response [:headers "Content-Type"]))
-          (should= "# X" (:body response)))))
+  (it "returns markdown when file exists and Accept matches"
+    (with-redefs [sut/prerendered-html     (constantly "<h1>X</h1>")
+                  sut/prerendered-markdown (constantly "# X")]
+      (let [response ((sut/web-prerendered :home) {:headers {"accept" "text/markdown"}})]
+        (should= 200 (:status response))
+        (should= "text/markdown; charset=utf-8" (get-in response [:headers "Content-Type"]))
+        (should= "# X" (:body response)))))
 
-    (it "falls back to HTML when markdown file missing"
-      (with-redefs [sut/prerendered-html     (constantly "<h1>X</h1>")
-                    sut/prerendered-markdown (constantly nil)]
-        (let [response ((sut/web-prerendered :home) {:headers {"accept" "text/markdown"}})]
-          (should= 200 (:status response))
-          (should (re-find #"<h1>X</h1>" (:body response)))))))
+  (it "falls back to HTML when markdown file missing"
+    (with-redefs [sut/prerendered-html     (constantly "<h1>X</h1>")
+                  sut/prerendered-markdown (constantly nil)]
+      (let [response ((sut/web-prerendered :home) {:headers {"accept" "text/markdown"}})]
+        (should= 200 (:status response))
+        (should (re-find #"<h1>X</h1>" (:body response)))))))
 ;; @c3kit/feature :ssr }

@@ -14,6 +14,4 @@
 
     (it "client versions"
       (should-version "0.x.x" :warn)
-      (should-version "1.0.0" :none))
-    )
-  )
+      (should-version "1.0.0" :none))))

@@ -27,8 +27,7 @@
 
     (it "puts something in the session to make sure one exists"
       (let [response (sut/ajax-csrf-token {:jwt/payload {:foo :bar}})]
-        (should= :bar (-> response :jwt/payload :foo))))
-    )
+        (should= :bar (-> response :jwt/payload :foo)))))
 
   (context "ajax-signin"
     (spec-helper/with-fast-password-hash)
@@ -63,8 +62,7 @@
       (let [response (sut/ajax-signin {:params {:email (:email @test-data/road-runner)
                                                 :password "meep-meep"}})]
         (should= :ok (ajax/status response))
-        (should= "Welcome to Acme" (ajax/first-flash-text response))))
-    )
+        (should= "Welcome to Acme" (ajax/first-flash-text response)))))
 
   (context "ajax-forgot-password"
 
@@ -86,8 +84,7 @@
                   :from    config/admin-email
                   :subject "Acme: Recover your account"
                   :text    (str "Click this link to recover your Acme account:\n\n" config/host "/recover-password/" (:recovery-token @test-data/coyote))}
-                 (spec-helper/last-email))))
-    )
+                 (spec-helper/last-email)))))
 
   (context "ajax-reset-password"
 
@@ -110,6 +107,4 @@
         (let [response (sut/ajax-reset-password {:params {:recovery-token (str token) :password "bar"}})]
           (should= :ok (ajax/status response))
           (should-be-nil (:recovery-token @test-data/coyote))
-          (should= (core/hash-password "bar") (:password @test-data/coyote)))))
-    )
-  )
+          (should= (core/hash-password "bar") (:password @test-data/coyote)))))))

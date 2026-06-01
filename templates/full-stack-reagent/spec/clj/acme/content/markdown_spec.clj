@@ -75,5 +75,4 @@
     (should= [:p [:s "strike"]] (sut/->hiccup "~~strike~~")))
 
   (it "->html"
-    (should= "<h1>Hi</h1>\n" (sut/->html "# Hi")))
-  )
+    (should= "<h1>Hi</h1>\n" (sut/->html "# Hi"))))

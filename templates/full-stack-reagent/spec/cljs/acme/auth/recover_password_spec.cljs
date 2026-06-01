@@ -39,5 +39,4 @@
     (wire/change! "#-password-1" "blah")
     (wire/change! "#-password-2" "blah")
     (wire/click! "#-recover")
-    (should-have-invoked-ajax-post "/ajax/recover-password" {:recovery-token "recovery-token" :password "blah"} core/go-home!))
-  )
+    (should-have-invoked-ajax-post "/ajax/recover-password" {:recovery-token "recovery-token" :password "blah"} core/go-home!)))

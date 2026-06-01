@@ -25,6 +25,4 @@
           (should-not (sut/verify-password "wrong" hash2))
           (should-not (sut/verify-password nil hash2))
           (should-not (sut/verify-password "wrong" nil))
-          (should-not (sut/verify-password nil nil)))))
-    )
-  )
+          (should-not (sut/verify-password nil nil)))))))

@@ -59,6 +59,4 @@
     (it "logout menu item"
       (with-redefs [cc/goto! (stub :core/goto!)]
         (wire-helper/click! "#-sign-out-menu-item")
-        (should-have-invoked :core/goto! {:with ["/signout"]})))
-    )
-  )
+        (should-have-invoked :core/goto! {:with ["/signout"]})))))
