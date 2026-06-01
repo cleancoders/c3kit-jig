@@ -1,7 +1,6 @@
 (ns acme.rest
   (:require [acme.core :as core]
             [c3kit.apron.corec :as ccc]
-            [c3kit.wire.api :as api]
             [c3kit.wire.flash :as flash]
             [c3kit.wire.flashc :as flashc]
             [c3kit.wire.rest :as rest]))
@@ -24,10 +23,10 @@
 
 (defn configure! []
   (rest/configure!
-    {:rest/unwrap-body?        true
-     :rest/response-middleware (comp rest/wrap-user-handlers
-                                     (partial rest/wrap-response-codes default-handlers)
-                                     rest/wrap-success-handler)}))
+   {:rest/unwrap-body?        true
+    :rest/response-middleware (comp rest/wrap-user-handlers
+                                    (partial rest/wrap-response-codes default-handlers)
+                                    rest/wrap-success-handler)}))
 
 (defn request! [method url request handler opts]
   (method url (assoc-in request [:headers "accept"] "application/transit+json") handler opts))

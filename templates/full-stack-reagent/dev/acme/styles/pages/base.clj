@@ -1,6 +1,5 @@
 (ns acme.styles.pages.base
-  (:refer-clojure :exclude [rem])
-  (:require [acme.styles.core :refer [px rem]]
+  (:require [acme.styles.core :refer [px]]
             [garden.def :refer [defstyles]]))
 
 (defstyles screen
@@ -10,6 +9,4 @@
 
    [:img {:width (px 400)
           :height (px 400)
-          :margin ["ato"]}]]
-
-  )
+          :margin ["ato"]}]])

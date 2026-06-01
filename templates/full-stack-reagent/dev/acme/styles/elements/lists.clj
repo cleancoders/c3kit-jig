@@ -1,12 +1,6 @@
-(ns acme.styles.elements.lists
-  (:refer-clojure :exclude [rem])
-  (:require [acme.styles.core :refer [rem]]))
+(ns acme.styles.elements.lists)
 
 (def screen
-(list
+  (list
 
-[:ol :ul :li {
-  :position "relative"
-}]
-
-))
+   [:ol :ul :li {:position "relative"}]))

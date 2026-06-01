@@ -4,7 +4,7 @@
             [acme.test-data :as test-data]
             [clojure.java.io :as io]
             [clojure.string :as string]
-            [speclj.core :refer [before describe it should should-be-nil should-contain should-not should-throw should= tags with]]))
+            [speclj.core :refer [before describe it should should-be-nil should-contain should-not should-throw should=]]))
 
 (describe "acme.content.core discovery"
 

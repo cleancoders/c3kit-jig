@@ -1,6 +1,5 @@
 (ns acme.spec-helper
-  (:require-macros [speclj.core :refer [redefs-around should-have-invoked stub]])
-  (:refer-clojure :exclude [flush])
+  (:require-macros [speclj.core :refer [redefs-around stub]])
   (:require [acme.core :as core]
             [acme.init :as init]
             [acme.page :as page]

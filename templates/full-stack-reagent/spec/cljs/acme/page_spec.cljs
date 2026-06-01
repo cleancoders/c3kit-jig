@@ -1,8 +1,5 @@
 (ns acme.page-spec
-  (:require-macros [speclj.core :refer [after around before before-all context describe it should should-be-nil
-                                        should-contain should-have-invoked should-not should-not-be-nil
-                                        should-not-contain should-not-have-invoked should-not= should= stub with
-                                        with-stubs]])
+  (:require-macros [speclj.core :refer [around before context describe it should should-not should=]])
   (:require [acme.page :as sut]
             [c3kit.apron.log :as log]
             [speclj.core]))

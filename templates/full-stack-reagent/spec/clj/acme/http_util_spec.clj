@@ -1,6 +1,6 @@
 (ns acme.http-util-spec
   (:require [acme.http-util :as sut]
-            [speclj.core :refer [describe it should should-not with]]))
+            [speclj.core :refer [describe it should should-not]]))
 
 (describe "wants-markdown?"
 

@@ -4,6 +4,7 @@
    [acme.main :as main]
    [c3kit.apron.app :as app]
    [c3kit.apron.log :as log]
+   ^{:clj-kondo/ignore [:unused-namespace]} [c3kit.bucket.api :as db]
    [c3kit.bucket.migrator :as m]))
 
 (defn config-from-service []
@@ -25,4 +26,3 @@
 (init/install-legend!)
 (main/start-db)
 (-ensure-migration-schema! (config-from-service))
-(require '[c3kit.bucket.api :as db])

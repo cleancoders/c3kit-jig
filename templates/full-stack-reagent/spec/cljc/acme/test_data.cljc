@@ -1,14 +1,14 @@
 (ns acme.test-data
   (:require [acme.schema.full :as schema]
-            #?(:clj [acme.spec-helper :as helper])
             ;; @c3kit/feature :auth {
+            #?(:clj [acme.spec-helper :as helper])
             #?(:clj [acme.auth.user.core :as user])
             ;; @c3kit/feature :auth }
             [c3kit.apron.corec :as ccc]
             [c3kit.apron.log :as log]
             [c3kit.bucket.api :as db]
             [c3kit.bucket.spec-helperc :as helperc]
-            [reagent.core :as reagent]
+            #?(:cljs [reagent.core :as reagent])
             [speclj.core :refer [before after]]))
 
 (deftype Entity [atm kind]

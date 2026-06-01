@@ -1,11 +1,9 @@
 (ns acme.init
   (:require #?(:cljs [acme.core :as core])
-            #?(:cljs [acme.page :as page])
             #?(:cljs [acme.rest :as rest])
-            #?(:cljs [reagent.core :as reagent])
             #?(:cljs [c3kit.bucket.re-memory])
             [c3kit.apron.legend :as legend]
-            [c3kit.bucket.api :as db]
+            #?(:cljs [c3kit.bucket.api :as db])
             [c3kit.bucket.memory]
             [c3kit.wire.api :as api]
             [acme.config :as config]

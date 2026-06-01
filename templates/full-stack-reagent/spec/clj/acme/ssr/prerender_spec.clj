@@ -2,8 +2,8 @@
   (:require [acme.ssr.prerender :as sut]
             ;; @c3kit/feature :content = [acme.content.core :as content]
             [acme.spec-helper]
-            [speclj.core :refer [before describe it should-contain should-have-invoked should-not-have-invoked stub with-stubs]]
-            [speclj.stub :as stub]))
+            ;; before / should-contain only used inside :content feature gate
+            [speclj.core :refer [#_:clj-kondo/ignore before describe it #_:clj-kondo/ignore should-contain should-have-invoked should-not-have-invoked stub with-stubs]]))
 
 (describe "prerender orchestrator guards"
 

@@ -2,7 +2,6 @@
   (:require [acme.core :as core]
             [acme.rest :as sut]
             [acme.spec-helper :as helper]
-            [c3kit.apron.corec :as ccc]
             [c3kit.apron.log :as log]
             [c3kit.wire.api :as api]
             [c3kit.wire.flash :as flash]
@@ -10,7 +9,7 @@
             [c3kit.wire.rest :as rest]
             [cljs-http.client :as client]
             [cljs.core.async :as async]
-            [speclj.core :refer-macros [around before tags focus-describe focus-context focus-it should-not-be-nil should-have-invoked stub redefs-around with-stubs should-not should context describe should-be-nil should-be it should= should-contain should-not-be with]]))
+            [speclj.core :refer-macros [around before context describe it redefs-around should-contain should-have-invoked should= stub with-stubs]]))
 
 (declare handler)
 (def uri "foo.com")

@@ -1,5 +1,4 @@
 (ns acme.styles.main
-  (:refer-clojure :exclude [rem])
   (:require [garden.def :as garden]
             [acme.styles.core :as core]
             [acme.styles.components.menus :as menus]

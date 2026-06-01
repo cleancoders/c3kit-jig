@@ -1,15 +1,9 @@
 (ns acme.styles.pages.authentication
-  (:refer-clojure :exclude [rem])
-  (:require [acme.styles.core :refer [rem size-plus-2]]))
+  (:require [acme.styles.core :refer [size-plus-2]]))
 
 (def screen
-(list
+  (list
 
-[:.authentication
-  [:.logo {
-    :margin [[0 "auto" size-plus-2]]
-    :max-width "80%"
-  }]
-]
-
-))
+   [:.authentication
+    [:.logo {:margin [[0 "auto" size-plus-2]]
+             :max-width "80%"}]]))

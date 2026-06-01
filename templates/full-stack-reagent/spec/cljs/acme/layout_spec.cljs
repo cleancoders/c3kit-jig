@@ -4,9 +4,9 @@
   (:require [acme.layout :as sut]
             [acme.modal :as modal]
             [acme.page :as page]
-            [acme.test-data :as test-data]
             ;; @c3kit/feature :auth {
             [acme.auth.user :as user]
+            [acme.test-data :as test-data]
             ;; @c3kit/feature :auth }
             [c3kit.apron.log :as log]
             [c3kit.wire.ajax :as ajax]

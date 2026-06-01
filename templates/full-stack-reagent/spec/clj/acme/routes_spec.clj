@@ -13,7 +13,8 @@
             [c3kit.wire.api]
             [c3kit.wire.spec-helper :as wire-helper]
             [c3kit.wire.websocket :as ws]
-            [speclj.core :refer [after around before describe it should should-be-nil should-have-invoked should-not= should= stub with-stubs]]
+            ;; should / should-be-nil only used inside :ssr + :content feature gates
+            [speclj.core :refer [around before describe it #_:clj-kondo/ignore should #_:clj-kondo/ignore should-be-nil should-have-invoked should-not= should= stub with-stubs]]
             [speclj.stub :as stub]))
 
 (def args (atom :none))

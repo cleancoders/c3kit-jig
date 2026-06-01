@@ -1,7 +1,7 @@
 (ns acme.content.page-spec
   (:require [acme.content.page :as sut]
             [acme.page :as page]
-            [speclj.core :refer-macros [describe context it should should= before]]))
+            [speclj.core :refer-macros [describe it should= before]]))
 
 (describe "content-page"
 

@@ -1,14 +1,14 @@
 (ns acme.spec-helper
-  (:require [c3kit.bucket.api :as db]
+  (:require [acme.email :as email]
+            [acme.init :as init]
             ;; @c3kit/feature :auth {
             [acme.auth.user.core :as user]
             [acme.auth.user.web :as user.web]
-            ;; @c3kit/feature :auth }
-            [acme.email :as email]
-            [acme.init :as init]
-            [c3kit.wire.routes :as wire.routes]
+            [c3kit.bucket.api :as db]
             [c3kit.wire.spec-helper :as wire-helper]
-            [speclj.core :refer [around it should= stub with]]
+            ;; @c3kit/feature :auth }
+            [c3kit.wire.routes :as wire.routes]
+            [speclj.core :refer [around it stub]]
             [speclj.stub :as stub]
             [taoensso.timbre :as timbre]))
 

@@ -1,6 +1,6 @@
 (ns acme.security.csp-spec
   (:require [acme.security.csp :as sut]
-            [speclj.core :refer [describe it should should-be-nil should= with]]))
+            [speclj.core :refer [describe it should should-be-nil should=]]))
 
 (describe "policy->header-value"
 

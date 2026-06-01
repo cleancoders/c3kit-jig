@@ -1,43 +1,25 @@
 (ns acme.styles.layout.page
-  (:refer-clojure :exclude [rem])
-  (:require [acme.styles.core :refer [light-grey px rem]]))
+  (:require [acme.styles.core :refer [light-grey px]]))
 
 (def screen
-(list
+  (list
 
-[:#app-root :#content {
-  :height "100%"
-}]
+   [:#app-root :#content {:height "100%"}]
 
-[:#content {
-  :display "flex"
-  :flex-direction "column"
-  :min-height "100vh"
-  :height "auto"
-  :width "100%"
-  :outline "none"
-}]
+   [:#content {:display "flex"
+               :flex-direction "column"
+               :min-height "100vh"
+               :height "auto"
+               :width "100%"
+               :outline "none"}]
 
-[:header {
-  :border-bottom [[(px 1) "solid" light-grey]]
-  }
+   [:header {:border-bottom [[(px 1) "solid" light-grey]]}
 
-  [:.logo {
-    :height (px 44)
-  }]
+    [:.logo {:height (px 44)}]
 
-  [:.logo:hover {
-    :opacity 0.6
-  }]
-]
+    [:.logo:hover {:opacity 0.6}]]
 
-[:main {
-  :flex 1
-}]
+   [:main {:flex 1}]
 
-[:section {
-  :position "relative"
-  :width "100%"
-}]
-
-))
+   [:section {:position "relative"
+              :width "100%"}]))

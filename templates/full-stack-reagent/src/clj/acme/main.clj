@@ -1,10 +1,8 @@
 (ns acme.main
   (:require [acme.config :as config]
             ;; @c3kit/feature :content = [acme.content.core]
-            ;; @c3kit/feature :auth = [acme.auth.destination :as destination]
             [acme.init :as init]
             ;; @c3kit/feature :ssr = [acme.ssr.prerender]
-            ;; @c3kit/feature :auth = [acme.auth.user.web :as user.web]
             [c3kit.apron.app :as app]
             [c3kit.apron.log :as log]
             [c3kit.apron.util :as util]

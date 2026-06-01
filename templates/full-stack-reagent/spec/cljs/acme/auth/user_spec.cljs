@@ -1,5 +1,6 @@
 (ns acme.auth.user-spec
-  (:require-macros [c3kit.wire.spec-helperc :refer [should-have-invoked-ws should-not-select should-select]]
+  ;; should-have-invoked-ws only used inside :websocket feature gate
+  (:require-macros [c3kit.wire.spec-helperc :refer [#_:clj-kondo/ignore should-have-invoked-ws should-not-select should-select]]
                    [speclj.core :refer [before context describe it should should-have-invoked should= stub with-stubs]])
   (:require [acme.core :as cc]
             [acme.layout :as layout]
