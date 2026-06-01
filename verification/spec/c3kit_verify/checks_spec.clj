@@ -1,5 +1,5 @@
 (ns c3kit-verify.checks-spec
-  (:require [speclj.core :refer [describe context it should= should should-not should-be-nil]]
+  (:require [speclj.core :refer [describe it should= should should-not should-be-nil]]
             [c3kit-verify.checks :as sut]))
 
 (describe "ns-prefix-violation"

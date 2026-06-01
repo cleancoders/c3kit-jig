@@ -38,11 +38,6 @@
   ;; they have been migrated to explicit `:refer [...]` lists.
   :refer-all           {:level :error}
 
-  ;; speclj's whole DSL is referred but used only inside describe/it bodies;
-  ;; clj-kondo cannot resolve those macro bodies without jar analysis.
-  :unused-referred-var {:level :off}
-  :unused-namespace    {:level :off}
-
   ;; speclj + c3kit.wire test helpers — universally-defined library macros
   ;; whose call-site forms clj-kondo cannot resolve without jar analysis.
   ;; Symbol resolution only; does not affect other linters.

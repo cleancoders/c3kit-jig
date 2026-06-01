@@ -1,5 +1,5 @@
 (ns c3kit-verify.coupling-spec
-  (:require [speclj.core :refer [describe context it should= should should-not should-be-nil]]
+  (:require [speclj.core :refer [describe it should= should-be-nil]]
             [c3kit-verify.coupling :as sut]))
 
 (def ^:private MANIFEST
