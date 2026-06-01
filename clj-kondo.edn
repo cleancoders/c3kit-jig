@@ -1,0 +1,75 @@
+;; Canonical clj-kondo configuration for the c3kit-jig monorepo.
+;;
+;; Single source of truth, deliberately STRICT and security-friendly:
+;; this file holds only universally-true c3kit + speclj idiom support
+;; and the strict policies the project enforces everywhere. Linters that
+;; matter for catching bugs (unused-binding, unused-value, unresolved-var,
+;; unresolved-namespace, …) are left at their defaults and MUST NOT be
+;; disabled here.
+;;
+;; Symlinked into:
+;;   - verification/.clj-kondo/config.edn — harness lints its own clj
+;;       sources under these strict rules.
+;;   - templates/<id>/.clj-kondo/c3kit-shared/config.edn — each template;
+;;       the template's own .clj-kondo/config.edn merges this in via
+;;       `:config-paths ["c3kit-shared"]` and then adds scaffold-specific
+;;       suppressions (placeholder bindings, lazy-route namespaces,
+;;       project-defined helper symbols). Scaffold-specific relaxations
+;;       belong in the per-template file, NOT here.
+;;
+;; Future templates: do the same — symlink c3kit-shared/config.edn back
+;; to this file, keep their scaffold relaxations local. Don't fork.
+;; (cli/.clj-kondo/config.edn stays separate: CLI dev only.)
+{:lint-as
+ {;; c3kit's `for-all` is a comprehension macro shaped like `for`.
+  c3kit.apron.corec/for-all clojure.core/for
+  ;; garden's `defstyles` defines the stylesheet var; treat like `def`.
+  garden.def/defstyles      clojure.core/def
+  ;; speclj `with` / `with-all` rebind a value used via deref (`@name`).
+  ;; Treating them as `def` lets clj-kondo see the rebind so it does not
+  ;; report `Expected: deref, received: keyword` against the
+  ;; `(def x :undefined)` placeholder pattern that speclj specs use.
+  speclj.core/with          clojure.core/def
+  speclj.core/with-all      clojure.core/def}
+
+ :linters
+ {;; Strict: no `:refer :all`. Every refer must be explicit. Speclj specs
+  ;; and garden style namespaces previously used `:refer :all` deliberately;
+  ;; they have been migrated to explicit `:refer [...]` lists.
+  :refer-all           {:level :error}
+
+  ;; speclj's whole DSL is referred but used only inside describe/it bodies;
+  ;; clj-kondo cannot resolve those macro bodies without jar analysis.
+  :unused-referred-var {:level :off}
+  :unused-namespace    {:level :off}
+
+  ;; speclj + c3kit.wire test helpers — universally-defined library macros
+  ;; whose call-site forms clj-kondo cannot resolve without jar analysis.
+  ;; Symbol resolution only; does not affect other linters.
+  :unresolved-symbol
+  {:exclude [;; speclj structure
+             describe context it xit
+             before before-all after after-all around around-all with with-all
+             focus-describe focus-context focus-it
+             tags pending
+             ;; speclj assertions
+             should should-not should= should-not= should== should-not==
+             should-be should-not-be should-be-a should-not-be-a
+             should-be-nil should-not-be-nil should-fail
+             should-contain should-not-contain
+             should-start-with should-not-start-with
+             should-end-with should-not-end-with
+             should-throw should-not-throw
+             should-have-invoked should-not-have-invoked
+             should-invoke should-not-invoke
+             should-be-same should-not-be-same
+             should< should<= should> should>=
+             ;; speclj stubs / fixtures
+             stub with-stubs redefs-around -fail -to-s
+             ;; c3kit.apron.log macro
+             capture-logs
+             ;; c3kit.wire test helpers
+             should-be-ajax-ok should-be-ajax-fail
+             should-have-invoked-ajax-get should-have-invoked-ajax-post
+             should-have-invoked-ws
+             should-select should-not-select]}}}

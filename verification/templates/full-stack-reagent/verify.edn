@@ -1,14 +1,23 @@
 {:cli-templates-dir "../templates"          ; relative to verification/, passed as --template-dir
  :template-id       "full-stack-reagent"
 
- :combos {:memory-defaults          {:tier :full}
-          :memory-minimal           {:tier :light}
-          :memory-no-auth           {:tier :light}
-          :memory-no-ssr-no-content {:tier :light}
-          :memory-no-websocket      {:tier :light}
-          :sqlite-defaults          {:tier :light}
-          :postgres-defaults        {:tier :light}
-          :datomic-pro-defaults     {:tier :light}}
+ ;; DB axis distributed across feature combos: each DB is exercised
+ ;; once on a feature-meaningful variant (not as a redundant *-defaults).
+ ;; Pair coverage:
+ ;;   ssr × content  — :memory-content-no-ssr (+ :postgres-ssr-no-content)
+ ;;   ssr × markdownc — :memory-ssr-no-markdownc
+ ;;   content × markdownc — :memory-content-no-markdownc
+ ;;   auth × websocket — :memory-no-websocket (auth on, ws off)
+ ;;                    + :sqlite-no-auth      (auth off, ws on)
+ :combos {:memory-defaults                {:tier :full}
+          :memory-minimal                 {:tier :light}
+          :memory-content-no-ssr          {:tier :light}
+          :memory-no-websocket            {:tier :light}
+          :memory-ssr-no-markdownc        {:tier :light}
+          :memory-content-no-markdownc    {:tier :light}
+          :sqlite-no-auth                 {:tier :light}
+          :postgres-ssr-no-content        {:tier :light}
+          :datomic-pro-no-ssr-no-content  {:tier :light}}
 
  ;; fs/glob patterns relative to the scaffold root that must NOT be present.
  ;; Template .gitignore patterns + standard template-dev files.
@@ -24,7 +33,8 @@
             "spec/hook_test.bb"
             "spec/combos"
             "dev/verify-scaffold.bb"
-            ".c3kit-jig-context.edn"]
+            ".c3kit-jig-context.edn"
+            ".scaffold-clj-kondo"]
 
  ;; Relative paths skipped by :ns-hyphen (none today; .edn files are not scanned).
  :ns-prefix-exempt []

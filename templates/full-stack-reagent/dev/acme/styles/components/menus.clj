@@ -1,6 +1,6 @@
 (ns acme.styles.components.menus
   (:refer-clojure :exclude [rem])
-  (:require [acme.styles.core :refer :all]))
+  (:require [acme.styles.core :refer [black body-line-height border-radius dark-grey font-family light-grey primary px rem size-0 size-minus-1 size-minus-2 size-minus-3 size-plus-1 white]]))
 
 (def screen
 (list

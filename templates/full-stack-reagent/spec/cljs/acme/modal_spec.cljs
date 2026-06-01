@@ -1,6 +1,6 @@
 (ns acme.modal-spec
   (:require-macros [c3kit.wire.spec-helperc :refer [should-not-select should-select]]
-                   [speclj.core :refer [before describe it should-be-nil should=]])
+                   [speclj.core :refer [around before describe it should-be-nil should=]])
   (:require [acme.modal :as modal]
             [acme.page :as page]
             [c3kit.apron.log :as log]
@@ -9,6 +9,7 @@
 
 (describe "Modal"
   (wire-helper/with-root-dom)
+  (around [it] (log/capture-logs (it)))
   (before (page/clear!)
           (wire-helper/render [modal/modal]))
 
@@ -16,11 +17,10 @@
     (should-not-select "#-modal"))
 
   (it "default"
-    (log/capture-logs
-      (modal/install! :blah)
-      (wire-helper/flush)
-      (should-select "#-modal")
-      (should-select "#-default-modal")))
+    (modal/install! :blah)
+    (wire-helper/flush)
+    (should-select "#-modal")
+    (should-select "#-default-modal"))
 
   (it "hello"
     (modal/install! :modal/hello)
@@ -50,7 +50,6 @@
       (modal/install! :modal/hello :on-close #(swap! calls inc))
       (wire-helper/flush)
       (modal/close!)
-      (should= 1 @calls)))
-  )
+      (should= 1 @calls))))
 
 

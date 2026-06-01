@@ -40,8 +40,7 @@
   (r/after-render #(core/scroll-to-thing-in-url core/thing-to-scroll-to)))
 
 (defn sandbox-routes []
-  (defroute "/sandbox/:page" [page] (load-page! (keyword (str "sandbox/" page))))
-  )
+  (defroute "/sandbox/:sandbox-page" [sandbox-page] (load-page! (keyword (str "sandbox/" sandbox-page)))))
 
 (defn app-routes []
   (secretary/set-config! :prefix "")

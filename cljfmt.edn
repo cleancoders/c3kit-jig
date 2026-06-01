@@ -1,0 +1,44 @@
+;; Canonical cljfmt configuration for the c3kit-jig monorepo.
+;;
+;; This file is the single source of truth. It is symlinked into:
+;;   - templates/<id>/cljfmt.edn   — each template; the CLI's fs/copy-tree
+;;                                    follows the symlink during fetch so the
+;;                                    scaffolded project ships a real file.
+;;   - verification/cljfmt.edn     — the harness itself uses these rules on
+;;                                    its own clj sources.
+;;
+;; The scaffolder runs cljfmt with this config as the final render step —
+;; against the stripped output, not the marker-laden template — so cljfmt's
+;; full ruleset is safe and the scaffold is born formatted. The verification
+;; harness then runs `cljfmt check src spec dev` against the same files with
+;; the same config, which is a no-op verification.
+;;
+;; Future templates: symlink their cljfmt.edn to this file. Don't fork.
+;;
+;; :extra-indents register block-style indentation so cljfmt does not align
+;; bodies under the first argument (which would fight the 2-space body
+;; indentation used throughout).
+;;
+;; Speclj test macros (describe/context/it/etc.) indent their bodies like
+;; defn. c3kit.apron.corec/for-all is a comprehension macro shaped like for.
+;; reagent.core/with-let is a binding macro shaped like let. Both bare and
+;; fully-qualified forms are registered so the rule fires regardless of how
+;; the caller aliases the namespace.
+{:extra-indents
+ {describe                  [[:block 1]]
+  context                   [[:block 1]]
+  it                        [[:block 1]]
+  xit                       [[:block 1]]
+  before                    [[:block 0]]
+  before-all                [[:block 0]]
+  after                     [[:block 0]]
+  after-all                 [[:block 0]]
+  around                    [[:block 1]]
+  with                      [[:block 1]]
+  with-all                  [[:block 1]]
+  redefs-around             [[:block 1]]
+  it-routes                 [[:block 2]]
+  for-all                   [[:block 1]]
+  c3kit.apron.corec/for-all [[:block 1]]
+  with-let                  [[:block 1]]
+  reagent.core/with-let     [[:block 1]]}}

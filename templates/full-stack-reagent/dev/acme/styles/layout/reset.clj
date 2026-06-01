@@ -1,6 +1,6 @@
 (ns acme.styles.layout.reset
   (:refer-clojure :exclude [rem])
-  (:require [acme.styles.core :refer :all]))
+  (:require [acme.styles.core :refer [em font-family px rem]]))
 
 (def screen
 (list

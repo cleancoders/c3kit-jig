@@ -1,6 +1,6 @@
 (ns acme.styles.pages.base
   (:refer-clojure :exclude [rem])
-  (:require [acme.styles.core :refer :all]
+  (:require [acme.styles.core :refer [px rem]]
             [garden.def :refer [defstyles]]))
 
 (defstyles screen

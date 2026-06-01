@@ -2,8 +2,7 @@
   (:require [accountant.core :as accountant]
             [c3kit.wire.js :as wjs]
             [reagent.core :as r]
-            [secretary.core :as secretary])
-  (:import (goog History)))
+            [secretary.core :as secretary]))
 
 (def thing-to-scroll-to (r/atom nil))
 

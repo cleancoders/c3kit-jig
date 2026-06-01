@@ -13,7 +13,7 @@
             [c3kit.wire.api]
             [c3kit.wire.spec-helper :as wire-helper]
             [c3kit.wire.websocket :as ws]
-            [speclj.core :refer :all]
+            [speclj.core :refer [after around before describe it should should-be-nil should-have-invoked should-not= should= stub with-stubs]]
             [speclj.stub :as stub]))
 
 (def args (atom :none))

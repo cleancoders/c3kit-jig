@@ -1,6 +1,6 @@
 (ns acme.http-spec
   (:require [acme.http :as sut]
-            [speclj.core :refer :all]))
+            [speclj.core :refer [describe it should-be-nil should=]]))
 
 (describe "wrap-security-headers"
 
@@ -31,7 +31,7 @@
 
   (it "response-specific header wins over default"
     (let [handler  (sut/wrap-security-headers
-                     (fn [_] {:status 200 :headers {"X-Frame-Options" "SAMEORIGIN"} :body ""}))
+                    (fn [_] {:status 200 :headers {"X-Frame-Options" "SAMEORIGIN"} :body ""}))
           response (handler {})]
       (should= "SAMEORIGIN" (get-in response [:headers "X-Frame-Options"]))))
 

@@ -1,17 +1,21 @@
 (ns acme.ssr.prerender
   (:require [acme.config :as config]
-            [acme.content.core :as content]
+            ;; @c3kit/feature :content = [acme.content.core :as content]
             [c3kit.apron.log :as log]
             [c3kit.apron.utilc :as utilc]
             [clojure.java.io :as io]
             [clojure.java.shell :as sh]))
 
 (defn build-payload []
-  {:config  {:host        config/host
-             :environment config/environment}
-   :content (into {} (for [t (content/types)]
-                       [t (into {} (for [p (content/posts t)]
-                                     [(:permalink p) p]))]))})
+  (cond-> {:config {:host        config/host
+                    :environment config/environment}}
+    ;; @c3kit/feature :content {
+    :always
+    (assoc :content (into {} (for [t (content/types)]
+                               [t (into {} (for [p (content/posts t)]
+                                             [(:permalink p) p]))])))
+    ;; @c3kit/feature :content }
+    ))
 
 (defn script-exists? []
   (.exists (io/file "resources/prerender/prerender.js")))

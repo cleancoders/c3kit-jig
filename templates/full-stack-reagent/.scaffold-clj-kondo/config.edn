@@ -1,0 +1,38 @@
+;; Scaffold-bound clj-kondo config: lint rules that ship into the
+;; scaffolded project. The CLI render step renames `.scaffold-clj-kondo/`
+;; to `.clj-kondo/` on the way out, so scaffold devs see this file as
+;; their `.clj-kondo/config.edn`.
+;;
+;; This file holds ONLY scaffold-specific relaxations and excludes — the
+;; strict, universal rules come from the canonical `/clj-kondo.edn`,
+;; merged via `:config-paths ["c3kit-shared"]`. The c3kit-shared/config.edn
+;; is a symlink to the canonical; `fs/copy-tree` resolves it during fetch
+;; so the scaffold ends up with a real file.
+;;
+;; Do NOT disable `:unused-binding`, `:unused-value`, `:unresolved-var`,
+;; or similar bug-finding linters here — they catch real issues in real
+;; scaffolds. If a specific call site needs suppression, narrow it.
+{:config-paths ["c3kit-shared"]
+
+ :linters
+ {;; Router uses c3kit `lazy-routes`, which references handler namespaces
+  ;; as fully-qualified symbols that are intentionally NOT required (lazy
+  ;; load to avoid eager dependency cycles). They resolve at runtime.
+  :unresolved-namespace
+  {:exclude [acme.security.csp
+             acme.content.core
+             acme.auth.user.api
+             acme.auth.user.ajax
+             acme.auth.user.web
+             acme.auth.destination
+             acme.layouts
+             acme.errors
+             acme.version
+             acme.sandbox.core]}
+
+  ;; Project-defined test-helper macro + secretary defroute URL-pattern
+  ;; bindings that clj-kondo cannot resolve. (Universal speclj + c3kit.wire
+  ;; macros come from the shared canonical config.)
+  :unresolved-symbol
+  {:exclude [it-routes
+             recovery-token content-type permalink sandbox-page]}}}

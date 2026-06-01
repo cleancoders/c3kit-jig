@@ -10,4 +10,12 @@
               :task     (apply c3kit-verify.engine/-main *command-line-args*)}
   verify-all {:doc      "Verify every combo at its declared tier"
               :requires ([c3kit-verify.engine])
-              :task     (c3kit-verify.engine/run-all *command-line-args*)}}}
+              :task     (c3kit-verify.engine/run-all *command-line-args*)}
+  scan-coupling {:doc      "Static cross-feature coupling scan; e.g. bb scan-coupling --template full-stack-reagent"
+                 :requires ([c3kit-verify.engine] [clojure.tools.cli])
+                 :task     (let [opts   (clojure.tools.cli/parse-opts
+                                         *command-line-args*
+                                         [[nil "--template ID" :default "full-stack-reagent"]])
+                                 t      (get-in opts [:options :template])
+                                 ok?    (:ok? (c3kit-verify.engine/scan-coupling t))]
+                             (System/exit (if ok? 0 1)))}}}

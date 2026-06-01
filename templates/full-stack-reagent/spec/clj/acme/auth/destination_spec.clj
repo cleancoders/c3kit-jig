@@ -1,8 +1,7 @@
 (ns acme.auth.destination-spec
   (:require [acme.auth.destination :as sut]
             [c3kit.wire.spec-helper :as wire]
-            [speclj.core :refer :all]))
-
+            [speclj.core :refer [before context describe it should-be-nil should-contain should-not-contain should= with]]))
 
 (declare request)
 
@@ -33,9 +32,7 @@
     (it "post"
       (let [request  {:request-method :post :uri "/somewhere" :params {:foo "bar"}}
             response (sut/preserve {} request)]
-        (should= {:method :post :uri "/somewhere" :params {:foo "bar"}} (-> response :session :destination))))
-
-    )
+        (should= {:method :post :uri "/somewhere" :params {:foo "bar"}} (-> response :session :destination)))))
 
   (context "add-to-payload"
 
@@ -73,9 +70,7 @@
       (should= "/" (sut/build-uri (sut/calculate-destination {} nil))))
 
     (it "no destination, normal user"
-      (should= "/" (sut/build-uri (sut/calculate-destination {} :some-user))))
-
-    )
+      (should= "/" (sut/build-uri (sut/calculate-destination {} :some-user)))))
 
   (context "web-redirect"
 
@@ -97,7 +92,4 @@
         (should-contain "method=\"post\"" (:body response))
         (should-contain "<input" (:body response))
         (should-contain "name=\"foo\"" (:body response))
-        (should-contain "value=\"bar\"" (:body response))))
-    )
-
-  )
+        (should-contain "value=\"bar\"" (:body response))))))

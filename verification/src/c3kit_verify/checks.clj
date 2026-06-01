@@ -160,7 +160,14 @@
     (tool-check* check {:config-exists? config-exists? :exit exit :tool tool :config config})))
 
 (defn cljs-check* [{:keys [exit out]}]
-  (assoc (parse-cljs-result out exit) :check :cljs-run))
+  (let [parsed (parse-cljs-result out exit)
+        clean  (clean-spec-output? out)
+        ok?    (and (:ok? parsed) (:ok? clean))
+        detail (cond
+                 (not (:ok? parsed)) (:detail parsed)
+                 (:ok? clean)        (:detail parsed)
+                 :else               (str "log noise: " (str/join " | " (take 3 (:offending clean)))))]
+    (assoc parsed :check :cljs-run :ok? ok? :detail detail)))
 
 (defn cljs-check [root cmd]
   (let [{:keys [exit out err]} (apply p/sh {:dir root :continue true} cmd)]

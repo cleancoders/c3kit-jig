@@ -5,7 +5,7 @@
             [acme.auth.user.core :as core]
             [c3kit.apron.legend :as legend]
             [c3kit.wire.spec-helper :as wire-helper :refer [should-be-ajax-fail should-be-ajax-ok]]
-            [speclj.core :refer :all]))
+            [speclj.core :refer [context describe it should-contain should= with-stubs]]))
 
 (describe "User REST API Handlers"
   (with-stubs)
@@ -22,10 +22,9 @@
 
     (it "success"
       (let [response (sut/api-signin {:body {:email (:email @test-data/road-runner)
-                                              :password "meep-meep"}})]
+                                             :password "meep-meep"}})]
         (should= 200 (:status response))
-        (should= (legend/present! @test-data/road-runner) (:body response))))
-    )
+        (should= (legend/present! @test-data/road-runner) (:body response)))))
 
   (context "api-signup"
     (spec-helper/with-fast-password-hash)
@@ -37,9 +36,7 @@
 
     (it "success"
       (let [response (sut/api-signup {:body {:email "new@user.com"
-                                              :password "secret123"
-                                              :confirm-password "secret123"}})]
+                                             :password "secret123"
+                                             :confirm-password "secret123"}})]
         (should= 200 (:status response))
-        (should= "new@user.com" (-> response :body :email))))
-    )
-  )
+        (should= "new@user.com" (-> response :body :email))))))

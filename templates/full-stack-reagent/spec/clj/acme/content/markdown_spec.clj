@@ -1,6 +1,6 @@
 (ns acme.content.markdown-spec
   (:require [acme.content.markdown :as sut]
-            [speclj.core :refer :all]))
+            [speclj.core :refer [describe it should-be-nil should=]]))
 
 (describe "Markdown"
 
@@ -75,5 +75,4 @@
     (should= [:p [:s "strike"]] (sut/->hiccup "~~strike~~")))
 
   (it "->html"
-    (should= "<h1>Hi</h1>\n" (sut/->html "# Hi")))
-  )
+    (should= "<h1>Hi</h1>\n" (sut/->html "# Hi"))))

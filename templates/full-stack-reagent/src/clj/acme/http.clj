@@ -8,8 +8,7 @@
             [c3kit.apron.time :as time]
             [c3kit.apron.util :as util]
             [c3kit.wire.assets :refer [wrap-asset-fingerprint]]
-            ;; @c3kit/feature :auth = [c3kit.wire.jwt :as jwt]
-            ;; @c3kit/feature :auth = [c3kit.wire.jwt :refer [wrap-jwt]]
+            ;; @c3kit/feature :auth = [c3kit.wire.jwt :as jwt :refer [wrap-jwt]]
             [compojure.core :refer [defroutes]]
             [compojure.route :as route]
             [org.httpkit.server :refer [run-server]]
@@ -102,8 +101,7 @@
       wrap-asset-fingerprint
       wrap-content-type
       wrap-not-modified
-      wrap-head
-      ))
+      wrap-head))
 
 (defn start [app]
   (let [port (or (some-> "PORT" System/getenv Integer/parseInt) 8123)]

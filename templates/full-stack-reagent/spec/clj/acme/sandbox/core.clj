@@ -31,16 +31,16 @@
 
 (defn index [_]
   (layouts/static
-    [:section.margin-top-plus-4.margin-bottom-plus-4
-     [:div.container.width-750
-      [:h1.margin-bottom-plus-1 "Sandbox Pages"]
-      [:table.striped
-       [:tbody
-        (ccc/for-all [[section pages] (sort-by first (group-by page-section (sandbox-page-names)))]
-          [:tr {:key section}
-           [:td section]
-           [:td
-            [:ol
-             (ccc/for-all [page pages]
-               [:li {:key page}
-                [:a {:href (str "/sandbox/" page)} page]])]]])]]]]))
+   [:section.margin-top-plus-4.margin-bottom-plus-4
+    [:div.container.width-750
+     [:h1.margin-bottom-plus-1 "Sandbox Pages"]
+     [:table.striped
+      [:tbody
+       (ccc/for-all [[section pages] (sort-by first (group-by page-section (sandbox-page-names)))]
+         [:tr {:key section}
+          [:td section]
+          [:td
+           [:ol
+            (ccc/for-all [page pages]
+              [:li {:key page}
+               [:a {:href (str "/sandbox/" page)} page]])]]])]]]]))

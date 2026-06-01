@@ -9,7 +9,7 @@
             [c3kit.wire.jwt :as jwt]
             [c3kit.wire.spec-helper :as wire-helper]
             [c3kit.wire.websocket :as websocket]
-            [speclj.core :refer :all]
+            [speclj.core :refer [around context describe it should-be-nil should-contain should-have-invoked should-not-have-invoked should= stub with with-stubs]]
             [speclj.stub :as stub]))
 
 (describe "User Web Handlers"
@@ -31,8 +31,7 @@
                          (assoc-in [:jwt/payload :client-id] "123")
                          sut/web-signout)]
         (wire-helper/should-redirect-to response config/host)
-        (should= {:client-id "123"} (:jwt/payload response))))
-    )
+        (should= {:client-id "123"} (:jwt/payload response)))))
 
   (context "websocket-open"
     (around [it]
@@ -47,8 +46,7 @@
       (let [request  (sut/authorize-user {} @test-data/road-runner)
             response (sut/websocket-open request)]
         (should= :connected response)
-        (should-have-invoked :websocket/handler {:with [request {:read-csrf jwt/client-id}]})))
-    )
+        (should-have-invoked :websocket/handler {:with [request {:read-csrf jwt/client-id}]}))))
 
   (context "ws-fetch-user-data"
 
@@ -59,6 +57,4 @@
     (it "with user"
       (let [response (sut/ws-fetch-user-data {:request (sut/authorize-user {} @test-data/road-runner)})]
         (should= :ok (:status response))
-        (should-contain (legend/present! @test-data/road-runner) (:payload response))))
-    )
-  )
+        (should-contain (legend/present! @test-data/road-runner) (:payload response))))))

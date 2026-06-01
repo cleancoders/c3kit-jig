@@ -18,6 +18,15 @@ shellcheck install.sh
 
 Template specs live under `templates/<name>/spec/` and run with `clojure -M:test:spec` inside the template tree.
 
+For any change under `templates/**`, also run the verification harness end-to-end before opening a PR:
+
+```sh
+cd verification
+bb verify-all   # coupling scan + every combo at its declared tier
+```
+
+CI runs the same harness on every push. See [README §Verification harness](README.md#verification-harness) for per-check details, tiers, and prerequisites.
+
 ## Design-first workflow
 
 Non-trivial work flows through specs and plans before code:
@@ -45,6 +54,15 @@ Current roadmap: [`docs/specs/2026-05-12-c3kit-jig-roadmap-design.md`](docs/spec
 - `!`-suffix for fns that throw or mutate; `->type` / `<-type` symmetry for converters.
 - Don't column-align values in maps; use single spaces.
 - `bb lint` (clj-kondo) and `shellcheck` must pass.
+- No `:refer :all`. Every `:require` must list its referred symbols explicitly. Canonical `clj-kondo.edn` enforces this with `:refer-all {:level :error}`.
+
+## Template editing
+
+- The template's `.clj-kondo/config.edn` is the **loose** config — relaxed enough that the marker-laden raw template does not yell at you in an editor. Scaffolds do not inherit it.
+- `.scaffold-clj-kondo/config.edn` holds the **strict** rules that ship into scaffolds (project-specific excludes + the canonical via `:config-paths`). The CLI render step swaps it into `.clj-kondo/` on the way out. The harness lints scaffolds under this config — keep it strict.
+- The canonical `clj-kondo.edn` and `cljfmt.edn` at the repo root are symlinked into both the template and `verification/`. Add new universally-true rules (c3kit / speclj idioms) there. Project-specific suppressions belong in the template's `.scaffold-clj-kondo/config.edn` or loose `.clj-kondo/config.edn`, never in the canonical.
+- Specs must not leak log output: the `cljs-run` check fails on any timestamp / level marker in spec stdout. Wrap noisy `describe` forms with `(around [it] (log/capture-logs (it)))`.
+- Static feature-coupling: any reference from one feature's code into another feature's namespace must sit inside a matching `;; @c3kit/feature :id { … }` block. `bb scan-coupling` runs once per template before any combo and rejects unmarked cross-feature refs.
 
 ## Submitting a PR
 

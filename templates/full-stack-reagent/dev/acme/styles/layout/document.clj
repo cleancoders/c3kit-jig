@@ -1,6 +1,6 @@
 (ns acme.styles.layout.document
   (:refer-clojure :exclude [rem])
-  (:require [acme.styles.core :refer :all]))
+  (:require [acme.styles.core :refer [black body-line-height font-family primary px rem white]]))
 
 (def screen
 (list

@@ -1,8 +1,8 @@
 (ns acme.ssr.prerender-spec
-  (:require [acme.content.core :as content]
-            [acme.ssr.prerender :as sut]
+  (:require [acme.ssr.prerender :as sut]
+            ;; @c3kit/feature :content = [acme.content.core :as content]
             [acme.spec-helper]
-            [speclj.core :refer :all]
+            [speclj.core :refer [before describe it should-contain should-have-invoked should-not-have-invoked stub with-stubs]]
             [speclj.stub :as stub]))
 
 (describe "prerender orchestrator guards"
@@ -29,6 +29,7 @@
       (sut/prerender!)
       (should-have-invoked :run-node))))
 
+;; @c3kit/feature :content {
 (describe "build-payload"
 
   (before (content/load!))
@@ -39,3 +40,4 @@
       (should-contain :content payload)
       (should-contain :blog (:content payload))
       (should-contain "2026-05-12-hello-world" (get-in payload [:content :blog])))))
+;; @c3kit/feature :content }

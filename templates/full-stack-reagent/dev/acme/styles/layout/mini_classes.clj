@@ -1,6 +1,6 @@
 (ns acme.styles.layout.mini-classes
   (:refer-clojure :exclude [rem])
-  (:require [acme.styles.core :refer :all]))
+  (:require [acme.styles.core :refer [light-grey px rem size-0 size-minus-1 size-minus-2 size-minus-3 size-minus-4 size-plus-1 size-plus-2 size-plus-3 size-plus-4 size-plus-5]]))
 
 (def screen
 (list

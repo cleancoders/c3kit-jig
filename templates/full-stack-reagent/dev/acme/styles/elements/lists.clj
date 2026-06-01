@@ -1,6 +1,6 @@
 (ns acme.styles.elements.lists
   (:refer-clojure :exclude [rem])
-  (:require [acme.styles.core :refer :all]))
+  (:require [acme.styles.core :refer [rem]]))
 
 (def screen
 (list

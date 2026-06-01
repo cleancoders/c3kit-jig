@@ -35,7 +35,7 @@
       (with-redefs [sut/dispatch-and-render (stub :dispatch-and-render)
                     log/all! (stub :all!)]
         (log/capture-logs
-          (it))))
+         (it))))
 
     ;; @c3kit/feature :auth {
     (it "installs user"
@@ -51,6 +51,4 @@
 
     (it "installs config"
       (sut/main (util/->transit {:config {:environment "blah"}}))
-      (should= "blah" @config/environment))
-    )
-  )
+      (should= "blah" @config/environment))))

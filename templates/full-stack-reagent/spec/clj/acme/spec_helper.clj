@@ -8,7 +8,7 @@
             [acme.init :as init]
             [c3kit.wire.routes :as wire.routes]
             [c3kit.wire.spec-helper :as wire-helper]
-            [speclj.core :refer :all]
+            [speclj.core :refer [around it should= stub with]]
             [speclj.stub :as stub]
             [taoensso.timbre :as timbre]))
 
@@ -23,8 +23,8 @@
 
 (defn stub-email []
   (around [it]
-          (with-redefs [email/send-email (stub :send-email)]
-            (it))))
+    (with-redefs [email/send-email (stub :send-email)]
+      (it))))
 
 (defn last-email [] (first (stub/last-invocation-of :send-email)))
 
@@ -33,9 +33,9 @@
 
 (defn with-fast-password-hash []
   (around [it]
-          (with-redefs [user/hash-password  speedy-hash
-                        user/check-password (fn [pw hash] (= (speedy-hash pw) hash))]
-            (it))))
+    (with-redefs [user/hash-password  speedy-hash
+                  user/check-password (fn [pw hash] (= (speedy-hash pw) hash))]
+      (it))))
 ;; @c3kit/feature :auth }
 
 ;(defmacro test-web-handler-requires-lemon-user [handler]
@@ -48,14 +48,14 @@
 ;; @c3kit/feature :auth {
 (defmacro test-ajax-handler-requires-user [handler]
   `(it (str (name '~handler) " requires user")
-       (let [response# (~handler {})]
-         (wire-helper/should-ajax-redirect-to response# "/" "Please sign in to proceed."))))
+     (let [response# (~handler {})]
+       (wire-helper/should-ajax-redirect-to response# "/" "Please sign in to proceed."))))
 
 (defmacro test-ajax-handler-requires-admin [handler]
   `(it (str (name '~handler) " requires admin")
-       (let [response# (~handler {})]
-         (wire-helper/should-ajax-redirect-to response# "/" "Please sign in to proceed."))
-       (let [user#     (db/tx :kind :user :email "joe@example.com")
-             response# (~handler (user.web/authorize-user {} user#))]
-         (wire-helper/should-ajax-redirect-to response# "/" "Access is restricted to admins."))))
+     (let [response# (~handler {})]
+       (wire-helper/should-ajax-redirect-to response# "/" "Please sign in to proceed."))
+     (let [user#     (db/tx :kind :user :email "joe@example.com")
+           response# (~handler (user.web/authorize-user {} user#))]
+       (wire-helper/should-ajax-redirect-to response# "/" "Access is restricted to admins."))))
 ;; @c3kit/feature :auth }

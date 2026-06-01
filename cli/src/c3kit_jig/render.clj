@@ -122,6 +122,19 @@
       (fs/delete-if-exists tgt)
       (fs/move src tgt))))
 
+(defn- swap-clj-kondo!
+  "Templates ship two clj-kondo configs: `.clj-kondo/` (loose, for editing
+   the marker-laden template raw source) and `.scaffold-clj-kondo/` (strict,
+   project-specific, what the rendered scaffold should ship). Replace the
+   loose one with the scaffold one on the way out. No-op if the template
+   does not ship a `.scaffold-clj-kondo/` dir."
+  [stage-dir]
+  (let [loose    (fs/path stage-dir ".clj-kondo")
+        scaffold (fs/path stage-dir ".scaffold-clj-kondo")]
+    (when (fs/exists? scaffold)
+      (when (fs/exists? loose) (fs/delete-tree loose))
+      (fs/move scaffold loose))))
+
 (defn- write-context! [stage-dir manifest user-name name-variants
                        db-choice features secret-map cli-version]
   (let [context {:name             user-name
@@ -159,6 +172,7 @@
     (apply-db-rename! stage-dir manifest db-choice)
     (rename-paths! tokens user stage-dir)
     (rename-readme! stage-dir)
+    (swap-clj-kondo! stage-dir)
     (write-context! stage-dir manifest user-name user db-choice features
                     secret-map cli-version)
     (when (:hook? manifest) (hook/run! stage-dir))

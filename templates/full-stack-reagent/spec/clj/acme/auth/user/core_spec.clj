@@ -1,7 +1,7 @@
 (ns acme.auth.user.core-spec
   (:require [acme.spec-helper :as spec-helper]
             [acme.auth.user.core :as sut]
-            [speclj.core :refer :all]))
+            [speclj.core :refer [context describe it should should-not should-not=]]))
 
 (describe "User Core"
 
@@ -25,6 +25,4 @@
           (should-not (sut/verify-password "wrong" hash2))
           (should-not (sut/verify-password nil hash2))
           (should-not (sut/verify-password "wrong" nil))
-          (should-not (sut/verify-password nil nil)))))
-    )
-  )
+          (should-not (sut/verify-password nil nil)))))))

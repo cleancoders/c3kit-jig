@@ -1,38 +1,42 @@
-;; clj-kondo configuration shipped with the scaffolded project.
+;; LOOSE clj-kondo config for editing the template's raw source.
 ;;
-;; The verification harness runs `clj-kondo --lint src spec dev` WITHOUT
-;; classpath/dependency analysis and requires ZERO findings (clj-kondo exits
-;; non-zero on ANY warning/error). The settings below silence library-macro
-;; and c3kit-idiom false positives that clj-kondo cannot resolve without
-;; analysing the deps, plus a few linters that are noise on a generated
-;; skeleton (e.g. placeholder bindings in component signatures). They affect
-;; linting only — not compiled behaviour.
+;; The template's clj/cljc/cljs files contain `;; @c3kit/feature` markers,
+;; alternate-branch placeholders, and `acme.*` namespaces that scaffolds
+;; will rewrite or delete at render time. Linting the raw template under
+;; strict rules surfaces noise that doesn't apply to any real scaffold.
+;; This file silences that noise so devs editing the template don't get
+;; spammed.
+;;
+;; This is NOT what scaffolds ship. The CLI render step deletes this
+;; directory and renames `.scaffold-clj-kondo/` to `.clj-kondo/` on the
+;; way out — see cli/src/c3kit_jig/render.clj. Scaffolds receive the
+;; strict + project-specific config from `.scaffold-clj-kondo/`, which in
+;; turn merges the canonical `/clj-kondo.edn` via `:config-paths`.
 {:lint-as
- {;; c3kit's `for-all` is a comprehension macro shaped like `for`.
-  c3kit.apron.corec/for-all clojure.core/for
-  ;; garden's `defstyles` defines the stylesheet var; treat like `def`.
-  garden.def/defstyles      clojure.core/def}
+ {c3kit.apron.corec/for-all clojure.core/for
+  garden.def/defstyles      clojure.core/def
+  speclj.core/with          clojure.core/def
+  speclj.core/with-all      clojure.core/def}
 
  :linters
- {;; c3kit specs and garden style namespaces use `(:require [x :refer :all])`
-  ;; deliberately.
-  :refer-all           {:level :off}
-  ;; speclj's whole DSL is referred but used only inside describe/it bodies
-  ;; clj-kondo can't resolve without jar analysis.
-  :unused-referred-var {:level :off}
-  :unused-namespace    {:level :off}
-  ;; speclj `:refer` lists occasionally repeat a symbol; harmless.
-  :duplicate-require   {:level :off}
-  ;; Generated skeleton has placeholder bindings (reagent component args,
+ {;; Generated skeleton has placeholder bindings (reagent component args,
   ;; destructured config) and handler vars referenced via runtime symbols.
   :unused-binding      {:level :off}
   :unused-value        {:level :off}
   :unused-import       {:level :off}
   :unresolved-var      {:level :off}
+  :unused-referred-var {:level :off}
+  :unused-namespace    {:level :off}
+  ;; Template-only refer lists occasionally repeat a symbol across
+  ;; feature-gated branches; harmless until render strips one branch.
+  :duplicate-require   {:level :off}
+  ;; Refer-all is silenced on the raw template so feature-marker variations
+  ;; do not yell. The scaffold config promotes this to :error.
+  :refer-all           {:level :off}
 
-  ;; The router uses c3kit `lazy-routes`, which references handler namespaces
-  ;; as fully-qualified symbols that are intentionally NOT required (lazy load
-  ;; to avoid eager dependency cycles). They resolve at runtime.
+  ;; Router uses c3kit `lazy-routes`, which references handler namespaces
+  ;; as fully-qualified symbols that are intentionally NOT required (lazy
+  ;; load to avoid eager dependency cycles). They resolve at runtime.
   :unresolved-namespace
   {:exclude [acme.security.csp
              acme.content.core
@@ -45,11 +49,8 @@
              acme.version
              acme.sandbox.core]}
 
-  ;; speclj + secretary + project test-helper macros referred via `:refer :all`
-  ;; / `:require-macros` can't be resolved without jar analysis, so their
-  ;; structure forms, assertion macros, stub helpers, secretary `defroute`
-  ;; route-param bindings, and the project's `it-routes` helper read as
-  ;; unresolved. Symbol-resolution only.
+  ;; speclj + c3kit.wire macros + project test helpers + secretary defroute
+  ;; URL-pattern bindings. Symbol resolution only.
   :unresolved-symbol
   {:exclude [;; speclj structure
              describe context it xit
@@ -70,11 +71,13 @@
              should< should<= should> should>=
              ;; speclj stubs / fixtures
              stub with-stubs redefs-around -fail -to-s
-             ;; project + c3kit.wire test helpers (spec-helper macros)
-             it-routes capture-logs
+             ;; c3kit.apron.log + c3kit.wire helpers
+             capture-logs
              should-be-ajax-ok should-be-ajax-fail
              should-have-invoked-ajax-get should-have-invoked-ajax-post
              should-have-invoked-ws
              should-select should-not-select
-             ;; secretary defroute route-param bindings (bound by URL pattern)
+             ;; project test-helper macro
+             it-routes
+             ;; secretary defroute URL-pattern bindings
              recovery-token content-type permalink sandbox-page]}}}

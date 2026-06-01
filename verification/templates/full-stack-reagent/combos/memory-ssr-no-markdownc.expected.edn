@@ -1,5 +1,5 @@
-{:db       :postgres
- :features {:content true :ssr true :markdownc true :auth true}
+{:db       :memory
+ :features {:content true :ssr true :markdownc false :auth true :websocket true}
  :name     "my-app"
 
  :must-exist     ["src/clj/my_app/main.clj"
@@ -11,15 +11,14 @@
                   "src/cljc/my_app/schema/full.cljc"
                   "src/cljc/my_app/schema/bg_task.cljc"
                   "src/cljc/my_app/schema/user.cljc"
-                  "src/cljc/my_app/markdownc.cljc"
                   "src/cljs/my_app/main.cljs"
                   "src/cljs/my_app/auth/user.cljs"
                   "src/cljs/my_app/auth/forgot_password.cljs"
                   "src/cljs/my_app/auth/recover_password.cljs"
                   "src/cljs/my_app/content/page.cljs"
-                  "dev/my_app/seed.clj"
                   "content/blog"
                   "package.json"
+                  "dev/my_app/seed.clj"
                   "bin/db"
                   "deps.edn"
                   "LICENSE"
@@ -33,13 +32,16 @@
                   "c3kit-template.bb"
                   "README.scaffold.md"
                   ".c3kit-jig-context.edn"
+                  ;; markdownc feature off
+                  "src/cljc/my_app/markdownc.cljc"
+                  "spec/cljc/my_app/markdownc_spec.cljc"
                   ;; legacy schema paths removed
                   "src/cljc/my_app/schema.cljc"
                   "src/cljc/my_app/bg_task.cljc"
                   "src/cljc/my_app/auth/user/schema.cljc"]
 
- :file-contains  {"src/clj/my_app/config.clj"  ["postgres-local"
-                                                ":bucket postgres-local"
+ :file-contains  {"src/clj/my_app/config.clj"  ["memory-local"
+                                                ":bucket memory-local"
                                                 "MyApp"]
                   "src/clj/my_app/main.clj"    ["my-app.content.core"
                                                 "my-app.ssr.prerender"
@@ -49,16 +51,15 @@
                                                 "google-api-client"
                                                 "ring-anti-forgery"
                                                 "commonmark"
-                                                "markdown-to-hiccup"
-                                                "org.postgresql/postgresql"
                                                 "my-app.compile-cljs"]
-                  "bin/db"                     ["createdb"]
+                  "bin/db"                     ["In-memory backend"]
                   "src/cljs/my_app/config.cljs" ["ws-csrf-token"]
                   "dev/my_app/repl.clj"         ["config-from-service"
                                                  "-ensure-migration-schema!"]}
 
- :file-not-contains {"src/clj/my_app/config.clj" ["datomic-local"
-                                                  "sqlite-local"
+ :file-not-contains {"src/clj/my_app/config.clj" ["sqlite-local"
+                                                  "datomic-local"
+                                                  "postgres-local"
                                                   "replaced by line below at scaffold"
                                                   "acme.schema/full"
                                                   "acme.bg-task"
@@ -70,6 +71,7 @@
                      "deps.edn"                   ["my.datomic.com"
                                                    "aws-java-sdk"
                                                    "@c3kit/"
+                                                   "markdown-to-hiccup"
                                                    "acme.schema/full"
                                                    "acme.bg-task"
                                                    "acme.auth.user.schema"]

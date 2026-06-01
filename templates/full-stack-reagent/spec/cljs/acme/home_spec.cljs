@@ -52,8 +52,7 @@
       (should= "password" (wire-helper/value "#-password"))
       (should-not (wire-helper/disabled? "#-signin-button"))
       (wire-helper/click! "#-signin-button")
-      (should-have-invoked-ajax-post "/ajax/user/signin" {:email "test@test.com" :password "password"}))
-    )
+      (should-have-invoked-ajax-post "/ajax/user/signin" {:email "test@test.com" :password "password"})))
 
   (context "with user"
     (test-data/with-memory-kinds :user)
@@ -73,8 +72,7 @@
     (it "shows spinner button"
       (should-select "#-spinner-button")
       (wire-helper/click! "#-spinner-button")
-      (should-have-invoked-ajax-get "/ajax/spinner"))
-    )
+      (should-have-invoked-ajax-get "/ajax/spinner")))
 
   (context "signup form"
 
@@ -99,6 +97,4 @@
       (wire-helper/change! "#-signup-confirm" "password")
       (should-not (wire-helper/disabled? "#-signup-button"))
       (wire-helper/click! "#-signup-button")
-      (should-have-invoked-ajax-post "/ajax/user/signup" {:email "test@test.com" :password "password" :confirm-password "password"}))
-    )
-  )
+      (should-have-invoked-ajax-post "/ajax/user/signup" {:email "test@test.com" :password "password" :confirm-password "password"}))))

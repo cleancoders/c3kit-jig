@@ -27,6 +27,7 @@
   (redefs-around [rest/-request! (stub :request {:invoke (fn [_ callback] (callback @response))})
                   client/get    (fn [& _] (async/chan))
                   core/goto!    (stub :goto!)])
+  (around [it] (log/capture-logs (it)))
   (before (reset! api/config {})
           (reset! flash/state {})
           (reset! response {:status 200 :body 1}))
@@ -48,8 +49,7 @@
           (should-contain-flash msg)))
 
       (it "redirects to root page"
-        (should-have-invoked :goto! {:with ["/"]}))
-      )
+        (should-have-invoked :goto! {:with ["/"]})))
 
     (it "403 produces flash"
       (let [msg (flashc/error "You don't have access to this resource")]
@@ -67,6 +67,4 @@
       (let [msg (flashc/error "Sorry, we weren't able to complete your request")]
         (swap! response assoc :status 500)
         (sut/get! uri request inc)
-        (should-contain-flash msg)))
-    )
-  )
+        (should-contain-flash msg)))))

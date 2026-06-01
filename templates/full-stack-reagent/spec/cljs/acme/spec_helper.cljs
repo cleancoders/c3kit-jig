@@ -7,10 +7,8 @@
             [c3kit.apron.corec :as ccc] ;; Brings in js/ReactTestUtils
             [c3kit.wire.js :as wjs]
             [cljsjs.react.dom.test-utils]
-            [speclj.core]
-            [taoensso.timbre :as timbre]))
+            [speclj.core]))
 
-(timbre/merge-config! {:appenders {:println {:enabled? false}}})
 (init/install-reagent-db-atom!)
 (init/install-legend!)
 (init/configure-api!)
