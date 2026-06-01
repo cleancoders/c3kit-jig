@@ -5,16 +5,12 @@
  ;; once on a feature-meaningful variant (not as a redundant *-defaults).
  ;; Pair coverage:
  ;;   ssr × content  — :memory-content-no-ssr (+ :postgres-ssr-no-content)
- ;;   ssr × markdownc — :memory-ssr-no-markdownc
- ;;   content × markdownc — :memory-content-no-markdownc
  ;;   auth × websocket — :memory-no-websocket (auth on, ws off)
  ;;                    + :sqlite-no-auth      (auth off, ws on)
  :combos {:memory-defaults                {:tier :full}
           :memory-minimal                 {:tier :light}
           :memory-content-no-ssr          {:tier :light}
           :memory-no-websocket            {:tier :light}
-          :memory-ssr-no-markdownc        {:tier :light}
-          :memory-content-no-markdownc    {:tier :light}
           :sqlite-no-auth                 {:tier :light}
           :postgres-ssr-no-content        {:tier :light}
           :datomic-pro-no-ssr-no-content  {:tier :light}}

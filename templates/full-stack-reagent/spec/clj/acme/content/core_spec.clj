@@ -1,10 +1,11 @@
 (ns acme.content.core-spec
   (:require [acme.content.core :as sut]
+            [acme.content.hiccup-registry :as registry]
             [acme.spec-helper]
             [acme.test-data :as test-data]
             [clojure.java.io :as io]
             [clojure.string :as string]
-            [speclj.core :refer [before describe it should should-be-nil should-contain should-not should-throw should=]]))
+            [speclj.core :refer [before describe it should should-be-nil should-contain should-have-invoked should-not should-throw should= stub with-stubs]]))
 
 (describe "acme.content.core discovery"
 
@@ -61,7 +62,8 @@
           response (handler {:params {:permalink "2026-05-12-hello-world"}})]
       (should= 200 (:status response))
       (should (re-find #"Hello, world" (:body response)))
-      (should (re-find #"<h1>Hello, world</h1>" (:body response)))))
+      ;; nj/markdown adds a slugified id="…" attr to headings.
+      (should (re-find #"<h1[^>]*>Hello, world</h1>" (:body response)))))
 
   (it "returns the not-found layout for unknown permalink"
     (let [handler  (sut/web-post :blog)
@@ -132,3 +134,15 @@
       (should= "text/markdown; charset=utf-8" (get-in response [:headers "Content-Type"]))
       (should (re-find #"# Blog" (:body response)))
       (should (re-find #"- \[Hello, world\]\(/blog/2026-05-12-hello-world\)" (:body response))))))
+
+(describe "api-fetch-post hiccup pipeline"
+
+  (test-data/with-memory-schema)
+  (with-stubs)
+  (before (sut/load!))
+
+  (it "pipes parsed hiccup through hiccup-registry/resolve-components"
+    (with-redefs [registry/resolve-components (stub :resolve {:return [:div "stubbed"]})]
+      (let [response (sut/api-fetch-post {:params {:type "blog" :permalink "2026-05-12-hello-world"}})]
+        (should-have-invoked :resolve)
+        (should= [:div "stubbed"] (get-in response [:body :payload :body]))))))

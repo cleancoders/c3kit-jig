@@ -1,7 +1,8 @@
 (ns acme.content.core
-  (:require [acme.http-util]
-            [acme.layouts]
+  (:require [acme.content.hiccup-registry :as registry]
             [acme.content.markdown]
+            [acme.http-util]
+            [acme.layouts]
             [c3kit.wire.ajax]
             [clojure.edn :as edn]
             [clojure.java.io :as io]
@@ -64,15 +65,15 @@
 
 (defn- render-list-preview [type posts]
   (hiccup.core/html
-    [:section
-     [:h1 (clojure.string/capitalize (name type))]
-     [:ul
-      (for [p posts]
-        [:li
-         [:a {:href (str "/" (name type) "/" (:permalink p))}
-          (-> p :meta :title)]
-         (when-let [d (-> p :meta :description)]
-           (list " — " d))])]]))
+   [:section
+    [:h1 (clojure.string/capitalize (name type))]
+    [:ul
+     (for [p posts]
+       [:li
+        [:a {:href (str "/" (name type) "/" (:permalink p))}
+         (-> p :meta :title)]
+        (when-let [d (-> p :meta :description)]
+          (list " — " d))])]]))
 
 (def wants-markdown? acme.http-util/wants-markdown?)
 
@@ -90,7 +91,7 @@
   (let [m (assoc (:meta post) :permalink (:permalink post))]
     (str "---\n"
          (clojure.string/join "\n"
-           (for [[k v] m] (str (name k) ": " (yaml-scalar v))))
+                              (for [[k v] m] (str (name k) ": " (yaml-scalar v))))
          "\n---\n\n"
          (:markdown post))))
 
@@ -112,13 +113,13 @@
       (cond
         (nil? post)               (acme.layouts/not-found)
         (acme.http-util/wants-markdown? request) {:status  200
-                                   :headers {"Content-Type" "text/markdown; charset=utf-8"}
-                                   :body    (post->markdown post)}
+                                                  :headers {"Content-Type" "text/markdown; charset=utf-8"}
+                                                  :body    (post->markdown post)}
         :else                     (acme.layouts/web-rich-client request
-                                    {:seo/preview    (render-post-preview post)
-                                     :og/title       (-> post :meta :title)
-                                     :og/description (-> post :meta :description)
-                                     :title          (-> post :meta :title)})))))
+                                                                {:seo/preview    (render-post-preview post)
+                                                                 :og/title       (-> post :meta :title)
+                                                                 :og/description (-> post :meta :description)
+                                                                 :title          (-> post :meta :title)})))))
 
 (defn web-list [type]
   (fn [request]
@@ -128,16 +129,16 @@
          :headers {"Content-Type" "text/markdown; charset=utf-8"}
          :body    (posts->markdown-index type ps)}
         (acme.layouts/web-rich-client request
-          {:seo/preview (render-list-preview type ps)
-           :og/title    (clojure.string/capitalize (name type))
-           :title       (clojure.string/capitalize (name type))})))))
+                                      {:seo/preview (render-list-preview type ps)
+                                       :og/title    (clojure.string/capitalize (name type))
+                                       :title       (clojure.string/capitalize (name type))})))))
 
 (defn build-routes []
   (apply compojure.core/routes
-    (for [type (types)]
-      (compojure.core/routes
-        (compojure.core/GET (str "/" (name type))               req ((web-list type) req))
-        (compojure.core/GET (str "/" (name type) "/:permalink") req ((web-post type) req))))))
+         (for [type (types)]
+           (compojure.core/routes
+            (compojure.core/GET (str "/" (name type))               req ((web-list type) req))
+            (compojure.core/GET (str "/" (name type) "/:permalink") req ((web-post type) req))))))
 
 (defn api-fetch-post [request]
   (let [{:keys [type permalink]} (:params request)
@@ -145,7 +146,7 @@
         post                     (find-post type-kw permalink)]
     (if post
       (c3kit.wire.ajax/ok
-        {:meta      (:meta post)
-         :permalink (:permalink post)
-         :body      (acme.content.markdown/->hiccup (:markdown post))})
+       {:meta      (:meta post)
+        :permalink (:permalink post)
+        :body      (-> post :markdown acme.content.markdown/->hiccup registry/resolve-components)})
       (c3kit.wire.ajax/fail {:error "not-found"} 404))))

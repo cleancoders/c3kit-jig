@@ -4,9 +4,7 @@
              com.cleancoders.c3kit/bucket                              {:mvn/version "2.9.0"}
              com.cleancoders.c3kit/wire                                {:mvn/version "2.8.5"}
              ;; @c3kit/feature :content {
-             com.atlassian.commonmark/commonmark                       {:mvn/version "0.17.0"}
-             com.atlassian.commonmark/commonmark-ext-gfm-strikethrough {:mvn/version "0.17.0"}
-             com.atlassian.commonmark/commonmark-ext-gfm-tables        {:mvn/version "0.17.0"}
+             io.github.nextjournal/markdown                            {:mvn/version "0.7.225"}
              ;; @c3kit/feature :content }
              com.datomic/peer                                          {:mvn/version "1.0.7482"}  ; baseline; harmless if user picks another :db
              ;; @c3kit/db :sqlite   = org.xerial/sqlite-jdbc {:mvn/version "3.46.0.0"}
@@ -19,11 +17,7 @@
              compojure/compojure                                       {:mvn/version "1.7.2"}
              dev.weavejester/medley                                    {:mvn/version "1.9.0"}
              hiccup/hiccup                                             {:mvn/version "2.0.0"}
-             org.clojure/clojure                                       {:mvn/version "1.12.4"}
-             ;; @c3kit/feature :markdownc {
-             markdown-to-hiccup/markdown-to-hiccup                    {:mvn/version "0.6.2"}
-             ;; @c3kit/feature :markdownc }
-             }
+             org.clojure/clojure                                       {:mvn/version "1.12.4"}}
  :aliases   {:test     {:extra-deps  {clj-commons/secretary          {:mvn/version "1.2.5-SNAPSHOT"}
                                       com.cleancoders.c3kit/scaffold {:mvn/version "2.3.2"}
                                       org.clojure/clojurescript      {:mvn/version "1.12.134"}

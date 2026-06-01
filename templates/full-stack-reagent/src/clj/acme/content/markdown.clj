@@ -1,63 +1,44 @@
 (ns acme.content.markdown
-  (:import (org.commonmark.ext.gfm.strikethrough Strikethrough StrikethroughExtension)
-           (org.commonmark.ext.gfm.tables TableBlock TableBody TableCell TableHead TableRow TablesExtension)
-           (org.commonmark.node BlockQuote BulletList Code Document Emphasis FencedCodeBlock HardLineBreak Heading HtmlBlock
-                                HtmlInline Image IndentedCodeBlock Link ListItem OrderedList Paragraph SoftLineBreak
-                                StrongEmphasis Text ThematicBreak)
-           org.commonmark.parser.Parser
-           (org.commonmark.renderer.html HtmlRenderer)))
+  "Server-side markdown → hiccup. Thin wrapper around `nextjournal/markdown`
+   so the content pipeline can ship hiccup over AJAX and render previews
+   server-side via `hiccup.core/html`.
 
-(def table-extension (TablesExtension/create))
-(def strikethrough-extension (StrikethroughExtension/create))
+   The hiccup shape follows nj/markdown's default renderer map:
+   - headings carry a slugified `:id` attribute,
+   - tight lists do not wrap items in `[:p ...]`,
+   - ordered lists carry a `:start` attribute,
+   - fenced code uses the `:code.language-X` class shorthand,
+   - GFM table header cells are `:th`, body cells `:td`.
 
-(def parser (-> (Parser/builder)
-                (.extensions [table-extension strikethrough-extension])
-                (.build)))
+   We add two custom renderers — `:html-inline` and `:html-block` — that
+   pass raw HTML text through verbatim instead of nj/markdown's default
+   `Unknown type` error span."
+  (:require [clojure.string :as str]
+            [nextjournal.markdown :as md]
+            [nextjournal.markdown.transform :as md-transform]))
 
-(defn- children [node]
-  (take-while some? (iterate #(.getNext %) (.getFirstChild node))))
+(defn- html-passthrough [_ctx node]
+  (-> node :content first :text))
 
-(defn- parse-markdown [s] (.parse parser s))
+(def hiccup-renderers
+  (assoc md-transform/default-hiccup-renderers
+         :html-inline html-passthrough
+         :html-block  html-passthrough))
 
-(defmulti render class)
+(defn ->hiccup
+  "Parse a markdown string to hiccup. Returns `nil` for blank/nil input.
 
-(defn render-children [node]
-  (let [children (children node)]
-    (cond (nil? (seq children)) nil
-          (= 1 (count children)) (render (first children))
-          :else (map render children))))
-
-(defmethod render Document [node] (render-children node))
-(defmethod render Heading [node] [(keyword (str "h" (.getLevel node))) (render-children node)])
-(defmethod render Text [node] (.getLiteral node))
-(defmethod render Paragraph [node] [:p (render-children node)])
-(defmethod render BulletList [node] [:ul (render-children node)])
-(defmethod render OrderedList [node] [:ol (render-children node)])
-(defmethod render ListItem [node] [:li (render-children node)])
-(defmethod render Code [node] [:code (.getLiteral node)])
-(defmethod render BlockQuote [node] [:blockquote (render-children node)])
-(defmethod render IndentedCodeBlock [node] [:pre [:code (.getLiteral node)]])
-(defmethod render FencedCodeBlock [node] [:pre [:code {:class (.getInfo node)} (.getLiteral node)]])
-(defmethod render Link [node] [:a {:href (.getDestination node)} (render-children node)])
-(defmethod render Image [node] [:img {:src (.getDestination node) :alt (render-children node) :title (.getTitle node)}])
-(defmethod render Emphasis [node] [:em (render-children node)])
-(defmethod render StrongEmphasis [node] [:strong (render-children node)])
-(defmethod render ThematicBreak [_] [:hr])
-(defmethod render SoftLineBreak [_] " ")
-(defmethod render HardLineBreak [_] [:br])
-(defmethod render HtmlInline [node] (.getLiteral node))
-(defmethod render HtmlBlock [node] (.getLiteral node))
-(defmethod render TableBlock [node] [:table (render-children node)])
-(defmethod render TableHead [node] [:thead (render-children node)])
-(defmethod render TableRow [node] [:tr (render-children node)])
-(defmethod render TableBody [node] [:tbody (render-children node)])
-(defmethod render TableCell [node] [:td (render-children node)])
-(defmethod render Strikethrough [node] [:s (render-children node)])
-
-(defn ->hiccup [md] (when md (render (parse-markdown md))))
-
-(def renderer (-> (HtmlRenderer/builder)
-                  (.extensions [table-extension strikethrough-extension])
-                  (.build)))
-
-(defn ->html [md] (when md (.render renderer (parse-markdown md))))
+   nj/markdown always wraps top-level output in `[:div ...]`. When there
+   is exactly one child element we unwrap it and return that element
+   directly, matching the historical single-element contract of this
+   namespace. Multi-element output keeps the `:div` wrapper so it
+   stays render-safe."
+  [md-string]
+  (when-not (str/blank? md-string)
+    (let [tree   (md/parse md-string)
+          result (md-transform/->hiccup hiccup-renderers tree)
+          kids   (rest result)]
+      (cond
+        (empty? kids)      nil
+        (= 1 (count kids)) (first kids)
+        :else              result))))

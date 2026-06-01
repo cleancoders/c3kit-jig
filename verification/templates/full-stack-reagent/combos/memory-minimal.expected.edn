@@ -1,5 +1,5 @@
 {:db       :memory
- :features {:content false :ssr false :markdownc false :auth false}
+ :features {:content false :ssr false :auth false}
  :name     "my-app"
 
  :must-exist     ["src/clj/my_app/main.clj"
@@ -36,9 +36,6 @@
                   "dev/my_app/ssr/"
                   "dev/my_app/compile_cljs.clj"
                   "spec/clj/my_app/compile_cljs_spec.clj"
-                  ;; markdownc feature off
-                  "src/cljc/my_app/markdownc.cljc"
-                  "spec/cljc/my_app/markdownc_spec.cljc"
                   ;; auth feature off
                   "src/clj/my_app/auth/"
                   "src/cljc/my_app/auth/"
@@ -83,8 +80,7 @@
                                                    "jbcrypt"
                                                    "google-api-client"
                                                    "ring-anti-forgery"
-                                                   "commonmark"
-                                                   "markdown-to-hiccup"]
+                                                   "nextjournal/markdown"]
                      "dev/my_app/seed.clj"        ["(prn \"other-fields: "
                                                    "(prn \"e: "]
                      "src/cljc/my_app/schema/full.cljc" ["user/all"]

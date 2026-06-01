@@ -49,9 +49,7 @@ jobs:
         combo:
           - memory-minimal
           - memory-content-no-ssr
-          - memory-content-no-markdownc
           - memory-no-websocket
-          - memory-ssr-no-markdownc
           - sqlite-no-auth
           - postgres-ssr-no-content
           - datomic-pro-no-ssr-no-content

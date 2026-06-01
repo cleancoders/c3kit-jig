@@ -1,5 +1,5 @@
 {:db       :sqlite
- :features {:content true :ssr true :markdownc true :auth false :websocket true}
+ :features {:content true :ssr true :auth false :websocket true}
  :name     "my-app"
 
  :must-exist     ["src/clj/my_app/main.clj"
@@ -8,7 +8,6 @@
                   "src/clj/my_app/ssr/prerender.clj"
                   "src/cljc/my_app/schema/full.cljc"
                   "src/cljc/my_app/schema/bg_task.cljc"
-                  "src/cljc/my_app/markdownc.cljc"
                   "src/cljs/my_app/main.cljs"
                   "src/cljs/my_app/content/page.cljs"
                   "dev/my_app/seed.clj"
@@ -45,8 +44,7 @@
                   "src/clj/my_app/main.clj"    ["my-app.content.core"
                                                 "my-app.ssr.prerender"]
                   "deps.edn"                   ["com.cleancoders.c3kit/apron"
-                                                "commonmark"
-                                                "markdown-to-hiccup"
+                                                "nextjournal/markdown"
                                                 "org.xerial/sqlite-jdbc"
                                                 "my-app.compile-cljs"]
                   "bin/db"                     ["SQLite ready"]

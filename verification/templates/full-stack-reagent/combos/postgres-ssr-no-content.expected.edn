@@ -1,5 +1,5 @@
 {:db       :postgres
- :features {:content false :ssr true :markdownc true :auth true :websocket true}
+ :features {:content false :ssr true :auth true :websocket true}
  :name     "my-app"
 
  :must-exist     ["src/clj/my_app/main.clj"
@@ -10,7 +10,6 @@
                   "src/cljc/my_app/schema/full.cljc"
                   "src/cljc/my_app/schema/bg_task.cljc"
                   "src/cljc/my_app/schema/user.cljc"
-                  "src/cljc/my_app/markdownc.cljc"
                   "src/cljs/my_app/main.cljs"
                   "src/cljs/my_app/auth/user.cljs"
                   "src/cljs/my_app/auth/forgot_password.cljs"
@@ -50,7 +49,6 @@
                                                 "org.mindrot/jbcrypt"
                                                 "google-api-client"
                                                 "ring-anti-forgery"
-                                                "markdown-to-hiccup"
                                                 "postgresql"
                                                 "my-app.compile-cljs"]
                   "bin/db"                     ["createdb"]
@@ -73,7 +71,7 @@
                      "deps.edn"                   ["my.datomic.com"
                                                    "aws-java-sdk"
                                                    "@c3kit/"
-                                                   "commonmark"
+                                                   "nextjournal/markdown"
                                                    "org.xerial/sqlite-jdbc"
                                                    "acme.schema/full"
                                                    "acme.bg-task"

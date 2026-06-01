@@ -1,5 +1,5 @@
 {:db       :memory
- :features {:content true :ssr false :markdownc true :auth true}
+ :features {:content true :ssr false :auth true}
  :name     "my-app"
 
  :must-exist     ["src/clj/my_app/main.clj"
@@ -10,7 +10,6 @@
                   "src/cljc/my_app/schema/full.cljc"
                   "src/cljc/my_app/schema/bg_task.cljc"
                   "src/cljc/my_app/schema/user.cljc"
-                  "src/cljc/my_app/markdownc.cljc"
                   "src/cljs/my_app/main.cljs"
                   "src/cljs/my_app/auth/user.cljs"
                   "src/cljs/my_app/auth/forgot_password.cljs"
@@ -54,8 +53,7 @@
                                                 "org.mindrot/jbcrypt"
                                                 "google-api-client"
                                                 "ring-anti-forgery"
-                                                "commonmark"
-                                                "markdown-to-hiccup"
+                                                "nextjournal/markdown"
                                                 "c3kit.scaffold.cljs"]
                   "bin/db"                     ["In-memory backend"]
                   "src/cljs/my_app/config.cljs" ["ws-csrf-token"]

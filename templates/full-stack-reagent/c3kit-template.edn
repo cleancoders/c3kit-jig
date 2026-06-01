@@ -1,6 +1,6 @@
 {:id          :full-stack-reagent
  :name        "Full-stack Reagent"
- :description "Clojure backend + Reagent frontend with c3kit; built-in CSP; optional SSR, content pipeline, client-side markdown, JWT auth"
+ :description "Clojure backend + Reagent frontend with c3kit; built-in CSP; optional SSR, content pipeline, JWT auth"
  :version     "0.1.0"
  :min-cli     "0.1.0"
  :test-only?  false
@@ -29,8 +29,6 @@
                           "resources/prerendered/"
                           "dev/acme/compile_cljs.clj"
                           "spec/clj/acme/compile_cljs_spec.clj"]}
-
-               {:id :markdownc :prompt "Client-side markdown (CLJC)?" :default true}
 
                {:id      :auth
                 :prompt  "JWT auth?"

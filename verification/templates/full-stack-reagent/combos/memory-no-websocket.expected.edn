@@ -1,5 +1,5 @@
 {:db       :memory
- :features {:content true :ssr true :markdownc true :auth true :websocket false}
+ :features {:content true :ssr true :auth true :websocket false}
  :name     "my-app"
 
  :must-exist     ["src/clj/my_app/main.clj"
@@ -36,8 +36,7 @@
                   "deps.edn"                         ["jbcrypt"
                                                       "google-api-client"
                                                       "ring-anti-forgery"
-                                                      "commonmark"
-                                                      "markdown-to-hiccup"
+                                                      "nextjournal/markdown"
                                                       "my-app.compile-cljs"]
                   "dev/my_app/repl.clj"              ["config-from-service"
                                                       "-ensure-migration-schema!"]}

@@ -18,7 +18,6 @@ A Clojure + ClojureScript app scaffold with:
 - Optional features (defaults in parens):
   - `:content` (on) — markdown content pipeline + auto-routes
   - `:ssr` (on) — Reagent SSR via Node prerender
-  - `:markdownc` (on) — client-side markdown rendering (CLJC)
   - `:auth` (on) — JWT auth + user kind + signin/signup/forgot/recover
 - Database backends:
   - `:datomic-pro` (default) — Datomic Pro free tier, single-jar transactor

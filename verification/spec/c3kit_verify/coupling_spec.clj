@@ -9,7 +9,6 @@
                                      "resources/prerender/"
                                      "dev/acme/compile_cljs.clj"
                                      "spec/clj/acme/compile_cljs_spec.clj"]}
-              {:id :markdownc}
               {:id :auth    :extras ["src/cljc/acme/schema/user.cljc"]}
               {:id :websocket}]})
 

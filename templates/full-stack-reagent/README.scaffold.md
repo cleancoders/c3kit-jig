@@ -138,7 +138,20 @@ Features:
 - **SSR/prerender (`:ssr`)** — `(defmethod acme.page/prerender? :my-page [_] true)`
   opts a page in; Node + `resources/prerender/prerender.js` produce
   HTML + markdown caches.
-- **Client-side markdown (`:markdownc`)** — `acme.markdownc` parses markdown
-  to hiccup in the browser; useful for AI-agent payloads.
+- **Hiccup component registry (`acme.content.hiccup-registry`)** — register
+  custom hiccup tags to swap for reagent components after the content
+  pipeline parses markdown. See the docstring on `register-component!`.
 - **JWT auth (`:auth`)** — signin/signup/forgot/recover flows + JWT cookie
   middleware + user kind + social-login kind.
+
+### Client-side markdown
+
+Not bundled. The starter ships server-side markdown only; the `:content`
+pipeline parses on the JVM and ships hiccup over AJAX. If you need a
+browser-side parser (e.g. for a comment composer or markdown preview),
+bring your own lib — recommendations:
+
+- `io.github.nextjournal/markdown` (best output, requires shadow-cljs).
+- `markdown-to-hiccup` (pure-Clojar, no bundler, but hiccup output is
+  rough on ordered lists, blockquotes, and GFM tables).
+- `marked.js` via `<script>` tag + cljs interop (lowest friction).
