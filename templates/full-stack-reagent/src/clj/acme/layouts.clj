@@ -28,7 +28,7 @@
    [:meta {:property "og:description" :content (or (:og/description options) default-description)}]
    [:meta {:property "og:image" :content (or (:og/image options) default-image)}]
    [:meta {:name "twitter:card" :content "summary"}]
-   [:meta {:name "twitter:site" :content "@thecleancoders"}]))
+   [:meta {:name "twitter:site" :content "@acme"}]))
 
 (defn default
   ([body] (default body {}))
@@ -108,7 +108,7 @@
             :api-version        (api/version)
             :environment        config/environment
             :google-client-id   (-> config/env :google-oauth :client-id)
-            :acme-root          (-> config/env :cleancoders-auth :url-root)
+            :acme-root          (-> config/env :acme-auth :url-root)
             :host               config/host}})
 ;; @c3kit/feature !:auth }
 
@@ -121,7 +121,7 @@
             :api-version        (api/version)
             :environment        config/environment
             :google-client-id   (-> config/env :google-oauth :client-id)
-            :acme-root          (-> config/env :cleancoders-auth :url-root)
+            :acme-root          (-> config/env :acme-auth :url-root)
             :host               config/host}})
 ;; @c3kit/feature :auth }
 

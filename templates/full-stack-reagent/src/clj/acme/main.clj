@@ -7,7 +7,8 @@
             [c3kit.apron.log :as log]
             [c3kit.apron.util :as util]
             [c3kit.bucket.bg :as bg]
-            [c3kit.bucket.api :as db])
+            [c3kit.bucket.api :as db]
+            [c3kit.bucket.migration :as migration])
   (:import (java.lang Runtime Thread)))
 
 (def scheduled-tasks [])
@@ -21,10 +22,10 @@
 (def bg-tasks (app/service 'acme.main/schedule-bg-tasks 'acme.main/cancel-bg-tasks))
 
 ;; @c3kit/feature :websocket {
-(def all-services [env db/service http @(util/resolve-var 'c3kit.wire.websocket/service) bg/service bg-tasks])
+(def all-services [env db/service migration/service http @(util/resolve-var 'c3kit.wire.websocket/service) bg/service bg-tasks])
 ;; @c3kit/feature :websocket }
 ;; @c3kit/feature !:websocket {
-(def all-services [env db/service http bg/service bg-tasks])
+(def all-services [env db/service migration/service http bg/service bg-tasks])
 ;; @c3kit/feature !:websocket }
 (def refresh-services [db/service bg/service bg-tasks])
 

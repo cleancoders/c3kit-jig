@@ -28,7 +28,7 @@
       (should= (api/version) api-version)
       (should= "development" environment)
       (should= (-> config/env :google-oauth :client-id) google-client-id)
-      (should= (-> config/env :cleancoders-auth :url-root) acme-root)
+      (should= (-> config/env :acme-auth :url-root) acme-root)
       (should= config/host host)))
 
   (describe "rich-client :seo/preview slot"
