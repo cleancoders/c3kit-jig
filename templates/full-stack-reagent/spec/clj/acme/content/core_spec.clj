@@ -5,7 +5,7 @@
             [acme.test-data :as test-data]
             [clojure.java.io :as io]
             [clojure.string :as string]
-            [speclj.core :refer [before describe it should should-be-nil should-contain should-have-invoked should-not should-throw should= stub with-stubs]]))
+            [speclj.core :refer [before describe it should should-be-nil should-contain should-not should-throw should=]]))
 
 (describe "acme.content.core discovery"
 
@@ -138,11 +138,20 @@
 (describe "api-fetch-post hiccup pipeline"
 
   (test-data/with-memory-schema)
-  (with-stubs)
   (before (sut/load!))
+  (before (reset! registry/registry {}))
 
-  (it "pipes parsed hiccup through hiccup-registry/resolve-components"
-    (with-redefs [registry/resolve-components (stub :resolve {:return [:div "stubbed"]})]
-      (let [response (sut/api-fetch-post {:params {:type "blog" :permalink "2026-05-12-hello-world"}})]
-        (should-have-invoked :resolve)
-        (should= [:div "stubbed"] (get-in response [:body :payload :body]))))))
+  (it "ships parsed hiccup as raw keyword tags (client resolves to components)"
+    ;; Server must NOT invoke `resolve-components`: components are CLJS
+    ;; reagent fns that cannot be serialized over transit. Custom tags
+    ;; like `[:quote-block {…}]` must reach the client as plain keyword
+    ;; hiccup so the client-side registry can swap them for fns. Even
+    ;; with a server-side entry registered, the wire payload stays raw.
+    (let [md "intro\n\n[:quote-block {:text \"hi\"}]\n\noutro"]
+      (with-redefs [sut/find-post (constantly {:permalink "p" :meta {} :markdown md})]
+        (registry/register-component! :quote-block (fn [_] [:blockquote "server"]))
+        (let [response (sut/api-fetch-post {:params {:type "blog" :permalink "p"}})
+              body     (get-in response [:body :payload :body])]
+          (should= :div (first body))
+          (should-contain [:quote-block {:text "hi"}] body)
+          (should-not (some fn? (tree-seq coll? seq body))))))))

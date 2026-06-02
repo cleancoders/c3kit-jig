@@ -1,6 +1,5 @@
 (ns acme.content.core
-  (:require [acme.content.hiccup-registry :as registry]
-            [acme.content.markdown]
+  (:require [acme.content.markdown]
             [acme.http-util]
             [acme.layouts]
             [c3kit.wire.ajax]
@@ -145,8 +144,11 @@
         type-kw                  (keyword type)
         post                     (find-post type-kw permalink)]
     (if post
+      ;; Body is raw keyword hiccup. Custom tags like `[:quote-block {…}]`
+      ;; stay as keywords so the client-side registry can swap them for
+      ;; reagent fns at render time. (Fns wouldn't transit-serialize.)
       (c3kit.wire.ajax/ok
        {:meta      (:meta post)
         :permalink (:permalink post)
-        :body      (-> post :markdown acme.content.markdown/->hiccup registry/resolve-components)})
+        :body      (-> post :markdown acme.content.markdown/->hiccup)})
       (c3kit.wire.ajax/fail {:error "not-found"} 404))))

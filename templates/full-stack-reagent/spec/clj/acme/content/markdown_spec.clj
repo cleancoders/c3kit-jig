@@ -94,4 +94,38 @@
                                 "| cell 1   | cell 2   |\n"))))
 
   (it "strikethrough"
-    (should= [:p [:s "strike"]] (sut/->hiccup "~~strike~~"))))
+    (should= [:p [:s "strike"]] (sut/->hiccup "~~strike~~")))
+
+  ;; Authors can drop a hiccup-shaped vector on its own line in markdown to
+  ;; mark a slot for a client-side component:
+  ;;   [:quote-block {:text "…"}]
+  ;; The pipeline rewrites that paragraph to the literal hiccup vector so
+  ;; `hiccup-registry/resolve-components` can swap it for a reagent fn.
+
+  (it "[:keyword {…}] paragraph — parsed as hiccup vector"
+    (should= [:quote-block {:text "hi"}]
+             (sut/->hiccup "[:quote-block {:text \"hi\"}]")))
+
+  (it "[:keyword {…}] paragraph mixed with prose"
+    (should= [:div
+              [:p "before"]
+              [:quote-block {:text "hi" :n 1}]
+              [:p "after"]]
+             (sut/->hiccup
+              "before\n\n[:quote-block {:text \"hi\" :n 1}]\n\nafter")))
+
+  (it "[:keyword] without props"
+    (should= [:divider]
+             (sut/->hiccup "[:divider]")))
+
+  (it "non-vector bracket text — left alone"
+    (should= [:p "[just text]"]
+             (sut/->hiccup "[just text]")))
+
+  (it "malformed EDN — left as paragraph text"
+    (should= [:p "[:quote-block {:text"]
+             (sut/->hiccup "[:quote-block {:text")))
+
+  (it "inline `[:tag …]` inside a paragraph — left as inline code"
+    (should= [:p "see " [:code "[:quote-block {:x 1}]"] " here"]
+             (sut/->hiccup "see `[:quote-block {:x 1}]` here"))))

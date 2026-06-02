@@ -138,9 +138,33 @@ Features:
 - **SSR/prerender (`:ssr`)** — `(defmethod acme.page/prerender? :my-page [_] true)`
   opts a page in; Node + `resources/prerender/prerender.js` produce
   HTML + markdown caches.
-- **Hiccup component registry (`acme.content.hiccup-registry`)** — register
-  custom hiccup tags to swap for reagent components after the content
-  pipeline parses markdown. See the docstring on `register-component!`.
+- **Hiccup component registry (`acme.content.hiccup-registry`)** — author
+  drops `[:my-tag {…}]` on its own line in markdown; the server parses
+  it as a hiccup vector and ships it as keyword hiccup. The client
+  registry swaps `:my-tag` for a registered reagent fn at render time.
+  Resolution happens **on the client** (reagent fns can't roundtrip
+  over transit). See `quote-block` in `src/cljs/acme/content/page.cljs`
+  for a worked example.
+
+  To add your own:
+
+  ```clojure
+  ;; in any cljs ns required from acme.main
+  (defn callout [{:keys [tone text]}]
+    [:aside.callout {:class (str "callout-" (name tone))} text])
+
+  (registry/register-component! :callout callout)
+  ```
+
+  Then in markdown:
+
+  ```markdown
+  Some prose before the slot.
+
+  [:callout {:tone :warn :text "Heads up."}]
+
+  More prose after.
+  ```
 - **JWT auth (`:auth`)** — signin/signup/forgot/recover flows + JWT cookie
   middleware + user kind + social-login kind.
 

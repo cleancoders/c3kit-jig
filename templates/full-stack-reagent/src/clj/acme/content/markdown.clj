@@ -12,8 +12,15 @@
 
    We add two custom renderers — `:html-inline` and `:html-block` — that
    pass raw HTML text through verbatim instead of nj/markdown's default
-   `Unknown type` error span."
-  (:require [clojure.string :as str]
+   `Unknown type` error span.
+
+   Component slots: a paragraph that is exactly `[:my-tag {…}]` is parsed
+   as EDN and spliced into the tree as that hiccup vector. The client
+   then swaps `:my-tag` for a reagent component via
+   `acme.content.hiccup-registry/resolve-components`."
+  (:require [clojure.edn :as edn]
+            [clojure.string :as str]
+            [clojure.walk :as walk]
             [nextjournal.markdown :as md]
             [nextjournal.markdown.transform :as md-transform]))
 
@@ -25,6 +32,26 @@
          :html-inline html-passthrough
          :html-block  html-passthrough))
 
+(defn- try-read-component-slot
+  "If `s` is `[:keyword …]` EDN, return the parsed vector. Otherwise nil."
+  [s]
+  (when (and (string? s)
+             (str/starts-with? s "[:")
+             (str/ends-with? s "]"))
+    (try
+      (let [v (edn/read-string s)]
+        (when (and (vector? v) (keyword? (first v))) v))
+      (catch Exception _ nil))))
+
+(defn- splice-component-slots
+  "Replace `[:p \"[:tag …]\"]` paragraphs with the parsed hiccup vector."
+  [node]
+  (or (when (and (vector? node)
+                 (= :p (first node))
+                 (= 2 (count node)))
+        (try-read-component-slot (second node)))
+      node))
+
 (defn ->hiccup
   "Parse a markdown string to hiccup. Returns `nil` for blank/nil input.
 
@@ -32,11 +59,16 @@
    is exactly one child element we unwrap it and return that element
    directly, matching the historical single-element contract of this
    namespace. Multi-element output keeps the `:div` wrapper so it
-   stays render-safe."
+   stays render-safe.
+
+   Paragraphs whose sole content is a hiccup-shaped EDN vector
+   (`[:my-tag {…}]`) are spliced into the tree as that vector so the
+   client-side registry can render them as components."
   [md-string]
   (when-not (str/blank? md-string)
     (let [tree   (md/parse md-string)
-          result (md-transform/->hiccup hiccup-renderers tree)
+          raw    (md-transform/->hiccup hiccup-renderers tree)
+          result (walk/postwalk splice-component-slots raw)
           kids   (rest result)]
       (cond
         (empty? kids)      nil
