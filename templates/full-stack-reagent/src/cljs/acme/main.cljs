@@ -7,7 +7,7 @@
             [c3kit.wire.flash :as flash]
             [c3kit.wire.js :as wjs]
             [acme.config :as config]
-            ;; @c3kit/feature :content = [acme.content.page]
+            ;; @c3kit/feature :content = [acme.content.page :as content-page]
             ;; @c3kit/feature :auth = [acme.auth.forgot-password]
             [acme.home]
             [acme.init :as init]
@@ -42,6 +42,7 @@
   (init/install-legend!)
   (init/install-reagent-db-atom!)
   (init/configure-api!)
+  ;; @c3kit/feature :content = (content-page/install-components!)
   (let [{:keys [config flash
                 ;; @c3kit/feature :auth = user
                 ]} (utilc/<-transit payload-src)]

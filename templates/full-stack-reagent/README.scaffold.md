@@ -146,15 +146,19 @@ Features:
   over transit). See `quote-block` in `src/cljs/acme/content/page.cljs`
   for a worked example.
 
-  To add your own:
+  To add your own, edit `src/cljs/acme/content/page.cljs`:
 
   ```clojure
-  ;; in any cljs ns required from acme.main
   (defn callout [{:keys [tone text]}]
     [:aside.callout {:class (str "callout-" (name tone))} text])
 
-  (registry/register-component! :callout callout)
+  (def components
+    {:quote-block quote-block
+     :callout     callout})
   ```
+
+  `acme.main` calls `(content-page/install-components!)` once at
+  startup — registration is explicit, never a top-level side effect.
 
   Then in markdown:
 

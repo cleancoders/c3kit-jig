@@ -38,16 +38,23 @@
     (when (and type permalink (not (current-post)))
       (fetch! type permalink nil))))
 
-;; ─── Example custom component ────────────────────────────────────────
+;; ─── Custom components ───────────────────────────────────────────────
 ;; Authors write `[:quote-block {:text "…" :attribution "…"}]` on its
 ;; own line in markdown. The server ships that as raw keyword hiccup;
-;; the registry below swaps it for this reagent fn at render time.
-;; Add your own components the same way and require this namespace
-;; (or the ns that registers them) from `acme.main`.
+;; `components` below maps the keyword to a reagent fn so the registry
+;; can swap them at render time. Add your own entries here.
+;;
+;; Registration happens explicitly from `acme.main` via
+;; `install-components!` — never as a top-level side effect.
 
 (defn quote-block [{:keys [text attribution]}]
   [:blockquote.quote-block
    [:p text]
    (when attribution [:footer "— " attribution])])
 
-(registry/register-component! :quote-block quote-block)
+(def components
+  {:quote-block quote-block})
+
+(defn install-components! []
+  (doseq [[k f] components]
+    (registry/register-component! k f)))

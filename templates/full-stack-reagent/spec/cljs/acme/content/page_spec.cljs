@@ -47,3 +47,19 @@
     (let [post {:meta {} :body [:div [:not-registered {:x 1}]]}]
       (should (some #{:not-registered}
                     (tree-seq coll? seq (sut/render-post :default post)))))))
+
+(describe "install-components!"
+
+  (before (reset! registry/registry {}))
+  (after  (reset! registry/registry {}))
+
+  (it "registers every entry in the components map"
+    (should= {} @registry/registry)
+    (sut/install-components!)
+    (doseq [[k f] sut/components]
+      (should= f (get @registry/registry k))))
+
+  (it "no top-level side effect — registry stays empty until install! runs"
+    ;; Loading the namespace must not mutate the registry. This guards
+    ;; against accidentally re-introducing a top-level register call.
+    (should= {} @registry/registry)))
