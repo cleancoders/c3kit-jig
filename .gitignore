@@ -40,3 +40,4 @@ cli/dist/
 # Worktrees
 .worktrees/
 .claude/worktrees/
+.claude/.security-session-start-sha
