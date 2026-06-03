@@ -163,23 +163,34 @@
     (should-not (:ok? (sut/cljs-check* {:exit 1 :out "5 examples, 0 failures"})))))
 
 (describe "server-boot-result*"
-  (it "passes on an HTTP response with both boot log lines"
-    (let [out "----- STARTING My-app SERVER -----\nStarting HTTP server: http://localhost:8123"
-          r   (sut/server-boot-result* {:http-code "200" :output out})]
-      (should (:ok? r))
-      (should= "HTTP 200" (:detail r))))
+  (def boot-logs "----- STARTING My-app SERVER -----\nStarting HTTP server: http://localhost:8123")
+  (def home-body "<html><head>...</head><body><div id=\"app-root\">Your page is loading...</div></body></html>")
+  (it "passes on HTTP 200 serving the homepage with both boot log lines"
+    (let [r (sut/server-boot-result* {:http-code "200" :body home-body :output boot-logs})]
+      (should (:ok? r))))
   (it "fails when the server never responded"
-    (let [out "----- STARTING My-app SERVER -----\nStarting HTTP server: http://localhost:8123"
-          r   (sut/server-boot-result* {:http-code nil :output out})]
+    (let [r (sut/server-boot-result* {:http-code nil :body home-body :output boot-logs})]
       (should-not (:ok? r))))
+  (it "fails on a non-200 response even when it carries homepage markup"
+    (let [r (sut/server-boot-result* {:http-code "404" :body home-body :output boot-logs})]
+      (should-not (:ok? r))
+      (should (re-find #"200" (:detail r)))))
+  (it "fails when 200 but the homepage shell was not served (e.g. not-found page)"
+    (let [r (sut/server-boot-result* {:http-code "200"
+                                      :body "<html><body><h2>Not Found (404)</h2></body></html>"
+                                      :output boot-logs})]
+      (should-not (:ok? r))
+      (should (re-find #"app-root|homepage" (:detail r)))))
   (it "fails when the startup banner was not printed"
-    (let [r (sut/server-boot-result* {:http-code "200" :output "Starting HTTP server: http://localhost:8123"})]
+    (let [r (sut/server-boot-result* {:http-code "200" :body home-body
+                                      :output "Starting HTTP server: http://localhost:8123"})]
       (should-not (:ok? r))
       (should (re-find #"STARTING" (:detail r)))))
   (it "fails when the HTTP server log was not printed"
-    (let [r (sut/server-boot-result* {:http-code "200" :output "----- STARTING My-app SERVER -----"})]
+    (let [r (sut/server-boot-result* {:http-code "200" :body home-body
+                                      :output "----- STARTING My-app SERVER -----"})]
       (should-not (:ok? r))
       (should (re-find #"Starting HTTP server" (:detail r)))))
   (it "fails when no boot logs were printed"
-    (let [r (sut/server-boot-result* {:http-code "500" :output ""})]
+    (let [r (sut/server-boot-result* {:http-code "200" :body home-body :output ""})]
       (should-not (:ok? r)))))

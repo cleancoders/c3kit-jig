@@ -178,23 +178,32 @@
 ;;   (log/info   "Starting HTTP server: http://localhost:<port>")
 (def ^:private SERVER-BOOT-LOGS ["----- STARTING" "Starting HTTP server"])
 
+;; The homepage renders the rich-client shell server-side regardless of whether
+;; the cljs/css assets are compiled, so a served homepage always contains the
+;; #app-root mount point. The not-found / error pages do not.
+(def ^:private HOME-MARKER "app-root")
+
 (defn server-boot-result*
-  "Decide server-boot success from the polled HTTP code and the server's
-   captured console output. Pass iff an HTTP response arrived AND every
-   expected boot log line was printed."
-  [{:keys [http-code output]}]
-  (let [http-ok? (boolean (and http-code (re-matches #"[1-5]\d\d" http-code)))
-        missing  (remove #(str/includes? (or output "") %) SERVER-BOOT-LOGS)]
+  "Decide server-boot success from the polled HTTP code, the response body for
+   \"/\", and the server's captured console output. Pass iff the homepage was
+   actually served (HTTP 200 carrying the #app-root shell) AND every expected
+   boot log line was printed."
+  [{:keys [http-code body output]}]
+  (let [missing (remove #(str/includes? (or output "") %) SERVER-BOOT-LOGS)]
     (cond
-      (not http-ok?) {:check :server-boot :ok? false :detail "server did not respond"}
-      (seq missing)  {:check :server-boot :ok? false
-                      :detail (str "HTTP " http-code " but missing boot logs: " (str/join ", " missing))}
-      :else          {:check :server-boot :ok? true :detail (str "HTTP " http-code)})))
+      (not= "200" http-code) {:check :server-boot :ok? false
+                              :detail (str "expected HTTP 200 for \"/\", got " (or http-code "no response"))}
+      (not (str/includes? (or body "") HOME-MARKER))
+      {:check :server-boot :ok? false
+       :detail "HTTP 200 but homepage not served (response missing #app-root shell)"}
+      (seq missing) {:check :server-boot :ok? false
+                     :detail (str "homepage served but missing boot logs: " (str/join ", " missing))}
+      :else {:check :server-boot :ok? true :detail "HTTP 200, homepage served"})))
 
 (defn server-boot-check
-  "Run migrate, start the server in the background, poll its port for any HTTP
-   response, then kill it. Pass iff a response arrives before timeout AND the
-   expected boot log lines were printed to the console."
+  "Run migrate, start the server in the background, poll \"/\" until it responds,
+   then kill it. Pass iff the homepage is actually served (HTTP 200 with the
+   #app-root shell) before timeout AND the expected boot log lines were printed."
   [root {:keys [migrate run port]}]
   (let [migrate-exit (:exit (apply p/sh {:dir root :continue true} migrate))]
     (if-not (zero? migrate-exit)
@@ -205,14 +214,17 @@
             deadline (+ (System/currentTimeMillis) 60000)]
         (try
           (loop []
-            (let [resp (try (-> (p/sh {:continue true} "curl" "-s" "-o" "/dev/null" "-w" "%{http_code}" url) :out)
-                            (catch Exception _ nil))
-                  code (some-> resp str/trim)]
+            ;; curl prints the body followed by a final line holding the status code
+            (let [resp  (try (-> (p/sh {:continue true} "curl" "-s" "-w" "\n%{http_code}" url) :out)
+                             (catch Exception _ nil))
+                  lines (some-> resp str/split-lines)
+                  code  (some-> lines last str/trim)
+                  body  (when lines (str/join "\n" (butlast lines)))]
               (cond
                 (and code (re-matches #"[1-5]\d\d" code))
                 (do (p/destroy-tree proc)
                     (let [{:keys [out err]} @proc]
-                      (server-boot-result* {:http-code code :output (str out "\n" err)})))
+                      (server-boot-result* {:http-code code :body body :output (str out "\n" err)})))
                 (> (System/currentTimeMillis) deadline) {:check :server-boot :ok? false :detail "server did not respond within 60s"}
                 :else (do (Thread/sleep 1000) (recur)))))
           (finally (p/destroy-tree proc)))))))
