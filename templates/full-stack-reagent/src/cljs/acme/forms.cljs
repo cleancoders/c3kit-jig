@@ -81,7 +81,7 @@
              ;presentable (assoc presentable :__anti-forgery-token (config/anti-forgery-token))
              options     (update options :after-all processing-off ratom)
              ;; @c3kit/feature :websocket {
-             call-fn     (if (keyword? url) ws/call! ajax/post!)]
+             ;call-fn     (if (keyword? url) ws/call! ajax/post!)
              ;; @c3kit/feature :websocket }
              ;; @c3kit/feature !:websocket {
              call-fn     ajax/post!]

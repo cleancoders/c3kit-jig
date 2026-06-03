@@ -9,6 +9,7 @@
             [acme.config :as config]
             ;; @c3kit/feature :content = [acme.content.page :as content-page]
             ;; @c3kit/feature :auth = [acme.auth.forgot-password]
+            ;; @c3kit/feature :auth = [acme.auth.login]
             [acme.home]
             [acme.init :as init]
             [acme.layout :as layout]
