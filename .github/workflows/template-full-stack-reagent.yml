@@ -20,8 +20,8 @@ jobs:
   hook-iso-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: DeLaGuardo/setup-clojure@13.0
+      - uses: actions/checkout@v6
+      - uses: DeLaGuardo/setup-clojure@13.6.1
         with:
           bb: 1.12.218
       - name: Run c3kit-template.bb isolation test
@@ -32,8 +32,8 @@ jobs:
   coupling-scan:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: DeLaGuardo/setup-clojure@13.0
+      - uses: actions/checkout@v6
+      - uses: DeLaGuardo/setup-clojure@13.6.1
         with:
           bb: 1.12.218
       - name: Static feature-coupling scan
@@ -54,12 +54,12 @@ jobs:
           - postgres-ssr-no-content
           - datomic-pro-no-ssr-no-content
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '21'
-      - uses: DeLaGuardo/setup-clojure@13.0
+      - uses: DeLaGuardo/setup-clojure@13.6.1
         with:
           cli: latest
           bb: 1.12.218
@@ -76,12 +76,12 @@ jobs:
   verify-full:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '21'
-      - uses: DeLaGuardo/setup-clojure@13.0
+      - uses: DeLaGuardo/setup-clojure@13.6.1
         with:
           cli: latest
           bb: 1.12.218

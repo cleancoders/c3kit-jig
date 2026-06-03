@@ -15,9 +15,9 @@ jobs:
         os: [ubuntu-latest, macos-latest]
         bb: ['1.12.218']
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: DeLaGuardo/setup-clojure@13.6.0
+      - uses: DeLaGuardo/setup-clojure@13.6.1
         with:
           bb: ${{ matrix.bb }}
 
@@ -46,6 +46,6 @@ jobs:
     name: shellcheck install.sh
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: shellcheck
         run: shellcheck cli/install.sh
