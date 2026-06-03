@@ -74,6 +74,60 @@ clj -M:test:dev    # server + specs + cljs in one process
 clj -M:repl        # REPL
 ```
 
+## Java 23+ startup warnings
+
+On JDK 23 and newer you may see `sun.misc.Unsafe` deprecation warnings when
+starting the server or the Datomic transactor (`bin/db`):
+
+```
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by io.netty.util.internal.PlatformDependent0$4 (.../netty-common-4.1.100.Final.jar)
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+```
+
+**Cause.** The warning comes from Netty, pulled in transitively (Datomic
+peer, Redis client, AWS SDK) — not from app code. Netty 4.1.x uses `Unsafe`
+memory methods slated for removal. Netty dropped `Unsafe` in **4.2.x**, but
+Datomic's peer pins Netty **4.1.x** and can't move up, so the whole
+dependency graph is held on 4.1.x.
+
+There are two ways to address it, depending on your project:
+
+- **Silence it now (any project, JDK 23+).** Add the
+  `--sun-misc-unsafe-memory-access=allow` JVM flag to the `:run`/`:server`
+  aliases (`deps.edn`) and, on a Datomic project, to `bin/db`. This only
+  quiets the noise — it doesn't remove the `Unsafe` usage. It is **not**
+  baked into the scaffold because the flag was introduced in **JDK 23** and
+  *fails to start* on JDK 17/21 (the scaffold's floor is Java 17+; see System
+  Requirements). On JDK 17/21 the warning doesn't exist anyway. Add it only
+  if you run on JDK 23+ and want it gone before the real fix lands.
+
+  In `deps.edn` (append to the existing `:jvm-opts`):
+
+  ```clojure
+  :run      {:jvm-opts ["--enable-native-access=ALL-UNNAMED"
+                        "--sun-misc-unsafe-memory-access=allow"]
+             :main-opts ["-m" "acme.main"]}
+  :server   {:jvm-opts ["-Xmx1g" "-server"
+                        "--enable-native-access=ALL-UNNAMED"
+                        "--sun-misc-unsafe-memory-access=allow"]
+             :main-opts ["-m" "acme.main"]}
+  ```
+
+  In `bin/db` (Datomic only — append to the `JAVA_OPTS` line):
+
+  ```sh
+  export JAVA_OPTS="${JAVA_OPTS:-"-XX:+UseG1GC -XX:MaxGCPauseMillis=50"} --enable-native-access=ALL-UNNAMED --sun-misc-unsafe-memory-access=allow"
+  ```
+- **Fix it for real (Netty 4.2.x).** Once a wire release ships that moves to
+  **Lettuce 7 / Redisson 4** (both on Netty 4.2.x):
+  - **Non-Datomic projects** can clear the warning by upgrading wire —
+    nothing else pins them to 4.1.x.
+  - **Datomic projects should *not*** upgrade wire for this reason alone:
+    the Datomic peer still drags Netty 4.1.x back into the graph, so the
+    warning persists regardless. Wait until a Datomic peer release has
+    itself bumped to Netty 4.2.x.
+
 ## Test
 
 ```sh

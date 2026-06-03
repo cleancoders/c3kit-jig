@@ -19,4 +19,8 @@ if [[ ! -d "$DATOMIC_HOME" ]]; then
 fi
 
 cd "$DATOMIC_HOME"
+# Grant native access so the transactor's Netty stack doesn't warn on JDK 23+.
+# bin/transactor only applies its own GC defaults when JAVA_OPTS is empty, so we
+# re-include them here. Valid on JDK 17+; harmless on older JDKs.
+export JAVA_OPTS="${JAVA_OPTS:-"-XX:+UseG1GC -XX:MaxGCPauseMillis=50"} --enable-native-access=ALL-UNNAMED"
 exec bin/transactor config/samples/dev-transactor-template.properties
