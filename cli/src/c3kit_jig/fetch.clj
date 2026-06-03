@@ -29,11 +29,23 @@
 
 (def ^:private cruft-exts #{"iml" "class" "jar"})
 
+;; Generated build outputs that live at fixed paths and so cannot be matched by
+;; basename without nuking same-named source dirs (e.g. "cljs" would also match
+;; src/cljs). Glob patterns are relative to the copied tree root. Mirrors the
+;; template .gitignore's generated-output entries.
+(def ^:private cruft-paths
+  ["resources/public/cljs"
+   "resources/public/css/*.css"
+   "resources/public/js/compiled"
+   "resources/public/js/main.js"
+   "dev/*/ssr/prerender_pages.cljs"])
+
 (defn prune-cruft!
   "Delete known dev/VCS artifacts from a freshly copied template tree.
    Matches directory/file basenames exactly (cruft-names) plus build-artifact
    extensions (cruft-exts) — never substring/suffix, to avoid deleting
-   legitimately-named template files."
+   legitimately-named template files. Also prunes generated build outputs at
+   fixed paths (cruft-paths), which basename matching cannot safely target."
   [dest]
   (doseq [^java.io.File f (reverse (file-seq (fs/file dest)))
           :when (.exists f)
@@ -41,6 +53,12 @@
                  ext (last (str/split n #"\."))]
           :when (or (contains? cruft-names n)
                     (and (.isFile f) (contains? cruft-exts ext)))]
+    (if (.isDirectory f)
+      (fs/delete-tree (str f))
+      (fs/delete-if-exists (str f))))
+  (doseq [pat cruft-paths
+          ^java.io.File f (map fs/file (fs/glob dest pat {:hidden true}))
+          :when (.exists f)]
     (if (.isDirectory f)
       (fs/delete-tree (str f))
       (fs/delete-if-exists (str f)))))
