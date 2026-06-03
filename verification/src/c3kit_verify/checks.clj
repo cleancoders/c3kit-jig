@@ -200,6 +200,19 @@
                      :detail (str "homepage served but missing boot logs: " (str/join ", " missing))}
       :else {:check :server-boot :ok? true :detail "HTTP 200, homepage served"})))
 
+(defn free-port!
+  "Kill any process listening on TCP `port`. destroy-tree occasionally fails to
+   reap the clojure->java grandchild, leaving a stale server bound to the port;
+   a later run's fresh server then can't bind, exits immediately, and curl hits
+   the stale server (HTTP 200 but no fresh boot logs). Freeing the port before
+   start makes the check self-healing. Best-effort — ignores lsof/kill errors."
+  [port]
+  (let [{:keys [out]} (p/sh {:continue true} "lsof" "-nP" (str "-iTCP:" port) "-sTCP:LISTEN" "-t")
+        pids (->> (str/split-lines (or out "")) (map str/trim) (remove str/blank?))]
+    (doseq [pid pids]
+      (p/sh {:continue true} "kill" "-9" pid))
+    (when (seq pids) (Thread/sleep 500))))
+
 (defn server-boot-check
   "Run migrate, start the server in the background, poll \"/\" until it responds,
    then kill it. Pass iff the homepage is actually served (HTTP 200 with the
@@ -208,7 +221,8 @@
   (let [migrate-exit (:exit (apply p/sh {:dir root :continue true} migrate))]
     (if-not (zero? migrate-exit)
       {:check :server-boot :ok? false :detail (str "migrate failed (exit " migrate-exit ")")}
-      (let [proc (apply p/process {:dir root :extra-env {"PORT" (str port)}
+      (let [_    (free-port! port)
+            proc (apply p/process {:dir root :extra-env {"PORT" (str port)}
                                    :out :string :err :string} run)
             url  (str "http://localhost:" port "/")
             deadline (+ (System/currentTimeMillis) 60000)]
@@ -227,4 +241,8 @@
                       (server-boot-result* {:http-code code :body body :output (str out "\n" err)})))
                 (> (System/currentTimeMillis) deadline) {:check :server-boot :ok? false :detail "server did not respond within 60s"}
                 :else (do (Thread/sleep 1000) (recur)))))
-          (finally (p/destroy-tree proc)))))))
+          (finally
+            (p/destroy-tree proc)
+            ;; destroy-tree can miss the detached grandchild; reap any survivor
+            ;; so it can't poison the next combo's server-boot check.
+            (free-port! port)))))))
