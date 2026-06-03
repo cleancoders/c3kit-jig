@@ -70,6 +70,7 @@
   (test-route "/apple/oauth" :post acme.auth.user.web/web-apple-oauth-login)
   (test-route "/forgot-password" :get acme.layouts/web-rich-client)
   (test-route "/google/oauth" :post acme.auth.user.web/web-google-oauth-login)
+  (test-route "/login" :get acme.layouts/web-rich-client)
   (test-route "/recover-password/foo" :get acme.layouts/web-rich-client)
   ;; @c3kit/feature :auth }
   (test-route "/sandbox/example-page" :get acme.sandbox.core/handler)

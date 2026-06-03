@@ -128,6 +128,7 @@
      ["/forgot-password" :get]                  acme.layouts/web-rich-client
      ["/google/oauth" :post]                    acme.auth.user.web/web-google-oauth-login
      ["/apple/oauth" :post]                     acme.auth.user.web/web-apple-oauth-login
+     ["/login" :get]                            acme.layouts/web-rich-client
      ["/recover-password/:recovery-token" :get] acme.layouts/web-rich-client
      ["/redirect" :get]                         acme.auth.destination/web-redirect
      ["/signout" :any]                          acme.auth.user.web/web-signout

@@ -48,6 +48,7 @@
   (defroute "/" [] (load-page! :home))
   ;; @c3kit/feature :auth {
   (defroute "/forgot-password" [] (load-page! :forgot-password))
+  (defroute "/login" [] (load-page! :login))
   (defroute "/recover-password/:recovery-token" [recovery-token]
     (reset! recover-password/recovery-token recovery-token)
     (load-page! :recover-password))

@@ -26,6 +26,7 @@
     (it-routes "/" :home)
     ;; @c3kit/feature :auth {
     (it-routes "/forgot-password" :forgot-password)
+    (it-routes "/login" :login)
     (it-routes "/recover-password/blah" :recover-password
       (should= "blah" @recover-password/recovery-token))
     ;; @c3kit/feature :auth }
