@@ -17,7 +17,7 @@ The template generated a `bin/db` script for your chosen backend.
 ```sh
 bin/db                 # start (or initialize) the database
 clj -M:test:migrate    # run migrations
-clj -M:test:seed       # seed dev data (auth only)
+clj -M:test:seed       # seed dev data
 ```
 
 If you chose `:datomic-pro`, the first run of `bin/db` will prompt you

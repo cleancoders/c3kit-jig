@@ -78,8 +78,7 @@ scaffold time per the rules in
 1. Reads `.c3kit-jig-context.edn` (CLI sub-spec §7.2).
 2. Generates `bin/db` from the selected `:db`.
 3. Reconciles the HEAD-default `:bucket` line in `config.clj`.
-4. Drops the `:seed` alias when `:auth` is off (defense-in-depth).
-5. Greps for residual `@c3kit/*` markers; exits non-zero if any remain.
+4. Greps for residual `@c3kit/*` markers; exits non-zero if any remain.
 
 Unit test: `bb spec/hook_test.bb`.
 

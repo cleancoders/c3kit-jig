@@ -41,6 +41,6 @@
              :migrate  {:main-opts ["-m" "c3kit.bucket.migration"]}
              :repl     {:main-opts ["-e" "(require,'acme.repl)" "-e" "(in-ns,'acme.repl)" "--repl"] :extra-paths ["dev"]}
              :run      {:jvm-opts ["--enable-native-access=ALL-UNNAMED"] :main-opts ["-m" "acme.main"]}
-             ;; @c3kit/feature :auth = :seed {:main-opts ["-m" "acme.seed"] :extra-paths ["dev"]}
+             :seed     {:main-opts ["-m" "acme.seed"] :extra-paths ["dev"]}
              :server   {:jvm-opts ["-Xmx1g" "-server" "--enable-native-access=ALL-UNNAMED"] :main-opts ["-m" "acme.main"]}
              :spec     {:main-opts ["-m" "speclj.main" "-c"]}}}
