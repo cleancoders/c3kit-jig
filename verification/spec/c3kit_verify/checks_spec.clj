@@ -161,3 +161,25 @@
       (should-not (:ok? r))))
   (it "fails on nonzero exit"
     (should-not (:ok? (sut/cljs-check* {:exit 1 :out "5 examples, 0 failures"})))))
+
+(describe "server-boot-result*"
+  (it "passes on an HTTP response with both boot log lines"
+    (let [out "----- STARTING My-app SERVER -----\nStarting HTTP server: http://localhost:8123"
+          r   (sut/server-boot-result* {:http-code "200" :output out})]
+      (should (:ok? r))
+      (should= "HTTP 200" (:detail r))))
+  (it "fails when the server never responded"
+    (let [out "----- STARTING My-app SERVER -----\nStarting HTTP server: http://localhost:8123"
+          r   (sut/server-boot-result* {:http-code nil :output out})]
+      (should-not (:ok? r))))
+  (it "fails when the startup banner was not printed"
+    (let [r (sut/server-boot-result* {:http-code "200" :output "Starting HTTP server: http://localhost:8123"})]
+      (should-not (:ok? r))
+      (should (re-find #"STARTING" (:detail r)))))
+  (it "fails when the HTTP server log was not printed"
+    (let [r (sut/server-boot-result* {:http-code "200" :output "----- STARTING My-app SERVER -----"})]
+      (should-not (:ok? r))
+      (should (re-find #"Starting HTTP server" (:detail r)))))
+  (it "fails when no boot logs were printed"
+    (let [r (sut/server-boot-result* {:http-code "500" :output ""})]
+      (should-not (:ok? r)))))

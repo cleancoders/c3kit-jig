@@ -173,14 +173,34 @@
   (let [{:keys [exit out err]} (apply p/sh {:dir root :continue true} cmd)]
     (cljs-check* {:exit exit :out (str out "\n" err)})))
 
+;; Token-free substrings of the two boot log lines printed by acme.main:
+;;   (log/report "----- STARTING <Name> SERVER -----")  ; always prints
+;;   (log/info   "Starting HTTP server: http://localhost:<port>")
+(def ^:private SERVER-BOOT-LOGS ["----- STARTING" "Starting HTTP server"])
+
+(defn server-boot-result*
+  "Decide server-boot success from the polled HTTP code and the server's
+   captured console output. Pass iff an HTTP response arrived AND every
+   expected boot log line was printed."
+  [{:keys [http-code output]}]
+  (let [http-ok? (boolean (and http-code (re-matches #"[1-5]\d\d" http-code)))
+        missing  (remove #(str/includes? (or output "") %) SERVER-BOOT-LOGS)]
+    (cond
+      (not http-ok?) {:check :server-boot :ok? false :detail "server did not respond"}
+      (seq missing)  {:check :server-boot :ok? false
+                      :detail (str "HTTP " http-code " but missing boot logs: " (str/join ", " missing))}
+      :else          {:check :server-boot :ok? true :detail (str "HTTP " http-code)})))
+
 (defn server-boot-check
   "Run migrate, start the server in the background, poll its port for any HTTP
-   response, then kill it. Pass iff a response arrives before timeout."
+   response, then kill it. Pass iff a response arrives before timeout AND the
+   expected boot log lines were printed to the console."
   [root {:keys [migrate run port]}]
   (let [migrate-exit (:exit (apply p/sh {:dir root :continue true} migrate))]
     (if-not (zero? migrate-exit)
       {:check :server-boot :ok? false :detail (str "migrate failed (exit " migrate-exit ")")}
-      (let [proc (apply p/process {:dir root :extra-env {"PORT" (str port)}} run)
+      (let [proc (apply p/process {:dir root :extra-env {"PORT" (str port)}
+                                   :out :string :err :string} run)
             url  (str "http://localhost:" port "/")
             deadline (+ (System/currentTimeMillis) 60000)]
         (try
@@ -189,7 +209,10 @@
                             (catch Exception _ nil))
                   code (some-> resp str/trim)]
               (cond
-                (and code (re-matches #"[1-5]\d\d" code)) {:check :server-boot :ok? true :detail (str "HTTP " code)}
-                (> (System/currentTimeMillis) deadline)   {:check :server-boot :ok? false :detail "server did not respond within 60s"}
+                (and code (re-matches #"[1-5]\d\d" code))
+                (do (p/destroy-tree proc)
+                    (let [{:keys [out err]} @proc]
+                      (server-boot-result* {:http-code code :output (str out "\n" err)})))
+                (> (System/currentTimeMillis) deadline) {:check :server-boot :ok? false :detail "server did not respond within 60s"}
                 :else (do (Thread/sleep 1000) (recur)))))
           (finally (p/destroy-tree proc)))))))
