@@ -5,9 +5,6 @@
 
 (defn next-steps []
   [:ul#-next-steps.starter-links
-   ;; @c3kit/feature :content {
-   [:li [:a#-blog-link {:href "/blog"} "Blog"]]
-   ;; @c3kit/feature :content }
    [:li "Edit this page at " [:code "src/cljs/acme/home.cljs"]]
    [:li "Seed dev data — " [:code "clj -M:test:seed"]]
    [:li "Project docs — see " [:code "README.md"]]])
@@ -17,8 +14,11 @@
    [:section.home
     [:div.container.width-750.margin-top-plus-5.margin-bottom-plus-5.text-align-center
      [:h1 "Acme is running 🎉"]
-     [:p "Your full-stack Clojure + ClojureScript app is live."]
+     [:p#-tagline.margin-top-plus-3 "Your full-stack Clojure + ClojureScript app is live."]
      [next-steps]
+     ;; @c3kit/feature :content {
+     [:p.margin-top-default [:a#-blog-link {:href "/blog"} "Blog"]]
+     ;; @c3kit/feature :content }
      ;; @c3kit/feature :auth {
      [:p.margin-top-default [:a#-login-link {:href "/login"} "Sign in →"]]
      ;; @c3kit/feature :auth }
