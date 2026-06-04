@@ -84,6 +84,10 @@
   (test-route "/ajax/forgot-password" :post acme.auth.user.ajax/ajax-forgot-password)
   (test-route "/ajax/recover-password" :post acme.auth.user.ajax/ajax-reset-password)
   ;; @c3kit/feature :auth }
+  ;; @c3kit/feature :content {
+  (test-route "/ajax/content/blog" :get acme.content.core/api-fetch-list)
+  (test-route "/ajax/content/blog/2026-05-12-hello-world" :get acme.content.core/api-fetch-post)
+  ;; @c3kit/feature :content }
   (test-route "/ajax/spinner" :get acme.routes/spinner)
   ;; @c3kit/feature :auth {
   (test-route "/ajax/user/csrf-token" :get acme.auth.user.ajax/ajax-csrf-token)
@@ -92,9 +96,6 @@
   ;; @c3kit/feature :auth }
 
   ;; api routes
-  ;; @c3kit/feature :content {
-  (test-route "/api/v1/content/blog/2026-05-12-hello-world" :get acme.content.core/api-fetch-post)
-  ;; @c3kit/feature :content }
   ;; @c3kit/feature :auth {
   (test-route "/api/user/forgot-password" :post acme.auth.user.api/api-forgot-password)
   (test-route "/api/user/reset-password/some-token" :post acme.auth.user.api/api-reset-password)

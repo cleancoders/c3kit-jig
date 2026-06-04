@@ -5,16 +5,17 @@
 
 (defn next-steps []
   [:ul#-next-steps.starter-links
-   [:li [:a {:href "https://github.com/cleancoders/c3kit-jig/wiki" :target "_blank"} "c3kit-jig wiki & guides"]]
-   [:li "Add a page — edit " [:code "src/cljs/acme/home.cljs"] " and register a route"]
+   ;; @c3kit/feature :content {
+   [:li [:a#-blog-link {:href "/blog"} "Blog"]]
+   ;; @c3kit/feature :content }
+   [:li "Edit this page at " [:code "src/cljs/acme/home.cljs"]]
    [:li "Seed dev data — " [:code "clj -M:test:seed"]]
    [:li "Project docs — see " [:code "README.md"]]])
 
 (defn starter []
   [:main#-starter
    [:section.home
-    [:div.container.width-300.margin-top-plus-5.margin-bottom-plus-5.text-align-center
-     [:img.logo.margin-bottom-plus-1 {:src "/images/logos/cc-emblem.png"}]
+    [:div.container.width-750.margin-top-plus-5.margin-bottom-plus-5.text-align-center
      [:h1 "Acme is running 🎉"]
      [:p "Your full-stack Clojure + ClojureScript app is live."]
      [next-steps]

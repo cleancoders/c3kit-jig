@@ -13,7 +13,8 @@
             [acme.styles.layout.reset :as reset]
             [acme.styles.layout.structure :as structure]
             [acme.styles.media.responsive :as responsive]
-            [acme.styles.pages.authentication :as authentication]))
+            [acme.styles.pages.authentication :as authentication]
+            [acme.styles.pages.content :as content]))
 
 (garden/defstyles screen
 
@@ -36,6 +37,7 @@
 
 ; Pages
   authentication/screen
+  content/screen
 
 ; Media
   responsive/screen

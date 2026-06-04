@@ -155,3 +155,16 @@
           (should= :div (first body))
           (should-contain [:quote-block {:text "hi"}] body)
           (should-not (some fn? (tree-seq coll? seq body))))))))
+
+(describe "api-fetch-list"
+
+  (before (sut/load!))
+
+  (it "returns post summaries (permalink + meta, no body) for the type"
+    (let [response (sut/api-fetch-list {:params {:type "blog"}})
+          payload  (get-in response [:body :payload])
+          post     (first (:posts payload))]
+      (should= :blog (:type payload))
+      (should= "2026-05-12-hello-world" (:permalink post))
+      (should= "Hello, world" (-> post :meta :title))
+      (should-not (contains? post :body)))))

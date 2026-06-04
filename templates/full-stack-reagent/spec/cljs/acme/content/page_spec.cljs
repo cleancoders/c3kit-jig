@@ -2,6 +2,7 @@
   (:require [acme.content.hiccup-registry :as registry]
             [acme.content.page :as sut]
             [acme.page :as page]
+            [c3kit.wire.ajax :as ajax]
             [speclj.core :refer-macros [after before describe it should should-not should=]]))
 
 (describe "content-page"
@@ -21,7 +22,49 @@
 
   (it "current-post returns nil when nothing is loaded"
     (sut/install! "blog" "missing")
-    (should= nil (sut/current-post))))
+    (should= nil (sut/current-post)))
+
+  (it "fetch! GETs the ajax content endpoint for the given type and permalink"
+    (let [captured (atom nil)]
+      (with-redefs [ajax/get! (fn [url & _] (reset! captured url))]
+        (sut/fetch! "blog" "hello" nil)
+        (should= "/ajax/content/blog/hello" @captured))))
+
+  (it "fetch-list! GETs the ajax content list endpoint for the given type"
+    (let [captured (atom nil)]
+      (with-redefs [ajax/get! (fn [url & _] (reset! captured url))]
+        (sut/fetch-list! "blog" nil)
+        (should= "/ajax/content/blog" @captured))))
+
+  (it "current-list returns stored summaries for the current type"
+    (sut/install! "blog" nil)
+    (swap! page/state assoc-in [:content :blog ::sut/list]
+           [{:permalink "p1" :meta {:title "First"}}])
+    (should= [{:permalink "p1" :meta {:title "First"}}] (sut/current-list)))
+
+  (it "content-view renders the post list (not Loading) when the list is loaded and no permalink"
+    (sut/install! "blog" nil)
+    (swap! page/state assoc-in [:content :blog ::sut/list]
+           [{:permalink "p1" :meta {:title "First Post"}}])
+    (let [flat (tree-seq coll? seq (sut/content-view))]
+      (should (some #{"First Post"} flat))
+      (should-not (some #{"Loading..."} flat))))
+
+  (it "reentering! fetches the post on soft-nav within :content/page"
+    ;; secretary routes /blog and /blog/x to the same page key, so the
+    ;; transition is a reenter, not an enter. It must still fetch.
+    (let [captured (atom nil)]
+      (with-redefs [ajax/get! (fn [url & _] (reset! captured url))]
+        (sut/install! "blog" "hello")
+        (page/reentering! :content/page)
+        (should= "/ajax/content/blog/hello" @captured))))
+
+  (it "reentering! fetches the list on soft-nav to a list route"
+    (let [captured (atom nil)]
+      (with-redefs [ajax/get! (fn [url & _] (reset! captured url))]
+        (sut/install! "blog" nil)
+        (page/reentering! :content/page)
+        (should= "/ajax/content/blog" @captured)))))
 
 (describe "render-post :default — registry resolution"
 

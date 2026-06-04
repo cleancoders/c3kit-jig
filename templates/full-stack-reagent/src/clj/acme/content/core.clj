@@ -152,3 +152,12 @@
         :permalink (:permalink post)
         :body      (-> post :markdown acme.content.markdown/->hiccup)})
       (c3kit.wire.ajax/fail {:error "not-found"} 404))))
+
+(defn api-fetch-list [request]
+  ;; List view needs only summaries — permalink + meta, no parsed body.
+  (let [type-kw (keyword (-> request :params :type))]
+    (c3kit.wire.ajax/ok
+     {:type  type-kw
+      :posts (vec (for [p (posts type-kw)]
+                    {:permalink (:permalink p)
+                     :meta      (:meta p)}))})))

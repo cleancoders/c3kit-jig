@@ -22,6 +22,11 @@
   (it "shows the next-steps list"
     (should-select "#-next-steps"))
 
+  ;; @c3kit/feature :content {
+  (it "links to the blog"
+    (should-select "#-blog-link"))
+  ;; @c3kit/feature :content }
+
   (it "does not show a signin form"
     (should-not-select "#-signin-button"))
 
