@@ -98,7 +98,8 @@
 
 (def ajax-routes-handler
   (-> (lazy-routes
-       {         ;; @c3kit/feature :auth {
+       {["/spinner" :get]           acme.routes/spinner
+         ;; @c3kit/feature :auth {
         ["/forgot-password" :post]  acme.auth.user.ajax/ajax-forgot-password
         ["/recover-password" :post] acme.auth.user.ajax/ajax-reset-password
          ;; @c3kit/feature :auth }
@@ -106,7 +107,6 @@
         ["/content/:type" :get]            acme.content.core/api-fetch-list
         ["/content/:type/:permalink" :get] acme.content.core/api-fetch-post
          ;; @c3kit/feature :content }
-        ["/spinner" :get]           acme.routes/spinner
          ;; @c3kit/feature :auth {
         ["/user/csrf-token" :get]   acme.auth.user.ajax/ajax-csrf-token
         ["/user/signin" :post]      acme.auth.user.ajax/ajax-signin
