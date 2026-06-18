@@ -118,6 +118,34 @@ After the above lands and `CHANGES.md` top reads `### 0.1.0`:
 - CI publishes the assets.
 - Verify the installer succeeds end-to-end.
 
+### 6. Documentation
+
+The versioning + release model must be documented so contributors and
+maintainers can follow it.
+
+**`CONTRIBUTING.md`:**
+- Reconcile the existing CHANGES instruction. Today it says "Update
+  `CHANGES.md` with a one-line entry under the current `Unreleased` (or
+  pending version) section." Keep that for contributors — during development,
+  entries accumulate under `### Unreleased`.
+- Add a **Releasing** section (maintainer-facing) describing the full flow:
+  1. Bump root `VERSION` (semver: patch/minor/major).
+  2. Rename the `### Unreleased` heading in `CHANGES.md` to `### <VERSION>`
+     (the top heading must match `VERSION` at release time).
+  3. Commit on `main`, tree clean, synced with origin.
+  4. Run `bb release` (from `cli/`) — tags bare semver, pushes.
+  5. CI builds + publishes `c3kit-jig.bb` + `.sha256` as release assets.
+  6. Verify the installer end-to-end.
+- Note the guards `bb release` enforces (clean tree, CHANGES matches VERSION,
+  tag absent) so the process is self-checking.
+
+**`README.md`:**
+- Add a short **Versioning** note: bare-semver, source of truth is root
+  `VERSION`, releases distributed via GitHub Releases, CLI self-upgrades via
+  `c3kit-jig upgrade`. Templates track `main` (or `--template-ref`) and are
+  not separately versioned.
+- Add `VERSION` and `CHANGES.md` to the repo-layout block.
+
 ## Out of Scope / Minor
 
 - `cli/dist/c3kit-jig.bb` is a committed build artifact carrying a stale baked
@@ -145,3 +173,5 @@ After the above lands and `CHANGES.md` top reads `### 0.1.0`:
 - `cli/bb.edn` (`build` bakes VERSION; new `release` task)
 - `.github/workflows/release.yml` (bare-semver tag trigger)
 - `cli/spec/c3kit_jig/version_spec.clj` (tests)
+- `CONTRIBUTING.md` (Releasing section; CHANGES reconciliation)
+- `README.md` (Versioning note; repo-layout block)
