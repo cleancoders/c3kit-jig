@@ -8,6 +8,7 @@
             [c3kit-jig.render :as render]
             [c3kit-jig.rename :as rn]
             [c3kit-jig.ui :as ui]
+            [c3kit-jig.update-check :as update-check]
             [c3kit-jig.version :as v]
             [c3kit-jig.wizard :as wizard])
   (:gen-class))
@@ -164,7 +165,9 @@
         :version  (do (println (v/current)) (exit 0))
         :help     (do (println (args/help)) (exit 0))
         :error    (do (ui/fail error) (println (args/help)) (exit 2))
-        :list     (do (ui/info "List of templates not yet implemented.") (exit 0))
+        :list     (do (update-check/notify!)
+                      (ui/info "List of templates not yet implemented.")
+                      (exit 0))
         :upgrade  (try
                     (let [bin (System/getProperty "babashka.file")
                           r   (v/check-and-download! bin)]
@@ -180,10 +183,19 @@
                     (do (ui/fail "Missing required option: --template ID (required with --yes)")
                         (exit 2))
                     :else
-                    (let [opts (prompt-missing options)]
-                      (try
-                        (scaffold! opts)
-                        (exit 0)
-                        (finally
-                          (cfs/cleanup! (::clone-stage opts))))))))))
+                    (do
+                      (when-let [{:keys [current latest]} (update-check/available-update)]
+                        (if (:yes options)
+                          (ui/warn (update-check/update-message current latest))
+                          (when-not (wizard/prompt-yn
+                                     (str "Update available (" current " → " latest "). Continue anyway?")
+                                     true)
+                            (ui/info "Run `c3kit-jig upgrade` to update.")
+                            (exit 0))))
+                      (let [opts (prompt-missing options)]
+                        (try
+                          (scaffold! opts)
+                          (exit 0)
+                          (finally
+                            (cfs/cleanup! (::clone-stage opts)))))))))))
 
