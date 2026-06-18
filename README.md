@@ -19,6 +19,14 @@ curl -fsSL https://raw.githubusercontent.com/cleancoders/c3kit-jig/main/cli/inst
 
 The installer detects [Babashka](https://babashka.org) and `git`, installs Babashka if missing, then drops the `c3kit-jig` command onto your `PATH`.
 
+## Versioning
+
+c3kit-jig uses bare semantic versioning. The root `VERSION` file is the
+single source of truth and is baked into the CLI at build time. Releases are
+published as GitHub Releases; upgrade an installed CLI with `c3kit-jig
+upgrade`. Templates are fetched from `main` at runtime (override with
+`--template-ref <branch-or-tag>`) and are not separately versioned.
+
 ## Usage
 
 ```sh
@@ -45,6 +53,8 @@ cli/           # bb CLI source + installer
 templates/     # template trees, one dir per template
 verification/  # post-scaffold verification harness
 docs/          # design specs and implementation plans
+VERSION        # bare-semver source of truth for the CLI
+CHANGES.md     # changelog (### X.Y.Z headings)
 ```
 
 ## Verification harness

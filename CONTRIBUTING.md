@@ -45,7 +45,7 @@ Current roadmap: [`docs/specs/2026-05-12-c3kit-jig-roadmap-design.md`](docs/spec
 - Create a feature branch off `main`.
 - **Use TDD.** Write a failing spec first, then the minimum code to make it pass, then refactor.
 - Keep commits small and focused. Write descriptive commit messages.
-- Update `CHANGES.md` with a one-line entry under the current `Unreleased` (or pending version) section.
+- Update `CHANGES.md` with a one-line entry under the `### Unreleased` heading. The release process (see Releasing) renames that heading to the version being shipped.
 - If you change CLI surface or template options, update the README and the relevant spec.
 
 ## Code Style
@@ -71,6 +71,30 @@ Current roadmap: [`docs/specs/2026-05-12-c3kit-jig-roadmap-design.md`](docs/spec
 3. If your change touches `templates/**`, the template CI must pass (`.github/workflows/template-full-stack-reagent.yml`).
 4. Open a PR against `main`.
 5. Describe what changed and why.
+
+## Releasing (maintainers)
+
+c3kit-jig follows the c3kit versioning convention: a bare-semver `VERSION`
+file at the repo root is the single source of truth, `CHANGES.md` uses
+`### X.Y.Z` headings, and releases are tagged with bare semver (no `v`
+prefix). The CLI is the only versioned artifact — templates are fetched from
+`main` (or `--template-ref`) at runtime and are not separately versioned.
+
+During development, add changelog entries under `### Unreleased`. To cut a
+release:
+
+1. Bump root `VERSION` (semver — patch: bug fix; minor: backward-compatible
+   feature; major: breaking change).
+2. Rename the `### Unreleased` heading in `CHANGES.md` to `### <VERSION>`.
+   The top heading must match `VERSION`.
+3. Commit on `main`; ensure the tree is clean and synced with origin.
+4. From `cli/`, run `bb release`. It verifies the tree is clean, that the
+   `CHANGES.md` top heading matches `VERSION`, and that the tag does not yet
+   exist, then `git tag <VERSION>` and pushes it.
+5. The push triggers `.github/workflows/release.yml`, which runs the tests,
+   builds the uberscript (baking `VERSION`), computes its sha256, and
+   publishes `c3kit-jig.bb` + `c3kit-jig.bb.sha256` as release assets.
+6. Verify end-to-end by running the installer from the README.
 
 ## Reporting Bugs / Requesting Features
 
