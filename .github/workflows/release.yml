@@ -2,6 +2,9 @@ name: release
 
 on:
   push:
+    # `+` is one-or-more in GitHub's ref-filter syntax (not @actions/glob),
+    # so this matches bare-semver tags like 1.0.0 / 1.10.99. `bb release`
+    # pushes `git tag <VERSION>` where VERSION is the root VERSION file.
     tags: ['[0-9]+.[0-9]+.[0-9]+']
 
 jobs:

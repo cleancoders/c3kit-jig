@@ -65,4 +65,3 @@
                                 (shell "git" "push" "origin" version)
                                 (println (str "tagged + pushed " version
                                               " — CI will build and publish assets")))))}}}
-
