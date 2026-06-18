@@ -10,7 +10,7 @@
 
 ## Global Constraints
 
-- Tags are **bare semver**, no `v`/`cli-` prefix (e.g. `0.1.0`). Verbatim from spec.
+- Tags are **bare semver**, no `v`/`cli-` prefix (e.g. `1.0.0`). Verbatim from spec.
 - Root `VERSION` holds bare semver; it is the source of truth.
 - `CHANGES.md` top heading must equal `### <VERSION>` at release time.
 - Uberscript runs standalone post-install — it cannot read `VERSION` at runtime; the version is baked at build via the placeholder literal `0.0.0-DEV`.
@@ -42,17 +42,17 @@
 - Modify: `CHANGES.md`
 
 **Interfaces:**
-- Produces: root `VERSION` containing `0.1.0`; `CHANGES.md` whose first `### ` heading is `### 0.1.0`.
+- Produces: root `VERSION` containing `1.0.0`; `CHANGES.md` whose first `### ` heading is `### 1.0.0`.
 
 - [ ] **Step 1: Create the VERSION file**
 
 Create `VERSION` (repo root) with exactly one line:
 
 ```
-0.1.0
+1.0.0
 ```
 
-- [ ] **Step 2: Fold `### Unreleased` into `### 0.1.0` in CHANGES.md**
+- [ ] **Step 2: Fold `### Unreleased` and the never-shipped `### 0.1.0` into `### 1.0.0` in CHANGES.md**
 
 The file currently starts:
 
@@ -66,10 +66,10 @@ The file currently starts:
  * `templates/full-stack-reagent` scaffolded; phase-1 template work in progress.
 ```
 
-Replace that block with (top heading now matches VERSION, no `Unreleased`):
+Replace that block with (top heading now matches VERSION; the `0.1.0` entry never shipped, so it collapses into `1.0.0`):
 
 ```markdown
-### 0.1.0
+### 1.0.0
  * Initial CLI: `c3kit-jig create`, `list`, `upgrade`, `version`.
  * Installer script (`cli/install.sh`) — detects Babashka and git, installs Babashka if missing.
  * `templates/full-stack-reagent` scaffolded; phase-1 template work in progress.
@@ -88,7 +88,7 @@ Expected: `OK`
 
 ```bash
 git add VERSION CHANGES.md
-git commit -m "chore: add root VERSION; align CHANGES top heading to 0.1.0"
+git commit -m "chore: add root VERSION; align CHANGES top heading to 1.0.0"
 ```
 
 ---
@@ -215,9 +215,9 @@ with (reads `../VERSION`, bakes it, then prepends shebang):
 
 Run:
 ```sh
-cd cli && bb build && grep -c '"0.1.0"' dist/c3kit-jig.bb && ! grep -q '0.0.0-DEV' dist/c3kit-jig.bb && echo NO-PLACEHOLDER
+cd cli && bb build && grep -c '"1.0.0"' dist/c3kit-jig.bb && ! grep -q '0.0.0-DEV' dist/c3kit-jig.bb && echo NO-PLACEHOLDER
 ```
-Expected: prints `built dist/c3kit-jig.bb @ 0.1.0`, a count `>= 1` for the version literal, then `NO-PLACEHOLDER`.
+Expected: prints `built dist/c3kit-jig.bb @ 1.0.0`, a count `>= 1` for the version literal, then `NO-PLACEHOLDER`.
 
 - [ ] **Step 3: Smoke-test the built CLI reports the baked version**
 
@@ -225,7 +225,7 @@ Run:
 ```sh
 cd cli && ./dist/c3kit-jig.bb version
 ```
-Expected: output includes `0.1.0` (not `0.0.0-DEV`).
+Expected: output includes `1.0.0` (not `0.0.0-DEV`).
 
 - [ ] **Step 4: Commit**
 
@@ -370,7 +370,7 @@ Add this entry to the `:tasks` map (alongside `build`, `install`, etc.):
 Working tree is dirty at this point (uncommitted `bb.edn` + new files), so the guard should block:
 
 Run: `cd cli && bb release`
-Expected: prints `ERROR: working tree is dirty; commit or stash first` and exits non-zero. No tag created (`git tag -l 0.1.0` is empty).
+Expected: prints `ERROR: working tree is dirty; commit or stash first` and exits non-zero. No tag created (`git tag -l 1.0.0` is empty).
 
 - [ ] **Step 7: Lint**
 
@@ -529,7 +529,7 @@ git commit -m "docs: document CLI versioning and release process"
 
 ## Task 7: Cut the first release (maintainer, operational)
 
-> This task pushes a tag to the **public** repo and triggers a real release. Run only when Tasks 1-6 are merged to `main` and you intend to publish `0.1.0`. Requires push access.
+> This task pushes a tag to the **public** repo and triggers a real release. Run only when Tasks 1-6 are merged to `main` and you intend to publish `1.0.0`. Requires push access.
 
 **Files:** none (operational).
 
@@ -538,25 +538,25 @@ git commit -m "docs: document CLI versioning and release process"
 Run:
 ```sh
 git switch main && git pull --ff-only origin main
-cat VERSION                                   # 0.1.0
-grep -m1 '^### ' CHANGES.md                   # ### 0.1.0
+cat VERSION                                   # 1.0.0
+grep -m1 '^### ' CHANGES.md                   # ### 1.0.0
 git status --short                            # empty
 ```
-Expected: `VERSION` is `0.1.0`, top CHANGES heading is `### 0.1.0`, clean tree.
+Expected: `VERSION` is `1.0.0`, top CHANGES heading is `### 1.0.0`, clean tree.
 
 - [ ] **Step 2: Run the release task**
 
 Run: `cd cli && bb release`
-Expected: prints `tagged + pushed 0.1.0 — CI will build and publish assets`.
+Expected: prints `tagged + pushed 1.0.0 — CI will build and publish assets`.
 
 - [ ] **Step 3: Watch the release workflow**
 
 Run: `gh run watch $(gh run list --workflow=release.yml --limit 1 --json databaseId -q '.[0].databaseId')`
-Expected: the `release` workflow succeeds; the run publishes a `0.1.0` release with `c3kit-jig.bb` and `c3kit-jig.bb.sha256` attached.
+Expected: the `release` workflow succeeds; the run publishes a `1.0.0` release with `c3kit-jig.bb` and `c3kit-jig.bb.sha256` attached.
 
 - [ ] **Step 4: Verify the release exists**
 
-Run: `gh release view 0.1.0 --json assets -q '.assets[].name'`
+Run: `gh release view 1.0.0 --json assets -q '.assets[].name'`
 Expected: lists `c3kit-jig.bb` and `c3kit-jig.bb.sha256`.
 
 - [ ] **Step 5: Verify the installer end-to-end**
@@ -566,7 +566,7 @@ Run:
 curl -fsSL https://raw.githubusercontent.com/cleancoders/c3kit-jig/main/cli/install.sh | bash
 c3kit-jig version
 ```
-Expected: install completes without the 404; `c3kit-jig version` reports `0.1.0`.
+Expected: install completes without the 404; `c3kit-jig version` reports `1.0.0`.
 
 ---
 
@@ -582,4 +582,4 @@ Expected: install completes without the 404; `c3kit-jig version` reports `0.1.0`
 
 **Placeholder scan:** No TBD/TODO; every code step shows full code; every command has expected output.
 
-**Type consistency:** `changes-top-heading` and `release-blockers` (with keys `:version :changes :dirty? :tag-exists?`) are defined in Task 4 Step 3 and consumed identically by the `release` task in Task 4 Step 5 and the tests in Step 1. The placeholder literal `0.0.0-DEV` is introduced in Task 2 and matched verbatim by the `str/replace` in Task 3. VERSION value `0.1.0` is consistent across Tasks 1, 3, 7.
+**Type consistency:** `changes-top-heading` and `release-blockers` (with keys `:version :changes :dirty? :tag-exists?`) are defined in Task 4 Step 3 and consumed identically by the `release` task in Task 4 Step 5 and the tests in Step 1. The placeholder literal `0.0.0-DEV` is introduced in Task 2 and matched verbatim by the `str/replace` in Task 3. VERSION value `1.0.0` is consistent across Tasks 1, 3, 7. (The `### 0.1.0` / `### 0.0.9` strings in Task 4's tests are arbitrary fixtures exercising the pure guard logic, not the real release version.)

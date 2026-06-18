@@ -65,7 +65,8 @@ Conclusion: **the CLI binary is the only artifact that is versioned.** The
 
 ### 1. Single source of truth
 
-- Add root `VERSION` containing bare semver (initial: `0.1.0`).
+- Add root `VERSION` containing bare semver. First public release is `1.0.0`
+  (tag is bare `1.0.0`, no `v` prefix, per c3kit convention).
 - Root `CHANGES.md` already exists. Enforce the c3kit discipline: top heading
   is `### <VERSION>`. Fold the current `### Unreleased` bullet into the
   released version's section at release time.
@@ -112,9 +113,9 @@ in CI for reproducibility; the local task only tags and pushes.
 
 ### 5. First release
 
-After the above lands and `CHANGES.md` top reads `### 0.1.0`:
+After the above lands and `CHANGES.md` top reads `### 1.0.0`:
 
-- Run `bb release` (tags `0.1.0`, pushes).
+- Run `bb release` (tags `1.0.0`, pushes).
 - CI publishes the assets.
 - Verify the installer succeeds end-to-end.
 
