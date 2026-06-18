@@ -7,13 +7,19 @@
 
    cljfmt is brought in via `add-deps` so this works both when the CLI runs
    from its own `bb.edn` (deps already on classpath) and when invoked via
-   `bb -cp …` (e.g. the verification harness), where `bb.edn` is bypassed."
+   `bb -cp …` (e.g. the verification harness), where `bb.edn` is bypassed.
+
+   cljfmt.core is loaded lazily via `requiring-resolve` (see `format!`), NOT
+   `require`d statically here: a static require makes `bb uberscript` inline
+   cljfmt.core into the distributed script, and its load-time `read-resource`
+   macro then throws (the resource isn't bundled in an uberscript). Resolving
+   at call time keeps cljfmt out of the uberscript so it loads from the real
+   jar (resources intact) that `add-deps` puts on the classpath at runtime."
   (:require [babashka.deps :as deps]))
 
 (deps/add-deps '{:deps {dev.weavejester/cljfmt {:mvn/version "0.16.4"}}})
 
 (require '[babashka.fs :as fs]
-         '[cljfmt.core :as cf]
          '[clojure.edn :as edn]
          '[clojure.string :as str])
 
@@ -41,8 +47,9 @@
    cljfmt and the options from stage-dir/cljfmt.edn. No-op if no config."
   [stage-dir]
   (when-let [opts (read-cljfmt-config stage-dir)]
-    (doseq [^java.io.File f (fmt-files stage-dir)]
-      (let [orig (slurp f)
-            fmt  (cf/reformat-string orig opts)]
-        (when-not (= orig fmt)
-          (spit f fmt))))))
+    (let [reformat-string (requiring-resolve 'cljfmt.core/reformat-string)]
+      (doseq [^java.io.File f (fmt-files stage-dir)]
+        (let [orig (slurp f)
+              fmt  (reformat-string orig opts)]
+          (when-not (= orig fmt)
+            (spit f fmt)))))))
