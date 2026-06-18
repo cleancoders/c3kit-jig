@@ -43,4 +43,26 @@
               :depends [build]
               :task    (let [bb-file (.getAbsolutePath (clojure.java.io/file "dist/c3kit-jig.bb"))]
                          (shell {:extra-env {"C3KIT_LOCAL_BB" bb-file}}
-                                "bash" "install.sh"))}}}
+                                "bash" "install.sh"))}
+  release    {:doc      "Tag root VERSION as a release and push (CI builds + publishes)"
+              :requires ([c3kit-jig.release :as release]
+                         [clojure.string :as str])
+              :task     (let [version  (str/trim (slurp "../VERSION"))
+                              changes  (slurp "../CHANGES.md")
+                              dirty?   (-> (shell {:out :string} "git" "status" "--short")
+                                           :out str/blank? not)
+                              tag?     (-> (shell {:out :string :err :string :continue true}
+                                                  "git" "rev-parse" "--verify" "--quiet"
+                                                  (str "refs/tags/" version))
+                                           :exit zero?)
+                              blockers (release/release-blockers
+                                        {:version version :changes changes
+                                         :dirty? dirty? :tag-exists? tag?})]
+                          (if (seq blockers)
+                            (do (doseq [b blockers] (println "ERROR:" b))
+                                (System/exit 1))
+                            (do (shell "git" "tag" version)
+                                (shell "git" "push" "origin" version)
+                                (println (str "tagged + pushed " version
+                                              " — CI will build and publish assets")))))}}}
+
