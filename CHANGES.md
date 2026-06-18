@@ -1,4 +1,4 @@
-### 1.0.0
+### 0.1.0
  * Initial CLI: `c3kit-jig create`, `list`, `upgrade`, `version`.
  * Installer script (`cli/install.sh`) — detects Babashka and git, installs Babashka if missing.
  * `templates/full-stack-reagent` scaffolded; phase-1 template work in progress.
