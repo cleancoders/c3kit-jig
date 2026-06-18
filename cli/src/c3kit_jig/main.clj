@@ -158,6 +158,48 @@
       (finally
         (cfs/cleanup! stage)))))
 
+(defn- upgrade!
+  "Download the latest CLI release, reporting the outcome. Exits the process."
+  []
+  (try
+    (let [bin (System/getProperty "babashka.file")]
+      (case (v/check-and-download! bin)
+        :up-to-date (ui/info "already on latest")
+        :upgraded   (ui/ok "upgraded — re-run your command"))
+      (exit 0))
+    (catch Exception e
+      (ui/fail (.getMessage e))
+      (exit 11))))
+
+(defn- prompt-update-gate!
+  "When an update is available, notify (under --yes) or prompt to continue.
+   Exits 0 if the user declines."
+  [options]
+  (when-let [{:keys [current latest]} (update-check/available-update)]
+    (if (:yes options)
+      (ui/warn (update-check/update-message current latest))
+      (when-not (wizard/prompt-yn
+                 (str "Update available (" current " → " latest "). Continue anyway?")
+                 true)
+        (ui/info "Run `c3kit-jig upgrade` to update.")
+        (exit 0)))))
+
+(defn- create!
+  "Scaffold a new project: enforce --yes prerequisites, surface any available
+   update up front, then prompt for anything missing and scaffold. Exits."
+  [options]
+  (if (and (:yes options) (not (:template options)))
+    (do (ui/fail "Missing required option: --template ID (required with --yes)")
+        (exit 2))
+    (do
+      (prompt-update-gate! options)
+      (let [opts (prompt-missing options)]
+        (try
+          (scaffold! opts)
+          (exit 0)
+          (finally
+            (cfs/cleanup! (::clone-stage opts))))))))
+
 (defn -main [& argv]
   (let [{:keys [action options error]} (args/parse argv)]
     (binding [ui/*color?* (ui/tty?)]
@@ -168,34 +210,6 @@
         :list     (do (update-check/notify!)
                       (ui/info "List of templates not yet implemented.")
                       (exit 0))
-        :upgrade  (try
-                    (let [bin (System/getProperty "babashka.file")
-                          r   (v/check-and-download! bin)]
-                      (case r
-                        :up-to-date (ui/info "already on latest")
-                        :upgraded   (ui/ok "upgraded — re-run your command"))
-                      (exit 0))
-                    (catch Exception e
-                      (ui/fail (.getMessage e))
-                      (exit 11)))
-        :scaffold (cond
-                    (and (:yes options) (not (:template options)))
-                    (do (ui/fail "Missing required option: --template ID (required with --yes)")
-                        (exit 2))
-                    :else
-                    (do
-                      (when-let [{:keys [current latest]} (update-check/available-update)]
-                        (if (:yes options)
-                          (ui/warn (update-check/update-message current latest))
-                          (when-not (wizard/prompt-yn
-                                     (str "Update available (" current " → " latest "). Continue anyway?")
-                                     true)
-                            (ui/info "Run `c3kit-jig upgrade` to update.")
-                            (exit 0))))
-                      (let [opts (prompt-missing options)]
-                        (try
-                          (scaffold! opts)
-                          (exit 0)
-                          (finally
-                            (cfs/cleanup! (::clone-stage opts)))))))))))
+        :upgrade  (upgrade!)
+        :scaffold (create! options)))))
 
