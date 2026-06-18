@@ -26,17 +26,8 @@
               :requires ([speclj.cli])
               :task     (speclj.cli/run "-c" "spec")}
   build      {:doc      "Build cli/dist/c3kit-jig.bb (bakes root VERSION)"
-              :requires ([babashka.fs :as fs]
-                         [clojure.string :as str])
-              :task     (let [out     "dist/c3kit-jig.bb"
-                              version (str/trim (slurp "../VERSION"))]
-                          (fs/create-dirs "dist")
-                          (fs/delete-if-exists out)
-                          (shell "bb" "uberscript" out "-m" "c3kit-jig.main")
-                          (let [baked (str/replace (slurp out) "0.0.0-DEV" version)]
-                            (spit out (str "#!/usr/bin/env bb\n" baked)))
-                          (fs/set-posix-file-permissions out "rwxr-xr-x")
-                          (println (str "built dist/c3kit-jig.bb @ " version)))}
+              :requires ([c3kit-jig.build :as build])
+              :task     (build/build!)}
   lint       {:doc  "Run clj-kondo"
               :task (shell "clj-kondo" "--lint" "src" "spec")}
   install    {:doc     "Build CLI from local source and install it via install.sh (same path users use)"
@@ -45,23 +36,5 @@
                          (shell {:extra-env {"C3KIT_LOCAL_BB" bb-file}}
                                 "bash" "install.sh"))}
   release    {:doc      "Tag root VERSION as a release and push (CI builds + publishes)"
-              :requires ([c3kit-jig.release :as release]
-                         [clojure.string :as str])
-              :task     (let [version  (str/trim (slurp "../VERSION"))
-                              changes  (slurp "../CHANGES.md")
-                              dirty?   (-> (shell {:out :string} "git" "status" "--short")
-                                           :out str/blank? not)
-                              tag?     (-> (shell {:out :string :err :string :continue true}
-                                                  "git" "rev-parse" "--verify" "--quiet"
-                                                  (str "refs/tags/" version))
-                                           :exit zero?)
-                              blockers (release/release-blockers
-                                        {:version version :changes changes
-                                         :dirty? dirty? :tag-exists? tag?})]
-                          (if (seq blockers)
-                            (do (doseq [b blockers] (println "ERROR:" b))
-                                (System/exit 1))
-                            (do (shell "git" "tag" version)
-                                (shell "git" "push" "origin" version)
-                                (println (str "tagged + pushed " version
-                                              " — CI will build and publish assets")))))}}}
+              :requires ([c3kit-jig.release :as release])
+              :task     (release/release!)}}}
