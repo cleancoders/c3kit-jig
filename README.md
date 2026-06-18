@@ -27,6 +27,11 @@ published as GitHub Releases; upgrade an installed CLI with `c3kit-jig
 upgrade`. Templates are fetched from `main` at runtime (override with
 `--template-ref <branch-or-tag>`) and are not separately versioned.
 
+The CLI checks for a newer release at most once a day (cached in
+`~/.c3kit/update-check.edn`) and, when one exists, says so before `create`
+and `list`. Set `C3KIT_NO_UPDATE_CHECK=1` to disable the check; it is also
+skipped automatically when output is not a terminal (CI, pipes).
+
 ## Usage
 
 ```sh
