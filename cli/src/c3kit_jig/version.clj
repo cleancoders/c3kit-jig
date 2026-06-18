@@ -4,7 +4,8 @@
             [clojure.string :as str])
   (:import [java.security MessageDigest]))
 
-(def ^:const CURRENT "0.1.0-SNAPSHOT")
+;; Placeholder baked to the real version by `bb build` (reads root VERSION).
+(def CURRENT "0.0.0-DEV")
 
 (defn current [] CURRENT)
 
@@ -40,7 +41,7 @@
    Returns :up-to-date or :upgraded."
   [^String binary-path]
   (let [tag (fetch-latest-tag!)]
-    (if (= tag (str "cli-v" CURRENT))
+    (if (= tag CURRENT)
       :up-to-date
       (let [base (str "https://github.com/cleancoders/c3kit-jig/releases/download/" tag)
             ub   (str base "/c3kit-jig.bb")

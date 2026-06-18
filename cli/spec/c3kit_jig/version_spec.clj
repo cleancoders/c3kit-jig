@@ -5,7 +5,7 @@
 (describe "c3kit-jig.version"
 
   (it "current returns the current CLI semver as a string"
-    (should= "0.1.0-SNAPSHOT" (v/current)))
+    (should= "0.0.0-DEV" (v/current)))
 
   (it "semver-compare compares standard releases"
     (should= -1 (v/semver-compare "0.1.0" "0.2.0"))
@@ -16,5 +16,5 @@
     (should= 64 (count (v/sha256 "hello"))))
 
   (it "check-and-download! no-ops when latest matches current"
-    (with-redefs [v/fetch-latest-tag! (constantly "cli-v0.1.0-SNAPSHOT")]
+    (with-redefs [v/fetch-latest-tag! (constantly (v/current))]
       (should= :up-to-date (v/check-and-download! "/tmp/whatever")))))
