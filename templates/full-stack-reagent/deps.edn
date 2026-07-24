@@ -1,8 +1,8 @@
 {:paths     ["src/clj" "src/cljc" "src/cljs" "resources"]
  :mvn/repos {"maven_central" {:url "https://repo.maven.apache.org/maven2/"}}
- :deps      {com.cleancoders.c3kit/apron                               {:mvn/version "2.5.0"}
-             com.cleancoders.c3kit/bucket                              {:mvn/version "2.9.0"}
-             com.cleancoders.c3kit/wire                                {:mvn/version "2.8.5"}
+ :deps      {com.cleancoders.c3kit/apron                               {:mvn/version "3.0.1"}
+             com.cleancoders.c3kit/bucket                              {:mvn/version "2.14.0"}
+             com.cleancoders.c3kit/wire                                {:mvn/version "4.2.1"}
              ;; @c3kit/feature :content {
              io.github.nextjournal/markdown                            {:mvn/version "0.7.225"}
              ;; @c3kit/feature :content }
@@ -19,7 +19,7 @@
              hiccup/hiccup                                             {:mvn/version "2.0.0"}
              org.clojure/clojure                                       {:mvn/version "1.12.4"}}
  :aliases   {:test     {:extra-deps  {clj-commons/secretary          {:mvn/version "1.2.5-SNAPSHOT"}
-                                      com.cleancoders.c3kit/scaffold {:mvn/version "2.3.2"}
+                                      com.cleancoders.c3kit/scaffold {:mvn/version "2.3.6"}
                                       org.clojure/clojurescript      {:mvn/version "1.12.134"}
                                       speclj/speclj                  {:mvn/version "3.12.0"}
                                       venantius/accountant           {:mvn/version "0.2.5"}}
