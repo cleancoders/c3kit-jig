@@ -6,7 +6,7 @@
             [c3kit.wire.api :as api]
             [c3kit.wire.flash :as flash]
             [c3kit.wire.flashc :as flashc]
-            [c3kit.wire.rest :as rest]
+            [c3kit.wire.core.rest :as core-rest]
             [cljs-http.client :as client]
             [cljs.core.async :as async]
             [speclj.core :refer-macros [around before context describe it redefs-around should-contain should-have-invoked should= stub with-stubs]]))
@@ -23,7 +23,7 @@
 
   (with-stubs)
   (helper/stub-goto!)
-  (redefs-around [rest/-request! (stub :request {:invoke (fn [_ callback] (callback @response))})
+  (redefs-around [core-rest/-request! (stub :request {:invoke (fn [_ _ callback] (callback @response))})
                   client/get    (fn [& _] (async/chan))
                   core/goto!    (stub :goto!)])
   (around [it] (log/capture-logs (it)))
