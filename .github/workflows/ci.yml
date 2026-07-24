@@ -42,10 +42,10 @@ jobs:
         working-directory: cli
         run: bb lint
 
-  shellcheck:
-    name: shellcheck install.sh
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - name: shellcheck
-        run: shellcheck cli/install.sh
+  security:
+    name: security scan
+    uses: cleancoders/github-actions/.github/workflows/security.yml@v1
+    with:
+      src-paths: "cli/src cli/spec"
+      shellcheck-dir: "."
+    secrets: inherit
