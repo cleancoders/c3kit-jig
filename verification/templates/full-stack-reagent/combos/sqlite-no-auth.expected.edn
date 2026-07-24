@@ -68,6 +68,7 @@
                      "src/cljc/my_app/schema/full.cljc" ["user/all"]
                      "deps.edn"                   ["my.datomic.com"
                                                    "aws-java-sdk"
+                                                   "com.datomic/peer"
                                                    "@c3kit/"
                                                    "acme.schema/full"
                                                    "acme.bg-task"

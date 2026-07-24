@@ -203,7 +203,7 @@
   (it "fails when it does not call the reusable workflow @v1"
     (should-not (:ok? (sut/security-workflow-result*
                        {:exists? true :content "name: Security\njobs: {}\n"}))))
-  (it "fails when clj-watson-blocking is not enabled"
+  (it "fails when the clj-watson-blocking line is entirely absent"
     (should-not (:ok? (sut/security-workflow-result*
                        {:exists? true
                         :content "uses: cleancoders/github-actions/.github/workflows/security.yml@v1\nsemgrep-blocking: true\n"}))))
@@ -211,7 +211,11 @@
     (should-not (:ok? (sut/security-workflow-result*
                        {:exists? true
                         :content "uses: cleancoders/github-actions/.github/workflows/security.yml@v1\nclj-watson-blocking: true\n"}))))
-  (it "passes a complete blocking caller"
+  (it "passes a complete blocking caller (clj-watson-blocking: true)"
     (should (:ok? (sut/security-workflow-result*
                    {:exists? true
-                    :content "uses: cleancoders/github-actions/.github/workflows/security.yml@v1\nclj-watson-blocking: true\nsemgrep-blocking: true\n"})))))
+                    :content "uses: cleancoders/github-actions/.github/workflows/security.yml@v1\nclj-watson-blocking: true\nsemgrep-blocking: true\n"}))))
+  (it "passes an advisory caller (clj-watson-blocking: false, e.g. datomic)"
+    (should (:ok? (sut/security-workflow-result*
+                   {:exists? true
+                    :content "uses: cleancoders/github-actions/.github/workflows/security.yml@v1\nclj-watson-blocking: false\nsemgrep-blocking: true\n"})))))

@@ -70,6 +70,7 @@
                                                   "#_bg-tasks"]
                      "deps.edn"                   ["my.datomic.com"
                                                    "aws-java-sdk"
+                                                   "com.datomic/peer"
                                                    "@c3kit/"
                                                    "nextjournal/markdown"
                                                    "org.xerial/sqlite-jdbc"

@@ -218,7 +218,9 @@
 
 (defn security-workflow-result*
   "Decide pass/fail for the baked security caller workflow. Pass iff the file
-   exists, calls the reusable workflow @v1, and enables both blocking toggles."
+   exists, calls the reusable workflow @v1, declares a clj-watson-blocking
+   toggle (true when blocking, or false when advisory — e.g. datomic, whose
+   transitive CVEs cannot be patched), and enables semgrep-blocking."
   [{:keys [exists? content]}]
   (let [c (or content "")]
     (cond
@@ -226,12 +228,12 @@
       {:check :security-workflow :ok? false :detail ".github/workflows/security.yml missing"}
       (not (str/includes? c SECURITY-WORKFLOW-REF))
       {:check :security-workflow :ok? false :detail "does not call security.yml@v1"}
-      (not (str/includes? c "clj-watson-blocking: true"))
-      {:check :security-workflow :ok? false :detail "clj-watson-blocking not enabled"}
+      (not (str/includes? c "clj-watson-blocking:"))
+      {:check :security-workflow :ok? false :detail "clj-watson-blocking toggle missing"}
       (not (str/includes? c "semgrep-blocking: true"))
       {:check :security-workflow :ok? false :detail "semgrep-blocking not enabled"}
       :else
-      {:check :security-workflow :ok? true :detail "security workflow present + blocking"})))
+      {:check :security-workflow :ok? true :detail "security workflow present + configured"})))
 
 (defn security-workflow-check [root]
   (let [f       (fs/path root ".github" "workflows" "security.yml")
