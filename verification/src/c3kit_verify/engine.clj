@@ -104,7 +104,8 @@
    [nil "--tier TIER"    "full or light (default: combo's declared tier)"]
    [nil "--cli-cp PATH"  "CLI source classpath dir" :default "../cli/src"]
    [nil "--keep-tmp"     "Keep scaffold temp dir"]
-   [nil "--verbose"      "Show CLI scaffold stdout (default: hide; shown only on failure)"]])
+   [nil "--verbose"      "Show CLI scaffold stdout (default: hide; shown only on failure)"]
+   [nil "--out DIR"     "Output dir for `render` (project written to DIR/<name>)"]])
 
 (defn -main [& argv]
   (let [{:keys [options errors]} (cli/parse-opts argv opts-spec)]
@@ -112,6 +113,32 @@
     (when-not (:combo options) (println "missing --combo") (System/exit 2))
     (let [ok? (verify-combo options)]
       (System/exit (if ok? 0 1)))))
+
+(defn render-combo
+  "Scaffold one combo into `out` (created if absent) and return the project path.
+   Runs no checks. Used by CI heavy-scan jobs to obtain rendered output."
+  [{:keys [template combo cli-cp out] :as _opts}]
+  (let [descriptor (read-edn (descriptor-path template))
+        combo-edn  (read-edn (combo-path template combo))
+        {:keys [tmp scaffold]} (scaffold! {:cli-cp cli-cp :template template
+                                           :descriptor descriptor :combo-edn combo-edn
+                                           :verbose false})]
+    (try
+      (fs/create-dirs out)
+      (let [dest (str (fs/path out (:name combo-edn)))]
+        (fs/delete-tree dest)
+        (fs/copy-tree scaffold dest)
+        dest)
+      (finally
+        (fs/delete-tree tmp)))))
+
+(defn render-main [argv]
+  (let [{:keys [options errors]} (cli/parse-opts argv opts-spec)]
+    (when errors (println "args error:" errors) (System/exit 2))
+    (when-not (:combo options) (println "missing --combo") (System/exit 2))
+    (when-not (:out options) (println "missing --out") (System/exit 2))
+    (println (render-combo options))
+    (System/exit 0)))
 
 (defn- template-root [descriptor template]
   (str (fs/absolutize (fs/path here (:cli-templates-dir descriptor) template))))
