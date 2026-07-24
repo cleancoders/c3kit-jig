@@ -23,7 +23,8 @@
                   "deps.edn"
                   "LICENSE"
                   "README.md"
-                  ".github/workflows/security.yml"]
+                  ".github/workflows/security.yml"
+                  ".env"]
 
  :must-not-exist ["bin/db.template.memory"
                   "bin/db.template.sqlite"
@@ -42,7 +43,9 @@
                                                 ":bucket memory-local"
                                                 "MyApp"
                                                 "my_app.env"
-                                                "MY_APP_ENV"]
+                                                "MY_APP_ENV"
+                                                "(env/env \"MY_APP_JWT_SECRET\")"
+                                                "c3kit.apron.env"]
                   "src/clj/my_app/main.clj"    ["my-app.content.core"
                                                 "my-app.ssr.prerender"
                                                 "my-app.auth.user.web"
@@ -64,7 +67,9 @@
                                                  "-ensure-migration-schema!"]
                   ".github/workflows/security.yml" ["cleancoders/github-actions/.github/workflows/security.yml@v1"
                                                     "clj-watson-blocking: true"
-                                                    "semgrep-blocking: true"]}
+                                                    "semgrep-blocking: true"]
+                  ".env"                        ["MY_APP_JWT_SECRET="]
+                  ".gitignore"                  [".env"]}
 
  :file-not-contains {"src/clj/my_app/config.clj" ["sqlite-local"
                                                   "datomic-local"
@@ -74,7 +79,9 @@
                                                   "CC_ENV"
                                                   "acme.schema/full"
                                                   "acme.bg-task"
-                                                  "acme.auth.user.schema"]
+                                                  "acme.auth.user.schema"
+                                                  ":jwt-secret \"MY_APP_DEV_SECRET\""
+                                                  "MY_APP_PRODUCTION_SECRET\""]
                      "src/clj/my_app/main.clj"   ["cc.env"
                                                   "CC_ENV"
                                                   "acme.schema/full"

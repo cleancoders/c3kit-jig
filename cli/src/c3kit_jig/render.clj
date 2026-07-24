@@ -32,12 +32,34 @@
       (when-not (= orig after-features)
         (spit file after-features)))))
 
+(def ^:private MARKER-LINE-EQ-RE
+  "A `;; @c3kit/feature :id = code` or `;; @c3kit/db :id = code` line. Its
+   trailing `code` clause is template source (e.g. an `env/env \"...\"` call
+   referencing a secret's placeholder NAME) and must survive secret
+   substitution verbatim; only the later token pass may rewrite it."
+  #"^\s*;;\s*@c3kit/(?:feature|db)\s+.*=.*$")
+
+(defn- replace-secrets-line [secret-map line]
+  (if (re-find MARKER-LINE-EQ-RE line)
+    line
+    (sec/apply-secret-map line secret-map)))
+
 (defn- replace-secrets! [secret-map file]
   (when (text-file? file)
     (let [s  (slurp file)
-          s' (sec/apply-secret-map s secret-map)]
+          s' (cond-> (str/join "\n" (map #(replace-secrets-line secret-map %) (str/split-lines s)))
+               (str/ends-with? s "\n") (str "\n"))]
       (when-not (= s s')
         (spit file s')))))
+
+(defn- write-env!
+  "Write a gitignored .env (Java Properties format) with one KEY=value line per
+   secret. Written after secret replacement and before the token pass so keys
+   get the project prefix applied by rewrite-content!."
+  [stage-dir secret-map]
+  (when (seq secret-map)
+    (spit (fs/file (fs/path stage-dir ".env"))
+          (str/join (map (fn [[k v]] (str k "=" v "\n")) secret-map)))))
 
 (defn- rename-paths! [tokens user dir]
   ;; depth-first so leaves are renamed before parents.
@@ -165,6 +187,7 @@
         secret-map (sec/generate-secret-map (:secrets manifest))]
     (doseq [file (visit-all-files stage-dir)]
       (replace-secrets! secret-map file))
+    (write-env! stage-dir secret-map)
     (doseq [file (visit-all-files stage-dir)]
       (rewrite-content! tokens user features db-choice file))
     (apply-feature-dir-deletes! stage-dir manifest features)

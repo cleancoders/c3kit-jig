@@ -12,9 +12,7 @@
                         :pascal     true}
                "ACME_" {:upper-prefix true}}
 
- :secrets     [{:placeholder "ACME_DEV_SECRET"        :bytes 24}
-               {:placeholder "ACME_STAGING_SECRET"    :bytes 24}
-               {:placeholder "ACME_PRODUCTION_SECRET" :bytes 24}]
+ :secrets     [{:placeholder "ACME_JWT_SECRET" :bytes 32}]
 
  :features    [{:id      :content
                 :prompt  "Markdown content pipeline?"

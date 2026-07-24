@@ -1,5 +1,6 @@
 (ns acme.config
-  (:require [c3kit.apron.app :as app]))
+  (:require [c3kit.apron.app :as app]
+            [c3kit.apron.env :as env]))
 
 (def ^:private base
   {:analytics-code "console.log('google analytics would have loaded for this page');"
@@ -82,7 +83,7 @@
     ;; @c3kit/db :memory }
          :host "http://localhost:8123"
          :log-level :trace
-    ;; @c3kit/feature :auth = :jwt-secret "ACME_DEV_SECRET"
+    ;; @c3kit/feature :auth = :jwt-secret (env/env "ACME_JWT_SECRET")
          ))
 
 (def staging
@@ -102,7 +103,7 @@
     ;; @c3kit/db :memory }
          :host "https://acme-staging.example.com"
          :log-level :trace
-    ;; @c3kit/feature :auth = :jwt-secret "ACME_STAGING_SECRET"
+    ;; @c3kit/feature :auth = :jwt-secret (env/env "ACME_JWT_SECRET")
          ))
 
 (def production
@@ -122,7 +123,7 @@
     ;; @c3kit/db :memory }
          :host "https://acme.example.com"
          :analytics-code "console.log('Replace me with Real Google Analytics Code.');"
-    ;; @c3kit/feature :auth = :jwt-secret "ACME_PRODUCTION_SECRET"
+    ;; @c3kit/feature :auth = :jwt-secret (env/env "ACME_JWT_SECRET")
          ))
 
 (def environment (app/find-env "acme.env" "ACME_ENV"))
