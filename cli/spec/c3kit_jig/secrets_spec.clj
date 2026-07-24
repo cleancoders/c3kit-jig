@@ -17,20 +17,20 @@
   (context "replace-placeholders"
     (it "replaces a single placeholder with one consistent hex value"
       (let [out (s/replace-placeholders "key=ACME_DEV_SECRET other=ACME_DEV_SECRET"
-                                         [{:placeholder "ACME_DEV_SECRET" :bytes 8}])
+                                        [{:placeholder "ACME_DEV_SECRET" :bytes 8}])
             [_ a b] (re-find #"key=([0-9a-f]+) other=([0-9a-f]+)" out)]
         (should= a b)))
 
     (it "different placeholders get different secrets"
       (let [out (s/replace-placeholders "a=A b=B"
-                                         [{:placeholder "A" :bytes 8}
-                                          {:placeholder "B" :bytes 8}])
+                                        [{:placeholder "A" :bytes 8}
+                                         {:placeholder "B" :bytes 8}])
             [_ a b] (re-find #"a=([0-9a-f]+) b=([0-9a-f]+)" out)]
         (should-not= a b)))
 
     (it "warns but does not throw when placeholder absent (returns input)"
       (should= "hello" (s/replace-placeholders "hello"
-                                                [{:placeholder "MISSING" :bytes 8}]))))
+                                               [{:placeholder "MISSING" :bytes 8}]))))
 
   (it "generate-secret-map returns {placeholder hex} for each secret entry"
     (let [m (s/generate-secret-map [{:placeholder "A" :bytes 4}

@@ -4,106 +4,106 @@
 
 (describe "c3kit-jig.rename"
 
-          (it "variants computes all four variants for a kebab name"
-              (should= {:hyphen     "my-cool-app"
-                        :underscore "my_cool_app"
-                        :pascal     "MyCoolApp"
-                        :upper      "MY_COOL_APP"}
-                       (r/variants "my-cool-app")))
+  (it "variants computes all four variants for a kebab name"
+    (should= {:hyphen     "my-cool-app"
+              :underscore "my_cool_app"
+              :pascal     "MyCoolApp"
+              :upper      "MY_COOL_APP"}
+             (r/variants "my-cool-app")))
 
-          (it "replace-token rewrites all variants of a source token in a string"
-              (should= "MyCoolApp / my_cool_app / my_cool_app / MY_COOL_APP_DEV"
-                       (r/replace-token "Acme / acme / acme / ACME_DEV"
-                                        "acme"
-                                        {:hyphen true :underscore true :pascal true :upper-prefix true}
-                                        (r/variants "my-cool-app"))))
+  (it "replace-token rewrites all variants of a source token in a string"
+    (should= "MyCoolApp / my_cool_app / my_cool_app / MY_COOL_APP_DEV"
+             (r/replace-token "Acme / acme / acme / ACME_DEV"
+                              "acme"
+                              {:hyphen true :underscore true :pascal true :upper-prefix true}
+                              (r/variants "my-cool-app"))))
 
-          (it "replace-token handles uppercase source token (e.g. ACME_) for :upper-prefix"
-              (should= "MY_COOL_APP_ENV / MY_COOL_APP_DEV_SECRET"
-                       (r/replace-token "ACME_ENV / ACME_DEV_SECRET"
-                                        "ACME_"
-                                        {:upper-prefix true}
-                                        (r/variants "my-cool-app"))))
+  (it "replace-token handles uppercase source token (e.g. ACME_) for :upper-prefix"
+    (should= "MY_COOL_APP_ENV / MY_COOL_APP_DEV_SECRET"
+             (r/replace-token "ACME_ENV / ACME_DEV_SECRET"
+                              "ACME_"
+                              {:upper-prefix true}
+                              (r/variants "my-cool-app"))))
 
-          (it "replace-many applies tokens in declared order; longest first"
-              (should= "MyCoolApp.foo my_cool_app.bar"
-                       (r/replace-many "Acme.foo acme.bar"
-                                       {"acme" {:hyphen true :underscore true :pascal true}}
-                                       (r/variants "my-cool-app"))))
+  (it "replace-many applies tokens in declared order; longest first"
+    (should= "MyCoolApp.foo my_cool_app.bar"
+             (r/replace-many "Acme.foo acme.bar"
+                             {"acme" {:hyphen true :underscore true :pascal true}}
+                             (r/variants "my-cool-app"))))
 
-          (it "reserved? rejects clojure-ish reserved names"
-              (should (r/reserved? "clojure"))
-              (should (r/reserved? "java"))
-              (should (r/reserved? "cljs")))
+  (it "reserved? rejects clojure-ish reserved names"
+    (should (r/reserved? "clojure"))
+    (should (r/reserved? "java"))
+    (should (r/reserved? "cljs")))
 
-          (it "reserved? accepts user names"
-              (should-not (r/reserved? "my-app")))
+  (it "reserved? accepts user names"
+    (should-not (r/reserved? "my-app")))
 
-          (context "validate-name"
-            (it "throws on names colliding with a template's source token"
-                (should-throw (r/validate-name "acme" {"acme" {:hyphen true}}))
-                (should-throw (r/validate-name "clojure" {})))
+  (context "validate-name"
+    (it "throws on names colliding with a template's source token"
+      (should-throw (r/validate-name "acme" {"acme" {:hyphen true}}))
+      (should-throw (r/validate-name "clojure" {})))
 
-            (it "throws on names that fail regex"
-                (should-throw (r/validate-name "1bad" {}))
-                (should-throw (r/validate-name "" {})))
+    (it "throws on names that fail regex"
+      (should-throw (r/validate-name "1bad" {}))
+      (should-throw (r/validate-name "" {})))
 
-            (it "returns the name on success"
-                (should= "my-app" (r/validate-name "my-app" {"acme" {:hyphen true}}))))
+    (it "returns the name on success"
+      (should= "my-app" (r/validate-name "my-app" {"acme" {:hyphen true}}))))
 
           ;; NOTE: each `it` carries its own `let` bindings on purpose. In
           ;; babashka's speclj, wrapping multiple sibling `it`s in a single
           ;; `(let …)` inside a context registers ONLY the last one — the
           ;; others silently never run. Keep bindings inside each `it`.
-          (context "replace-content (context-aware)"
-            (it "clj: code symbols hyphenate, string literals stay underscore"
-                (let [user (r/variants "my-app")
-                      toks {"acme" {:hyphen true :underscore true :pascal true}}]
-                  (should= "(ns my-app.core (:require [my-app.foo]))\n\"public/cljs/my_app_dev.js\""
-                           (r/replace-content
-                            "(ns acme.core (:require [acme.foo]))\n\"public/cljs/acme_dev.js\""
-                            toks user "clj"))))
+  (context "replace-content (context-aware)"
+    (it "clj: code symbols hyphenate, string literals stay underscore"
+      (let [user (r/variants "my-app")
+            toks {"acme" {:hyphen true :underscore true :pascal true}}]
+        (should= "(ns my-app.core (:require [my-app.foo]))\n\"public/cljs/my_app_dev.js\""
+                 (r/replace-content
+                   "(ns acme.core (:require [acme.foo]))\n\"public/cljs/acme_dev.js\""
+                   toks user "clj"))))
 
-            (it "clj: munged JS inside a string stays underscore"
-                (let [user (r/variants "my-app")
-                      toks {"acme" {:hyphen true :underscore true :pascal true}}]
-                  (should= "\"goog.require('my_app.main')\""
-                           (r/replace-content "\"goog.require('acme.main')\"" toks user "clj"))))
+    (it "clj: munged JS inside a string stays underscore"
+      (let [user (r/variants "my-app")
+            toks {"acme" {:hyphen true :underscore true :pascal true}}]
+        (should= "\"goog.require('my_app.main')\""
+                 (r/replace-content "\"goog.require('acme.main')\"" toks user "clj"))))
 
-            (it "edn: namespace args hyphenate, bare prefix stays underscore"
-                (let [user (r/variants "my-app")
-                      toks {"acme" {:hyphen true :underscore true :pascal true}}]
-                  (should= "{:main-opts [\"-m\" \"my-app.main\"] :ns-prefix \"my_app\"}"
-                           (r/replace-content
-                            "{:main-opts [\"-m\" \"acme.main\"] :ns-prefix \"acme\"}"
-                            toks user "edn"))))
+    (it "edn: namespace args hyphenate, bare prefix stays underscore"
+      (let [user (r/variants "my-app")
+            toks {"acme" {:hyphen true :underscore true :pascal true}}]
+        (should= "{:main-opts [\"-m\" \"my-app.main\"] :ns-prefix \"my_app\"}"
+                 (r/replace-content
+                   "{:main-opts [\"-m\" \"acme.main\"] :ns-prefix \"acme\"}"
+                   toks user "edn"))))
 
-            (it "edn: bare namespace-qualified symbol in code context hyphenates (bucket.edn case)"
-                (let [user (r/variants "my-app")
-                      toks {"acme" {:hyphen true :underscore true :pascal true}}]
-                  (should= "{:config-var my-app.config/bucket}"
-                           (r/replace-content
-                            "{:config-var acme.config/bucket}"
-                            toks user "edn"))))
+    (it "edn: bare namespace-qualified symbol in code context hyphenates (bucket.edn case)"
+      (let [user (r/variants "my-app")
+            toks {"acme" {:hyphen true :underscore true :pascal true}}]
+        (should= "{:config-var my-app.config/bucket}"
+                 (r/replace-content
+                   "{:config-var acme.config/bucket}"
+                   toks user "edn"))))
 
-            (it "edn: env-key string stays underscore (not a namespace arg)"
-                (let [user (r/variants "my-app")
-                      toks {"acme" {:hyphen true :underscore true :pascal true}}]
-                  (should= "{:env-keys [\"my_app.env\" \"ACME_ENV\"]}"
-                           (r/replace-content
-                            "{:env-keys [\"acme.env\" \"ACME_ENV\"]}"
-                            toks user "edn"))))
+    (it "edn: env-key string stays underscore (not a namespace arg)"
+      (let [user (r/variants "my-app")
+            toks {"acme" {:hyphen true :underscore true :pascal true}}]
+        (should= "{:env-keys [\"my_app.env\" \"ACME_ENV\"]}"
+                 (r/replace-content
+                   "{:env-keys [\"acme.env\" \"ACME_ENV\"]}"
+                   toks user "edn"))))
 
-            (it "edn: require/in-ns form inside a string hyphenates the ns"
-                (let [user (r/variants "my-app")
-                      toks {"acme" {:hyphen true :underscore true :pascal true}}]
-                  (should= "[\"-e\" \"(require,'my-app.repl)\"]"
-                           (r/replace-content
-                            "[\"-e\" \"(require,'acme.repl)\"]"
-                            toks user "edn"))))
+    (it "edn: require/in-ns form inside a string hyphenates the ns"
+      (let [user (r/variants "my-app")
+            toks {"acme" {:hyphen true :underscore true :pascal true}}]
+        (should= "[\"-e\" \"(require,'my-app.repl)\"]"
+                 (r/replace-content
+                   "[\"-e\" \"(require,'acme.repl)\"]"
+                   toks user "edn"))))
 
-            (it "other ext: single-variant underscore as before"
-                (let [user (r/variants "my-app")
-                      toks {"acme" {:hyphen true :underscore true :pascal true}}]
-                  (should= ".my_app { color: red }"
-                           (r/replace-content ".acme { color: red }" toks user "css"))))))
+    (it "other ext: single-variant underscore as before"
+      (let [user (r/variants "my-app")
+            toks {"acme" {:hyphen true :underscore true :pascal true}}]
+        (should= ".my_app { color: red }"
+                 (r/replace-content ".acme { color: red }" toks user "css"))))))

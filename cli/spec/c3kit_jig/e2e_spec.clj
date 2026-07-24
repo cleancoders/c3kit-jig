@@ -30,8 +30,8 @@
       (try
         ;; stdin: name="my-app", then choose template #1 from the listed menu
         (let [code (run-main! ["create" "--template-dir" (tfix)
-                                "--target-parent" work
-                                "--no-git"]
+                               "--target-parent" work
+                               "--no-git"]
                               "my-app\n1\n")]
           (should= 0 code)
           (should (fs/exists? (fs/path work "my-app" "src" "my_app" "core.clj"))))
@@ -41,9 +41,9 @@
     (let [work (str (fs/create-temp-dir))]
       (try
         (let [code (run-main! ["create" "my-app" "-t" "tiny-fixture"
-                                    "--template-dir" (tfix)
-                                    "--target-parent" work
-                                    "--yes"])]
+                               "--template-dir" (tfix)
+                               "--target-parent" work
+                               "--yes"])]
           (should= 0 code)
           (should     (fs/exists? (fs/path work "my-app" "src" "my_app" "core.clj")))
           (should     (fs/exists? (fs/path work "my-app" ".git")))
@@ -57,10 +57,10 @@
     (let [work (str (fs/create-temp-dir))]
       (try
         (let [code (run-main! ["create" "my-app" "-t" "tiny-fixture"
-                                    "--template-dir" (tfix)
-                                    "--target-parent" work
-                                    "--feature" "ssr=false"
-                                    "--yes"])]
+                               "--template-dir" (tfix)
+                               "--target-parent" work
+                               "--feature" "ssr=false"
+                               "--yes"])]
           (should= 0 code)
           (let [content (slurp (fs/file (fs/path work "my-app" "src" "my_app" "core.clj")))]
             (should-not (re-find #"has-ssr\?" content))))
@@ -70,10 +70,10 @@
     (let [work (str (fs/create-temp-dir))]
       (try
         (let [code (run-main! ["create" "my-app" "-t" "tiny-fixture"
-                                    "--template-dir" (tfix)
-                                    "--target-parent" work
-                                    "--db" "postgres"
-                                    "--yes"])]
+                               "--template-dir" (tfix)
+                               "--target-parent" work
+                               "--db" "postgres"
+                               "--yes"])]
           (should= 0 code)
           (let [content (slurp (fs/file (fs/path work "my-app" "src" "my_app" "core.clj")))]
             (should     (re-find #"db-impl :postgres" content))
@@ -84,10 +84,10 @@
     (let [work (str (fs/create-temp-dir))]
       (try
         (let [code (run-main! ["create" "my-app" "-t" "tiny-fixture"
-                                    "--template-dir" (tfix)
-                                    "--target-parent" work
-                                    "--db" "mysql"
-                                    "--yes"])]
+                               "--template-dir" (tfix)
+                               "--target-parent" work
+                               "--db" "mysql"
+                               "--yes"])]
           (should= 4 code))
         (finally (fs/delete-tree work)))))
 
@@ -95,10 +95,10 @@
     (let [work (str (fs/create-temp-dir))]
       (try
         (let [code (run-main! ["create" "my-app" "-t" "tiny-fixture"
-                                    "--template-dir" (tfix)
-                                    "--target-parent" work
-                                    "--feature" "ssr=false"
-                                    "--yes"])]
+                               "--template-dir" (tfix)
+                               "--target-parent" work
+                               "--feature" "ssr=false"
+                               "--yes"])]
           (should= 0 code)
           ;; tiny-fixture's :ssr :extras → resources/Acme.css
           ;; → after path rename → resources/MyApp.css
@@ -110,9 +110,9 @@
       (try
         ;; stdin: ssr=n, legacy=n, db pick #2 (postgres)
         (let [code (run-main! ["create" "my-app" "-t" "tiny-fixture"
-                                    "--template-dir" (tfix)
-                                    "--target-parent" work
-                                    "--no-git"]
+                               "--template-dir" (tfix)
+                               "--target-parent" work
+                               "--no-git"]
                               "n\nn\n2\n")]
           (should= 0 code)
           (let [content (slurp (fs/file (fs/path work "my-app" "src" "my_app" "core.clj")))]
@@ -126,10 +126,10 @@
       (try
         ;; ssr fixed off via CLI. stdin: legacy=y, db pick #1 (sqlite default)
         (let [code (run-main! ["create" "my-app" "-t" "tiny-fixture"
-                                    "--template-dir" (tfix)
-                                    "--target-parent" work
-                                    "--no-git"
-                                    "--feature" "ssr=false"]
+                               "--template-dir" (tfix)
+                               "--target-parent" work
+                               "--no-git"
+                               "--feature" "ssr=false"]
                               "y\n1\n")]
           (should= 0 code)
           (let [content (slurp (fs/file (fs/path work "my-app" "src" "my_app" "core.clj")))]
@@ -142,10 +142,10 @@
     (let [work (str (fs/create-temp-dir))]
       (try
         (let [code (run-main! ["create" "my-app" "-t" "tiny-fixture"
-                                    "--template-dir" (tfix)
-                                    "--target-parent" work
-                                    "--feature" "legacy=false"
-                                    "--yes"])]
+                               "--template-dir" (tfix)
+                               "--target-parent" work
+                               "--feature" "legacy=false"
+                               "--yes"])]
           (should= 0 code)
           ;; tiny-fixture's :legacy :extras → src/acme_legacy/
           ;; → after path rename → src/my_app_legacy/

@@ -1,7 +1,18 @@
+;; CLI dev config — deliberately SEPARATE from the canonical /clj-kondo.edn.
+;;
 ;; Speclj forms aren't linted — `:lint-as clojure.core/comment` skips them.
 ;; Trade-off: no kondo coverage inside specs, but no false positives from
 ;; describe/context/it/should* argument shapes. Replace with proper hooks
 ;; if test coverage from kondo becomes worth the effort.
+;;
+;; Security escalations: the blocking security linters from the plugin's
+;; canonical config (`:type-mismatch` / `:refer-all` → :error) are adopted —
+;; they are clean on the CLI sources. The plugin's advisory surfacing linters
+;; (`:unused-binding` / `:shadowed-var` / `:unused-private-var` → :warning) are
+;; intentionally NOT adopted here: `bb lint` fails on any clj-kondo warning
+;; (exit 2), and the CLI has ~13 pre-existing clojure.core shadows on common
+;; local names (key, name, bytes, ref, val, …). Escalating them would either
+;; break the lint gate or force a sprawling, risky rename across CLI sources.
 {:lint-as {speclj.core/describe   clojure.core/comment
            speclj.core/context    clojure.core/comment
            speclj.core/it         clojure.core/comment
@@ -11,4 +22,7 @@
            speclj.core/after-all  clojure.core/comment
            speclj.core/around     clojure.core/comment
            speclj.core/with       clojure.core/def
-           speclj.core/with-all   clojure.core/def}}
+           speclj.core/with-all   clojure.core/def}
+
+ :linters {:type-mismatch {:level :error}
+           :refer-all     {:level :error}}}

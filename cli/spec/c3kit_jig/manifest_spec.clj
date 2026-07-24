@@ -31,21 +31,21 @@
 
   (it "rejects duplicate secret placeholders"
     (should-throw (m/validate (assoc MIN-MANIFEST :secrets
-                                      [{:placeholder "X" :bytes 8}
-                                       {:placeholder "X" :bytes 8}])
+                                     [{:placeholder "X" :bytes 8}
+                                      {:placeholder "X" :bytes 8}])
                               "tiny")))
 
   (it "rejects duplicate feature ids"
     (should-throw (m/validate (assoc MIN-MANIFEST :features
-                                      [{:id :a :prompt "" :default true}
-                                       {:id :a :prompt "" :default true}])
+                                     [{:id :a :prompt "" :default true}
+                                      {:id :a :prompt "" :default true}])
                               "tiny")))
 
   (it "rejects :db.default not in :db.options"
     (should-throw (m/validate (assoc MIN-MANIFEST :db
-                                      {:prompt "DB"
-                                       :options [{:id :sqlite :label "SQLite"}]
-                                       :default :postgres})
+                                     {:prompt "DB"
+                                      :options [{:id :sqlite :label "SQLite"}]
+                                      :default :postgres})
                               "tiny")))
 
   (it "accepts :namespace-token at manifest root"
