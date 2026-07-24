@@ -19,7 +19,7 @@
 (defn- field-value [target schema field]
   (case (.-type target)
     "checkbox" (.-checked target)
-    "radio" (schema/coerce-value schema field (.-value target)) ;; MDM - can assume valid since we code the value
+    "radio" (schema/coerce-value! schema field (.-value target)) ;; MDM - can assume valid since we code the value
     (.-value target)))
 
 (defn update-field-value [field value schema ratom]
