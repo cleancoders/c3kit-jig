@@ -533,6 +533,141 @@ git commit -m "ci: scan rendered template output (clj-watson per DB, semgrep + c
 
 ---
 
+### Task 8: Drop `secrets: inherit` (final-review Finding A)
+
+The reusable workflow declares only an optional `private-git-ssh-key` and its own doc says "do not reintroduce blanket `secrets: inherit`". A dependency-free scaffold needs no secrets (`GITHUB_TOKEN` is auto-provided to reusable workflows). Removing the line also clears the `yaml.github-actions.security.secrets-inherit` semgrep finding.
+
+**Files:**
+- Modify: `templates/full-stack-reagent/.github/workflows/security.yml`
+- Modify: `.github/workflows/ci.yml`
+
+- [ ] **Step 1: Remove `secrets: inherit` from the baked caller**
+
+In `templates/full-stack-reagent/.github/workflows/security.yml`, delete the `secrets: inherit` line (last line of the `security` job). The job keeps `uses:` + `with:` (blocking toggles).
+
+- [ ] **Step 2: Remove `secrets: inherit` from the jig `ci.yml` security job**
+
+In `.github/workflows/ci.yml`, delete the `secrets: inherit` line from the `security` job.
+
+- [ ] **Step 3: Validate YAML + presence check still passes**
+
+Run: `python3 -c "import yaml; [yaml.safe_load(open(f)) for f in ['.github/workflows/ci.yml','templates/full-stack-reagent/.github/workflows/security.yml']]; print('both valid')"`
+Run: `cd verification && bb verify --combo memory-defaults --tier light --cli-cp ../cli/src`
+Expected: `both valid`; and `[PASS] security-workflow` still appears (the check asserts `@v1` + blocking toggles, not `secrets:`).
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add .github/workflows/ci.yml templates/full-stack-reagent/.github/workflows/security.yml
+git commit -m "ci: drop blanket secrets: inherit from security callers"
+```
+
+### Task 9: Env-source the JWT secret + scaffolder-written .env (final-review Finding B)
+
+Rendered `config.clj` currently ships three committed generated JWT signing secrets. Move the secret to the environment (read via apron `c3kit.apron.env`, which auto-loads a `.env` file), have the scaffolder write a gitignored `.env` with a generated secret so dev works out of the box, and prove it in the harness.
+
+**Files:**
+- Modify: `templates/full-stack-reagent/src/clj/acme/config.clj`
+- Modify: `templates/full-stack-reagent/c3kit-template.edn`
+- Modify: `templates/full-stack-reagent/.gitignore`
+- Modify: `cli/src/c3kit_jig/render.clj`
+- Test: `cli/spec/c3kit_jig/render_spec.clj` (add a `.env`-writer unit test)
+- Modify: `verification/templates/full-stack-reagent/combos/memory-defaults.expected.edn`
+
+**Key facts:**
+- apron `env/env` resolves: overrides → sys props → OS env → `.env` (Java Properties) in cwd.
+- Token `ACME_` has `:upper-prefix true`, so `ACME_JWT_SECRET` renders to `MY_APP_JWT_SECRET`.
+- `render!` order: `replace-secrets!` loop, then `rewrite-content!` (token + feature) loop, then deletes/renames/etc. The `.env` writer must run AFTER `replace-secrets!` (so the key text isn't hex-substituted) and BEFORE the `rewrite-content!` loop (so the token pass renames `ACME_`→`MY_APP_`). Placing the `write-env!` call between those two `doseq`s and letting the existing `rewrite-content!` loop pick up the new file achieves this.
+
+- [ ] **Step 1: RED — combo assertions for the new behavior**
+
+In `verification/templates/full-stack-reagent/combos/memory-defaults.expected.edn`:
+- Add `".env"` to `:must-exist`.
+- In `:file-contains`, add:
+  - `"src/clj/my_app/config.clj"` already has a vector — append `"(env/env \"MY_APP_JWT_SECRET\")"` and `"c3kit.apron.env"`.
+  - `".env"` → `["MY_APP_JWT_SECRET="]`
+  - `".gitignore"` → `[".env"]`
+- In `:file-not-contains`, add `"src/clj/my_app/config.clj"` entries: `":jwt-secret \"MY_APP_DEV_SECRET\""` and `"MY_APP_PRODUCTION_SECRET\""` (guards against a raw secret literal surviving).
+
+Run: `cd verification && bb verify --combo memory-defaults --tier light --cli-cp ../cli/src`
+Expected: FAIL — `must-exist missing: .env` (and file-contains misses).
+
+- [ ] **Step 2: Template config.clj — env-source the secret**
+
+In `templates/full-stack-reagent/src/clj/acme/config.clj`:
+- Add `[c3kit.apron.env :as env]` to the ns `:require`.
+- Change each of the three markers from `= :jwt-secret "ACME_<ENV>_SECRET"` to `= :jwt-secret (env/env "ACME_JWT_SECRET")`:
+  - line 85: `;; @c3kit/feature :auth = :jwt-secret (env/env "ACME_JWT_SECRET")`
+  - line 105: same
+  - line 125: same
+
+- [ ] **Step 3: Manifest — single secret placeholder**
+
+In `templates/full-stack-reagent/c3kit-template.edn`, replace the three `:secrets` entries with one:
+
+```clojure
+ :secrets     [{:placeholder "ACME_JWT_SECRET" :bytes 32}]
+```
+
+- [ ] **Step 4: Template .gitignore — ignore .env**
+
+Append `.env` to `templates/full-stack-reagent/.gitignore`.
+
+- [ ] **Step 5: RED — render.clj `.env` writer unit test**
+
+In `cli/spec/c3kit_jig/render_spec.clj`, add a test that `write-env!` writes a `.env` file with a `PLACEHOLDER=value` line from a secret map. Example:
+
+```clojure
+(it "writes .env with placeholder=value lines"
+  (let [dir (str (fs/create-temp-dir {:prefix "env-test-"}))]
+    (sut/write-env! dir {"ACME_JWT_SECRET" "deadbeef"})
+    (should= "ACME_JWT_SECRET=deadbeef\n" (slurp (str (fs/path dir ".env"))))
+    (fs/delete-tree dir)))
+```
+(Match the spec file's existing require of `babashka.fs` / `sut` alias; if `write-env!` is private, test via the `#'` var or make it public — follow the file's existing convention for testing render helpers.)
+
+Run: `cd cli && bb test` → FAIL (`write-env!` undefined).
+
+- [ ] **Step 6: GREEN — implement `write-env!` and call it in `render!`**
+
+In `cli/src/c3kit_jig/render.clj`, add:
+
+```clojure
+(defn- write-env!
+  "Write a gitignored .env (Java Properties format) with one KEY=value line per
+   secret. Written after secret replacement and before the token pass so keys
+   get the project prefix applied by rewrite-content!."
+  [stage-dir secret-map]
+  (when (seq secret-map)
+    (spit (fs/file (fs/path stage-dir ".env"))
+          (str/join (map (fn [[k v]] (str k "=" v "\n")) secret-map)))))
+```
+
+In `render!`, after the `replace-secrets!` `doseq` and before the `rewrite-content!` `doseq`, add:
+
+```clojure
+    (write-env! stage-dir secret-map)
+```
+
+Run: `cd cli && bb test` → PASS.
+
+- [ ] **Step 7: GREEN — full combo verification**
+
+Run: `cd verification && bb verify --combo memory-defaults --tier full --cli-cp ../cli/src`
+Expected: all checks PASS, including `combo` (new `.env`/config assertions), `security-workflow`, and `server-boot` (the app boots with the secret sourced from the generated `.env`). If `server-boot` fails, inspect whether the rendered app requires the secret at boot; capture output.
+
+- [ ] **Step 8: Confirm rendered output is clean of committed secrets**
+
+Run: `cd verification && rm -rf /tmp/c3kit-b && bb render --combo memory-defaults --out /tmp/c3kit-b --cli-cp ../cli/src && grep -n "jwt-secret" /tmp/c3kit-b/my-app/src/clj/my_app/config.clj && echo "--- .env ---" && cat /tmp/c3kit-b/my-app/.env`
+Expected: `config.clj` shows `:jwt-secret (env/env "MY_APP_JWT_SECRET")` (no literal secret); `.env` contains `MY_APP_JWT_SECRET=<hex>`.
+
+- [ ] **Step 9: Commit**
+
+```bash
+git add templates/full-stack-reagent/src/clj/acme/config.clj templates/full-stack-reagent/c3kit-template.edn templates/full-stack-reagent/.gitignore cli/src/c3kit_jig/render.clj cli/spec/c3kit_jig/render_spec.clj verification/templates/full-stack-reagent/combos/memory-defaults.expected.edn
+git commit -m "feat(template): source JWT secret from env, scaffolder writes gitignored .env"
+```
+
 ## Notes / Follow-ups
 
 - **clj-watson network dependency:** the dep-CVE job queries the GitHub Advisory DB and needs `GITHUB_TOKEN` (auto-provided). No NVD key required.
