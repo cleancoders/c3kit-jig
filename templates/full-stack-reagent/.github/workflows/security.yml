@@ -8,4 +8,3 @@ jobs:
     with:
       clj-watson-blocking: true
       semgrep-blocking: true
-    secrets: inherit

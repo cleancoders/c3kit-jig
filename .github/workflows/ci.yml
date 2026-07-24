@@ -48,4 +48,3 @@ jobs:
     with:
       src-paths: "cli/src cli/spec"
       shellcheck-dir: "."
-    secrets: inherit
