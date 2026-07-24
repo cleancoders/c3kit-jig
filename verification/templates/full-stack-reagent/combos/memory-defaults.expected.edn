@@ -55,7 +55,8 @@
                                                 "google-api-client"
                                                 "ring-anti-forgery"
                                                 "nextjournal/markdown"
-                                                "my-app.compile-cljs"]
+                                                "my-app.compile-cljs"
+                                                "clj-watson.cli"]
                   "bin/db"                     ["In-memory backend"]
                   "src/cljs/my_app/config.cljs" ["ws-csrf-token"]
                   "dev/my_app/repl.clj"         ["config-from-service"
