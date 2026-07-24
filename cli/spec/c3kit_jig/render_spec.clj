@@ -209,6 +209,14 @@
       (should-not (fs/exists? (fs/path dir ".env")))
       (fs/delete-tree dir)))
 
+  (it "replace-secrets! preserves trailing newlines and unmatched content"
+    (let [dir (str (fs/create-temp-dir {:prefix "sec-nl-"}))
+          f   (fs/file (fs/path dir "x.clj"))]
+      (spit f "foo\n\n\n")
+      (#'r/replace-secrets! {"ACME_JWT_SECRET" "deadbeef"} f)
+      (should= "foo\n\n\n" (slurp f))
+      (fs/delete-tree dir)))
+
   (it "render! aborts with ex-info when hook exits non-zero"
     (let [stage    (str (fs/create-temp-dir))
           manifest {:id :hooked :name "H" :description "x"

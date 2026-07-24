@@ -47,8 +47,7 @@
 (defn- replace-secrets! [secret-map file]
   (when (text-file? file)
     (let [s  (slurp file)
-          s' (cond-> (str/join "\n" (map #(replace-secrets-line secret-map %) (str/split-lines s)))
-               (str/ends-with? s "\n") (str "\n"))]
+          s' (str/join "\n" (map #(replace-secrets-line secret-map %) (str/split s #"\n" -1)))]
       (when-not (= s s')
         (spit file s')))))
 
