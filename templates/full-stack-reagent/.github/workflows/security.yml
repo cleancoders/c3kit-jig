@@ -6,5 +6,8 @@ jobs:
   security:
     uses: cleancoders/github-actions/.github/workflows/security.yml@v1
     with:
-      clj-watson-blocking: true
+      ;; @c3kit/db :datomic-pro = clj-watson-blocking: false
+      ;; @c3kit/db :sqlite = clj-watson-blocking: true
+      ;; @c3kit/db :postgres = clj-watson-blocking: true
+      ;; @c3kit/db :memory = clj-watson-blocking: true
       semgrep-blocking: true

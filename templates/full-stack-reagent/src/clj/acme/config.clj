@@ -1,6 +1,7 @@
 (ns acme.config
   (:require [c3kit.apron.app :as app]
-            [c3kit.apron.env :as env]))
+            ;; @c3kit/feature :auth = [c3kit.apron.env :as env]
+            ))
 
 (def ^:private base
   {:analytics-code "console.log('google analytics would have loaded for this page');"

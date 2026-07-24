@@ -55,11 +55,15 @@
                                                 "org.mindrot/jbcrypt"
                                                 "google-api-client"
                                                 "ring-anti-forgery"
-                                                "c3kit.scaffold.cljs"]
+                                                "c3kit.scaffold.cljs"
+                                                "com.datomic/peer"]
                   "bin/db"                     ["Datomic Pro"]
                   "src/cljs/my_app/config.cljs" ["ws-csrf-token"]
                   "dev/my_app/repl.clj"         ["config-from-service"
-                                                 "-ensure-migration-schema!"]}
+                                                 "-ensure-migration-schema!"]
+                  ".github/workflows/security.yml" ["cleancoders/github-actions/.github/workflows/security.yml@v1"
+                                                    "clj-watson-blocking: false"
+                                                    "semgrep-blocking: true"]}
 
  :file-not-contains {"src/clj/my_app/config.clj" ["sqlite-local"
                                                   "postgres-local"

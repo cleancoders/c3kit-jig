@@ -21,12 +21,12 @@
       (silence-err
         #(with-out-str
            (with-stdin "1\nok\n"
-                       (fn [] (should= "ok"
-                                       (w/prompt-text "Name" nil
-                                                      (fn [v]
-                                                        (when-not (re-matches #"[a-z]+" v)
-                                                          (throw (ex-info "bad" {})))
-                                                        v)))))))))
+             (fn [] (should= "ok"
+                             (w/prompt-text "Name" nil
+                                            (fn [v]
+                                              (when-not (re-matches #"[a-z]+" v)
+                                                (throw (ex-info "bad" {})))
+                                              v)))))))))
 
   (context "prompt-yn"
     (it "default Yes"
@@ -41,48 +41,48 @@
   (it "prompt-select returns nth option for valid index"
     (with-out-str
       (with-stdin "2\n"
-                  #(should= :sqlite
-                            (w/prompt-select "Database"
-                                             [{:id :datomic-pro :label "Datomic"}
-                                              {:id :sqlite      :label "SQLite"}]
-                                             :datomic-pro)))))
+        #(should= :sqlite
+                  (w/prompt-select "Database"
+                                   [{:id :datomic-pro :label "Datomic"}
+                                    {:id :sqlite      :label "SQLite"}]
+                                   :datomic-pro)))))
 
   (it "prompt-select returns default on empty"
     (with-out-str
       (with-stdin "\n"
-                  #(should= :datomic-pro
-                            (w/prompt-select "Database"
-                                             [{:id :datomic-pro :label "Datomic"}
-                                              {:id :sqlite      :label "SQLite"}]
-                                             :datomic-pro)))))
+        #(should= :datomic-pro
+                  (w/prompt-select "Database"
+                                   [{:id :datomic-pro :label "Datomic"}
+                                    {:id :sqlite      :label "SQLite"}]
+                                   :datomic-pro)))))
 
   (context "prompt-features"
     (it "prompts y/n per feature using manifest default"
       (with-out-str
         (with-stdin "\n\n"
-                    #(should= {:a true :b false}
-                              (w/prompt-features
-                                [{:id :a :prompt "A?" :default true}
-                                 {:id :b :prompt "B?" :default false}]
-                                nil)))))
+          #(should= {:a true :b false}
+                    (w/prompt-features
+                      [{:id :a :prompt "A?" :default true}
+                       {:id :b :prompt "B?" :default false}]
+                      nil)))))
 
     (it "honors explicit answers"
       (with-out-str
         (with-stdin "n\ny\n"
-                    #(should= {:a false :b true}
-                              (w/prompt-features
-                                [{:id :a :prompt "A?" :default true}
-                                 {:id :b :prompt "B?" :default false}]
-                                nil)))))
+          #(should= {:a false :b true}
+                    (w/prompt-features
+                      [{:id :a :prompt "A?" :default true}
+                       {:id :b :prompt "B?" :default false}]
+                      nil)))))
 
     (it "skips features overridden via CLI"
       (with-out-str
         (with-stdin "n\n"
-                    #(should= {:a false :b true}
-                              (w/prompt-features
-                                [{:id :a :prompt "A?" :default true}
-                                 {:id :b :prompt "B?" :default false}]
-                                {:b true})))))
+          #(should= {:a false :b true}
+                    (w/prompt-features
+                      [{:id :a :prompt "A?" :default true}
+                       {:id :b :prompt "B?" :default false}]
+                      {:b true})))))
 
     (it "returns empty map when features nil or empty"
       (should= {} (w/prompt-features nil nil))
@@ -115,22 +115,22 @@
                     w/gum-choose-one (fn [_ _ _] (throw (ex-info "cancel" {})))]
         (with-out-str
           (with-stdin "2\n"
-                      #(should= :sqlite
-                                (w/prompt-select "Database"
-                                                 [{:id :datomic-pro :label "Datomic"}
-                                                  {:id :sqlite      :label "SQLite"}]
-                                                 :datomic-pro))))))
+            #(should= :sqlite
+                      (w/prompt-select "Database"
+                                       [{:id :datomic-pro :label "Datomic"}
+                                        {:id :sqlite      :label "SQLite"}]
+                                       :datomic-pro))))))
 
     (it "falls back to numbered when labels collide"
       (with-redefs [w/gum-available? (fn [] true)
                     w/gum-choose-one (fn [_ _ _] (throw (ex-info "should not be called" {})))]
         (with-out-str
           (with-stdin "\n"
-                      #(should= :a
-                                (w/prompt-select "Pick"
-                                                 [{:id :a :label "Same"}
-                                                  {:id :b :label "Same"}]
-                                                 :a)))))))
+            #(should= :a
+                      (w/prompt-select "Pick"
+                                       [{:id :a :label "Same"}
+                                        {:id :b :label "Same"}]
+                                       :a)))))))
 
   (context "prompt-features-checkbox"
     (it "uses gum when available; returns ids picked + forced overrides"
@@ -163,22 +163,22 @@
       (with-redefs [w/gum-available? (fn [] false)]
         (with-out-str
           (with-stdin "y\nn\n"
-                      #(should= {:a true :b false}
-                                (w/prompt-features-checkbox
-                                  [{:id :a :prompt "A?" :default false}
-                                   {:id :b :prompt "B?" :default true}]
-                                  nil))))))
+            #(should= {:a true :b false}
+                      (w/prompt-features-checkbox
+                        [{:id :a :prompt "A?" :default false}
+                         {:id :b :prompt "B?" :default true}]
+                        nil))))))
 
     (it "falls back when gum-choose throws (e.g. user cancels)"
       (with-redefs [w/gum-available? (fn [] true)
                     w/gum-choose     (fn [_ _] (throw (ex-info "cancelled" {})))]
         (with-out-str
           (with-stdin "n\ny\n"
-                      #(should= {:a false :b true}
-                                (w/prompt-features-checkbox
-                                  [{:id :a :prompt "A?" :default true}
-                                   {:id :b :prompt "B?" :default false}]
-                                  nil))))))
+            #(should= {:a false :b true}
+                      (w/prompt-features-checkbox
+                        [{:id :a :prompt "A?" :default true}
+                         {:id :b :prompt "B?" :default false}]
+                        nil))))))
 
     (it "returns empty map when features nil/empty"
       (should= {} (w/prompt-features-checkbox nil nil))
@@ -188,24 +188,24 @@
     (it "returns chosen id via prompt-select"
       (with-out-str
         (with-stdin "2\n"
-                    #(should= :sqlite
-                              (w/prompt-db
-                                {:prompt  "Database"
-                                 :options [{:id :datomic-pro :label "Datomic"}
-                                           {:id :sqlite      :label "SQLite"}]
-                                 :default :datomic-pro}
-                                nil)))))
+          #(should= :sqlite
+                    (w/prompt-db
+                      {:prompt  "Database"
+                       :options [{:id :datomic-pro :label "Datomic"}
+                                 {:id :sqlite      :label "SQLite"}]
+                       :default :datomic-pro}
+                      nil)))))
 
     (it "returns default on empty input"
       (with-out-str
         (with-stdin "\n"
-                    #(should= :datomic-pro
-                              (w/prompt-db
-                                {:prompt  "Database"
-                                 :options [{:id :datomic-pro :label "Datomic"}
-                                           {:id :sqlite      :label "SQLite"}]
-                                 :default :datomic-pro}
-                                nil)))))
+          #(should= :datomic-pro
+                    (w/prompt-db
+                      {:prompt  "Database"
+                       :options [{:id :datomic-pro :label "Datomic"}
+                                 {:id :sqlite      :label "SQLite"}]
+                       :default :datomic-pro}
+                      nil)))))
 
     (it "skips prompt when CLI override provided"
       (should= :postgres

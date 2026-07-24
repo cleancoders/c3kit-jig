@@ -179,8 +179,8 @@
     (if (:yes options)
       (ui/warn (update-check/update-message current latest))
       (when-not (wizard/prompt-yn
-                 (str "Update available (" current " → " latest "). Continue anyway?")
-                 true)
+                  (str "Update available (" current " → " latest "). Continue anyway?")
+                  true)
         (ui/info "Run `c3kit-jig upgrade` to update.")
         (exit 0)))))
 

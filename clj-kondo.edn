@@ -7,44 +7,96 @@
 ;; unresolved-namespace, …) are left at their defaults and MUST NOT be
 ;; disabled here.
 ;;
+;; Security posture, not skeleton-silencing: linters that surface the sloppy
+;; code where bugs hide are escalated, not turned off.
+;;
 ;; Symlinked into:
 ;;   - verification/.clj-kondo/config.edn — harness lints its own clj
 ;;       sources under these strict rules.
-;;   - templates/<id>/.clj-kondo/c3kit-shared/config.edn — each template;
-;;       the template's own .clj-kondo/config.edn merges this in via
-;;       `:config-paths ["c3kit-shared"]` and then adds scaffold-specific
-;;       suppressions (placeholder bindings, lazy-route namespaces,
-;;       project-defined helper symbols). Scaffold-specific relaxations
-;;       belong in the per-template file, NOT here.
+;;   - templates/<id>/.scaffold-clj-kondo/c3kit-shared/config.edn — each
+;;       template; the scaffold's own .clj-kondo/config.edn merges this in
+;;       via `:config-paths ["c3kit-shared"]` and then adds scaffold-specific
+;;       suppressions (lazy-route namespaces, project-defined helper symbols).
+;;       Scaffold-specific relaxations belong in the per-template file, NOT
+;;       here.
+;;
+;; This config references two hooks (:hooks below). Wherever the config is
+;; used the matching hook files must sit alongside it under a `hooks/` dir:
+;;   - verification/.clj-kondo/hooks/{speclj_with,secretary}.clj
+;;   - the scaffold ships them via .scaffold-clj-kondo/hooks/ (render renames
+;;     .scaffold-clj-kondo/ → .clj-kondo/, so they land at
+;;     <scaffold>/.clj-kondo/hooks/).
 ;;
 ;; Future templates: do the same — symlink c3kit-shared/config.edn back
-;; to this file, keep their scaffold relaxations local. Don't fork.
-;; (cli/.clj-kondo/config.edn stays separate: CLI dev only.)
+;; to this file, ship the hook files, keep their scaffold relaxations local.
+;; Don't fork. (cli/.clj-kondo/config.edn stays separate: CLI dev only.)
 {:lint-as
  {;; c3kit's `for-all` is a comprehension macro shaped like `for`.
   c3kit.apron.corec/for-all clojure.core/for
   ;; garden's `defstyles` defines the stylesheet var; treat like `def`.
   garden.def/defstyles      clojure.core/def
-  ;; speclj `with` / `with-all` rebind a value used via deref (`@name`).
-  ;; Treating them as `def` lets clj-kondo see the rebind so it does not
-  ;; report `Expected: deref, received: keyword` against the
-  ;; `(def x :undefined)` placeholder pattern that speclj specs use.
-  speclj.core/with          clojure.core/def
-  speclj.core/with-all      clojure.core/def}
+  ;; reagent's `with-let` is a binding macro shaped like `let` (bindings vector
+  ;; then body); treat like `let` so its bindings resolve in the body.
+  reagent.core/with-let     clojure.core/let}
+ ;; NOTE — the plugin canonical also maps `speclj.core/around` / `around-all` to
+ ;; `clojure.core/fn`. NOT adopted here: the scaffold's spec-helper writes the
+ ;; `(around [it] (it))` idiom, and treating `around` as `fn` makes the `[it]`
+ ;; param shadow the `:refer`red `speclj.core/it`, leaving it "referred but
+ ;; never used" — a warning that fails the harness's exit-0 lint gate. Left
+ ;; unresolved (they stay in the :unresolved-symbol exclude below), matching the
+ ;; prior green behaviour.
+
+ ;; Speclj `with` / `with!` / `with-all` / `with-all!` declare a lazily
+ ;; evaluated, deref-able symbol accessed as `@name`. :lint-as def would bind
+ ;; the symbol to its value, making `@name` a deref of a non-derefable type and
+ ;; (with :type-mismatch escalated below) flagging every `@with-binding` as an
+ ;; error. The hook rewrites them to `(def sym (atom (do body...)))` so `@sym`
+ ;; type-checks while the body is still analysed. The hook fires because spec
+ ;; files `:refer` these macros, letting clj-kondo resolve them without jar
+ ;; analysis. Hook file: hooks/speclj_with.clj.
+ :hooks
+ {:analyze-call
+  {speclj.core/with      hooks.speclj-with/with-binding
+   speclj.core/with!     hooks.speclj-with/with-binding
+   speclj.core/with-all  hooks.speclj-with/with-binding
+   speclj.core/with-all! hooks.speclj-with/with-binding
+   ;; secretary's `defroute` is `(defroute path [route-params] & body)`; the
+   ;; hook rewrites it to a `fn` binding the route-params so they resolve in the
+   ;; body (clj-kondo can't see through the macro). Fires only where
+   ;; secretary.core/defroute is actually called, so it is inert in non-SPA
+   ;; repos. Hook file: hooks/secretary.clj.
+   secretary.core/defroute hooks.secretary/defroute}}
 
  :linters
- {;; Strict: no `:refer :all`. Every refer must be explicit. Speclj specs
+ {;; --- security posture: escalate (blocking, :error) ---------------------
+  ;; Type confusion is a real correctness/security defect — block on it.
+  :type-mismatch {:level :error}
+  ;; Strict: no `:refer :all`. Every refer must be explicit. Speclj specs
   ;; and garden style namespaces previously used `:refer :all` deliberately;
   ;; they have been migrated to explicit `:refer [...]` lists.
-  :refer-all           {:level :error}
+  :refer-all     {:level :error}
 
+  ;; NOTE — the plugin canonical also surfaces :unused-binding / :shadowed-var
+  ;; / :unused-private-var at :warning. Those are DELIBERATELY LEFT AT DEFAULTS
+  ;; here. In the plugin they are advisory (the per-edit PostToolUse hook shows
+  ;; them without blocking). This config, by contrast, is the gate the
+  ;; verification harness runs against the rendered scaffold, and that check
+  ;; passes only on `clj-kondo` exit 0 — any :warning fails it. The generated
+  ;; scaffold idiomatically shadows core vars (type/key/hash/name/it/… ~50
+  ;; sites) and carries placeholder bindings; escalating those linters would
+  ;; force churning generated output (which must not be touched) or disabling
+  ;; the linters per-scaffold (which this project forbids). So they stay at
+  ;; defaults, keeping the surfaced set to genuine, zero-tolerance findings.
+
+  ;; --- Speclj / c3kit.wire DSL: symbol-resolution only -------------------
   ;; speclj + c3kit.wire test helpers — universally-defined library macros
   ;; whose call-site forms clj-kondo cannot resolve without jar analysis.
   ;; Symbol resolution only; does not affect other linters.
   :unresolved-symbol
   {:exclude [;; speclj structure
              describe context it xit
-             before before-all after after-all around around-all with with-all
+             before before-all after after-all around around-all
+             with with! with-all with-all!
              focus-describe focus-context focus-it
              tags pending
              ;; speclj assertions

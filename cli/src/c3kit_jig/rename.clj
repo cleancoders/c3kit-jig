@@ -70,9 +70,9 @@
    are NOT namespace args and stay underscore."
   [text prev-str between]
   (boolean
-   (or (re-find #"\(\s*(?:require|in-ns)\b" text)
-       (and (= prev-str "\"-m\"")
-            (re-matches #"[\s,]*" (or between ""))))))
+    (or (re-find #"\(\s*(?:require|in-ns)\b" text)
+        (and (= prev-str "\"-m\"")
+             (re-matches #"[\s,]*" (or between ""))))))
 
 (defn- ns-qualified-symbol?
   "True if `text` (EDN code segment, no surrounding quotes) contains the source token
@@ -108,22 +108,22 @@
         und  #(underscore-token % source-token flags user)]
     (->> segs
          (map-indexed
-          (fn [i [kind text]]
-            (cond
-              (#{"clj" "cljc" "cljs"} ext)
-              (if (= kind :code) (hyph text) (und text))
+           (fn [i [kind text]]
+             (cond
+               (#{"clj" "cljc" "cljs"} ext)
+               (if (= kind :code) (hyph text) (und text))
 
-              (= ext "edn")
-              (cond
-                (= kind :code) (if (ns-qualified-symbol? text source-token) (hyph text) (und text))
-                (edn-ns-arg-str? text
-                                 (second (nth segs (- i 2) [:str ""]))   ; previous string segment
-                                 (second (nth segs (dec i) [:code ""]))) ; code between them
-                (hyph text)
-                :else (und text))
+               (= ext "edn")
+               (cond
+                 (= kind :code) (if (ns-qualified-symbol? text source-token) (hyph text) (und text))
+                 (edn-ns-arg-str? text
+                                  (second (nth segs (- i 2) [:str ""]))   ; previous string segment
+                                  (second (nth segs (dec i) [:code ""]))) ; code between them
+                 (hyph text)
+                 :else (und text))
 
-              :else
-              (und text))))
+               :else
+               (und text))))
          (apply str))))
 
 (defn replace-content
