@@ -79,7 +79,7 @@
       (spit (fs/file (fs/path stage "spec" "hook_test.bb")) "(println :tests-the-hook)")
       (r/render! stage manifest "x" {} {} "0.1.0-SNAPSHOT")
       (should     (fs/exists? marker))
-      (let [ctx (read-string (slurp (fs/file marker)))]
+      (let [ctx (edn/read-string (slurp (fs/file marker)))]
         (should= "x" (:name ctx))
         (should= "0.1.0-SNAPSHOT" (:cli-version ctx))
         (should= :hooked (:template ctx)))
