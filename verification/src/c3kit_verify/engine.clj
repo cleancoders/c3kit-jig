@@ -18,8 +18,8 @@
 (defn- read-edn [path] (edn/read-string (slurp path)))
 
 (def ^:private tier-checks
-  {:full  #{:no-cruft :combo :residue :ns-hyphen :lint :fmt :clj-clean :cljs-run :server-boot}
-   :light #{:no-cruft :combo :residue :ns-hyphen :lint :fmt :clj-clean :cljs-run}})
+  {:full  #{:no-cruft :combo :residue :ns-hyphen :lint :fmt :clj-clean :cljs-run :server-boot :security-workflow}
+   :light #{:no-cruft :combo :residue :ns-hyphen :lint :fmt :clj-clean :cljs-run :security-workflow}})
 
 (defn- feature-flags [features]
   (mapcat (fn [[k v]] ["--feature" (str (name k) "=" (boolean v))]) features))
@@ -72,6 +72,7 @@
         underscore (str/replace (:name combo-edn) "-" "_")
         thunks     [[:no-cruft    #(checks/cruft-check root denylist)]
                     [:combo       #(checks/combo-check root combo-edn)]
+                    [:security-workflow #(checks/security-workflow-check root)]
                     [:residue     #(checks/residue-check root)]
                     [:ns-hyphen   #(checks/ns-hyphen-check root underscore ns-prefix-exempt)]
                     [:lint        #(checks/tool-check :lint root (:lint commands) (:lint-config commands) "clj-kondo")]
