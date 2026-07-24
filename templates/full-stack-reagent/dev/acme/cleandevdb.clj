@@ -1,3 +1,4 @@
+;; @c3kit/db :datomic-pro {
 (ns acme.cleandevdb
   (:require [datomic.api :as datomic]))
 
@@ -11,3 +12,4 @@
   (datomic/create-database dev-uri)
   (println "\t done!")
   (System/exit 0))
+;; @c3kit/db :datomic-pro }
