@@ -94,3 +94,56 @@ jobs:
           cd verification
           bb verify --combo memory-defaults --tier full \
             --cli-cp ${{ github.workspace }}/cli/src
+
+  dep-cve:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        combo:
+          - sqlite-no-auth
+          - postgres-ssr-no-content
+          - datomic-pro-no-ssr-no-content
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+      - uses: DeLaGuardo/setup-clojure@13.6.1
+        with:
+          cli: latest
+          bb: 1.12.218
+      - name: Render combo
+        run: |
+          cd verification
+          bb render --combo ${{ matrix.combo }} --out "$GITHUB_WORKSPACE/scan-target" \
+            --cli-cp "$GITHUB_WORKSPACE/cli/src"
+      - name: clj-watson dependency CVE scan (blocking)
+        working-directory: scan-target/my-app
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: clojure -M:clj-watson scan -p deps.edn --database-strategy github-advisory --fail-on-result
+
+  sast:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: DeLaGuardo/setup-clojure@13.6.1
+        with:
+          bb: 1.12.218
+      - name: Render features-maximal combo
+        run: |
+          cd verification
+          bb render --combo memory-defaults --out "$GITHUB_WORKSPACE/scan-target" \
+            --cli-cp "$GITHUB_WORKSPACE/cli/src"
+      - name: clj-holmes SAST (blocking)
+        uses: clj-holmes/clj-holmes-action@53daa4da4ff495cccf791e4ba4222a8317ddae9e
+        with:
+          path: 'scan-target/my-app'
+          output-type: 'stdout'
+          fail-on-result: 'true'
+      - name: Install semgrep
+        run: python3 -m pip install --quiet semgrep
+      - name: Semgrep (OWASP Top 10 + default, blocking)
+        run: semgrep scan --config p/owasp-top-ten --config p/default --error scan-target/my-app

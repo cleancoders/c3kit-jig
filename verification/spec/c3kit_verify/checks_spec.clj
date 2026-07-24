@@ -194,3 +194,24 @@
   (it "fails when no boot logs were printed"
     (let [r (sut/server-boot-result* {:http-code "200" :body home-body :output ""})]
       (should-not (:ok? r)))))
+
+(describe "security-workflow-result*"
+  (it "fails when the workflow file is absent"
+    (let [r (sut/security-workflow-result* {:exists? false :content nil})]
+      (should-not (:ok? r))
+      (should (re-find #"missing" (:detail r)))))
+  (it "fails when it does not call the reusable workflow @v1"
+    (should-not (:ok? (sut/security-workflow-result*
+                       {:exists? true :content "name: Security\njobs: {}\n"}))))
+  (it "fails when clj-watson-blocking is not enabled"
+    (should-not (:ok? (sut/security-workflow-result*
+                       {:exists? true
+                        :content "uses: cleancoders/github-actions/.github/workflows/security.yml@v1\nsemgrep-blocking: true\n"}))))
+  (it "fails when semgrep-blocking is not enabled"
+    (should-not (:ok? (sut/security-workflow-result*
+                       {:exists? true
+                        :content "uses: cleancoders/github-actions/.github/workflows/security.yml@v1\nclj-watson-blocking: true\n"}))))
+  (it "passes a complete blocking caller"
+    (should (:ok? (sut/security-workflow-result*
+                   {:exists? true
+                    :content "uses: cleancoders/github-actions/.github/workflows/security.yml@v1\nclj-watson-blocking: true\nsemgrep-blocking: true\n"})))))

@@ -47,4 +47,5 @@
 
  :checks {:no-cruft true :combo true :residue true :ns-hyphen true
           :lint true :fmt true
-          :clj-clean true :cljs-run true :server-boot true}}
+          :clj-clean true :cljs-run true :server-boot true
+          :security-workflow true}}

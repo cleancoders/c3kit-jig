@@ -11,6 +11,9 @@
   verify-all {:doc      "Verify every combo at its declared tier"
               :requires ([c3kit-verify.engine])
               :task     (c3kit-verify.engine/run-all *command-line-args*)}
+  render     {:doc      "Scaffold one combo to --out (no checks). e.g. bb render --combo memory-defaults --out /tmp/scan"
+              :requires ([c3kit-verify.engine])
+              :task     (c3kit-verify.engine/render-main *command-line-args*)}
   scan-coupling {:doc      "Static cross-feature coupling scan; e.g. bb scan-coupling --template full-stack-reagent"
                  :requires ([c3kit-verify.engine] [clojure.tools.cli])
                  :task     (let [opts   (clojure.tools.cli/parse-opts

@@ -26,6 +26,8 @@
                         ;:override-deps {com.cleancoders.c3kit/wire {:local/root "../../cleancoders/c3kit/wire"}}
                         :extra-paths ["dev" "spec/clj" "spec/cljc" "spec/cljs"]}
              :clean-db {:main-opts ["-m" "acme.clean-dev-db"]}
+             :clj-watson {:replace-deps {io.github.clj-holmes/clj-watson {:git/tag "v6.1.0" :git/sha "be98e4d"}}
+                          :main-opts    ["-m" "clj-watson.cli"]}
              ;; @c3kit/feature !:ssr = :cljs     {:main-opts ["-m" "c3kit.scaffold.cljs"]}
              ;; @c3kit/feature :ssr {
              :cljs     {:main-opts   ["-m" "acme.compile-cljs"]

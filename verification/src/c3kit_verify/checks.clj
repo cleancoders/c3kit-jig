@@ -213,6 +213,31 @@
       (p/sh {:continue true} "kill" "-9" pid))
     (when (seq pids) (Thread/sleep 500))))
 
+(def ^:private SECURITY-WORKFLOW-REF
+  "cleancoders/github-actions/.github/workflows/security.yml@v1")
+
+(defn security-workflow-result*
+  "Decide pass/fail for the baked security caller workflow. Pass iff the file
+   exists, calls the reusable workflow @v1, and enables both blocking toggles."
+  [{:keys [exists? content]}]
+  (let [c (or content "")]
+    (cond
+      (not exists?)
+      {:check :security-workflow :ok? false :detail ".github/workflows/security.yml missing"}
+      (not (str/includes? c SECURITY-WORKFLOW-REF))
+      {:check :security-workflow :ok? false :detail "does not call security.yml@v1"}
+      (not (str/includes? c "clj-watson-blocking: true"))
+      {:check :security-workflow :ok? false :detail "clj-watson-blocking not enabled"}
+      (not (str/includes? c "semgrep-blocking: true"))
+      {:check :security-workflow :ok? false :detail "semgrep-blocking not enabled"}
+      :else
+      {:check :security-workflow :ok? true :detail "security workflow present + blocking"})))
+
+(defn security-workflow-check [root]
+  (let [f       (fs/path root ".github" "workflows" "security.yml")
+        exists? (fs/exists? f)]
+    (security-workflow-result* {:exists? exists? :content (when exists? (slurp (str f)))})))
+
 (defn server-boot-check
   "Run migrate, start the server in the background, poll \"/\" until it responds,
    then kill it. Pass iff the homepage is actually served (HTTP 200 with the
