@@ -146,4 +146,8 @@ jobs:
       - name: Install semgrep
         run: python3 -m pip install --quiet semgrep
       - name: Semgrep (OWASP Top 10 + default, blocking)
-        run: semgrep scan --config p/owasp-top-ten --config p/default --error scan-target/my-app
+        # Exclude the scaffolder-generated .env: it is gitignored, so a real
+        # scaffolded project's semgrep (which scans git-tracked files) never
+        # sees it. The harness renders with --no-git, so exclude it explicitly
+        # to match real-world behavior rather than flag the local dev secret.
+        run: semgrep scan --config p/owasp-top-ten --config p/default --error --exclude '.env' scan-target/my-app
