@@ -11,9 +11,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
 
-      - uses: DeLaGuardo/setup-clojure@13.6.1
+      - uses: DeLaGuardo/setup-clojure@4c7a6f613e5089821bb3bb2a33a3ee115578580d  # v13.6.1
         with:
           bb: '1.12.218'
 
@@ -31,7 +31,7 @@ jobs:
           sha256sum dist/c3kit-jig.bb | cut -d' ' -f1 > dist/c3kit-jig.bb.sha256
           ls -lah dist
 
-      - uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65  # v2.6.2
         with:
           files: |
             cli/dist/c3kit-jig.bb

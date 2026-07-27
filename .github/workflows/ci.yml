@@ -15,9 +15,9 @@ jobs:
         os: [ubuntu-latest, macos-latest]
         bb: ['1.12.218']
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
 
-      - uses: DeLaGuardo/setup-clojure@13.6.1
+      - uses: DeLaGuardo/setup-clojure@4c7a6f613e5089821bb3bb2a33a3ee115578580d  # v13.6.1
         with:
           bb: ${{ matrix.bb }}
 
@@ -48,3 +48,6 @@ jobs:
     with:
       src-paths: "cli/src cli/spec"
       shellcheck-dir: "."
+      # Repo is semgrep-clean (SHA-pinned actions, no curl|bash), so keep it
+      # that way: new findings fail the build instead of sitting red-but-ignored.
+      semgrep-blocking: true
